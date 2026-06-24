@@ -1,0 +1,70 @@
+/* 5. AI Action Center */
+.action-center-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.action-center-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: -4px;
+  margin-bottom: 18px;
+}
+
+.action-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-grow: 1;
+}
+
+.action-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background-color: white;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.action-item:hover {
+  transform: translateX(4px);
+  border-color: var(--border-dark);
+  box-shadow: var(--shadow-sm);
+}
+
+.action-icon-wrapper {
+  padding: 8px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.action-info {
+  flex-grow: 1;
+}
+
+.action-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.action-desc {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.action-arrow {
+  color: var(--text-light);
+  align-self: center;
+  width: 16px;
+  height: 16px;
+}

@@ -1,0 +1,87 @@
+/* 3. Upcoming Interviews */
+.interviews-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.interviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.interview-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+.interview-company-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.company-logo-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background-color: #f8fafc;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.interview-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.company-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.role-title {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.interview-schedule-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.interview-time-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+/* Badges styling */
+.badge-danger-soft {
+  background-color: var(--danger-bg);
+  color: var(--danger);
+}
+
+.badge-info-soft {
+  background-color: var(--info-bg);
+  color: var(--info);
+}
+
+.badge-purple-soft {
+  background-color: var(--purple-bg);
+  color: var(--purple-accent);
+}

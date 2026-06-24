@@ -1,0 +1,163 @@
+/* 2. Application Overview */
+.overview-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.overview-dropdown {
+  background-color: transparent;
+  border: 1px solid var(--border-dark);
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  outline: none;
+}
+
+.overview-chart-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 10px;
+  margin-bottom: 12px;
+}
+
+.doughnut-visual {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  flex-shrink: 0;
+}
+
+.doughnut-svg {
+  transform: rotate(-90deg);
+  width: 110px;
+  height: 110px;
+}
+
+.doughnut-slice {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.doughnut-center-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.doughnut-center-count {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1;
+}
+
+.doughnut-center-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.legend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.legend-label-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.legend-name {
+  color: var(--text-muted);
+}
+
+.legend-value-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+
+.legend-count {
+  color: var(--text-main);
+}
+
+.legend-percentage {
+  color: var(--text-light);
+  font-size: 10px;
+}
+
+/* Profile Strength Meter inside Application Overview Card */
+.profile-strength-box {
+  margin-top: auto;
+  border-top: 1px solid var(--border-color);
+  padding-top: 14px;
+}
+
+.strength-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.strength-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.strength-percentage {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.strength-progress-track {
+  width: 100%;
+  height: 6px;
+  background-color: var(--border-color);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.strength-progress-bar {
+  height: 100%;
+  background-color: var(--primary-accent);
+  border-radius: 3px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.strength-helper-text {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
