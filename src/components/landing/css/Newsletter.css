@@ -1,0 +1,103 @@
+/* Newsletter.css */
+
+.newsletter-section {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px 80px 24px;
+}
+
+.newsletter-banner {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-accent) 100%);
+  border-radius: 24px;
+  padding: 56px 64px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  box-shadow: 0 12px 30px rgba(54, 63, 245, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle decorative circles in banner */
+.newsletter-banner::before {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  top: -50px;
+  right: -50px;
+}
+
+.newsletter-text {
+  max-width: 500px;
+  z-index: 2;
+}
+
+.newsletter-title {
+  color: white;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.newsletter-desc {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.newsletter-form {
+  display: flex;
+  background-color: white;
+  border-radius: 14px;
+  padding: 6px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  z-index: 2;
+}
+
+.newsletter-input {
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px 16px;
+  flex-grow: 1;
+  color: var(--text-main);
+  border-radius: 10px;
+}
+
+.newsletter-input::placeholder {
+  color: var(--text-light);
+}
+
+.btn-subscribe {
+  background-color: var(--primary-accent);
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.btn-subscribe:hover {
+  background-color: var(--primary);
+}
+
+/* Responsiveness adjustments */
+@media (max-width: 1100px) {
+  .newsletter-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 32px;
+    padding: 48px;
+  }
+}

@@ -1,0 +1,76 @@
+/* Partners.css */
+
+.trusted-section {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+  text-align: center;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.trusted-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--primary-accent);
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.trusted-marquee-container {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  gap: 72px;
+  position: relative;
+  /* Premium fading mask effect on the edges */
+  mask-image: linear-gradient(to right,
+      transparent 0%,
+      black 15%,
+      black 85%,
+      transparent 100%);
+  -webkit-mask-image: linear-gradient(to right,
+      transparent 0%,
+      black 15%,
+      black 85%,
+      transparent 100%);
+  padding: 10px 0;
+}
+
+.trusted-marquee-track {
+  display: flex;
+  flex-shrink: 0;
+  min-width: 100%;
+  justify-content: space-around;
+  align-items: center;
+  gap: 72px;
+  animation: scroll-marquee 25s linear infinite;
+}
+
+.trusted-marquee-container:hover .trusted-marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes scroll-marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(calc(-100% - 72px));
+  }
+}
+
+.company-logo-text {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: -0.03em;
+  transition: var(--transition-smooth);
+}
+
+.company-logo-text:hover {
+  color: var(--text-muted);
+}
