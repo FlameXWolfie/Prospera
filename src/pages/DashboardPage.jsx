@@ -9,6 +9,7 @@ import ActionCenter from '../components/dashboard/ActionCenter';
 import AnalyticsChart from '../components/dashboard/AnalyticsChart';
 import LibraryPage from './LibraryPage';
 import AtsScanPage from './AtsScanPage';
+import EnhanceResumePage from './EnhanceResumePage';
 import { initialResumes } from '../data/resumes';
 
 export default function DashboardPage() {
@@ -61,6 +62,11 @@ export default function DashboardPage() {
   // Add a resume created from an uploaded file (ATS Scan empty state)
   const handleUploadResume = (resume) => {
     setResumes(prev => [resume, ...prev]);
+  };
+
+  // Enhance Resume: apply an arbitrary transform to one resume (single source of truth)
+  const handleUpdateResume = (id, updater) => {
+    setResumes(prev => prev.map(r => (r.id === id ? updater(r) : r)));
   };
 
   // Promote one resume to the single active version (BoostBanner targets the active one)
@@ -116,6 +122,17 @@ export default function DashboardPage() {
           onNewResumeClick={handleNewResume}
           onUpload={handleUploadResume}
           onEnhance={() => setActiveTab('enhance')}
+        />
+      );
+    }
+
+    if (activeTab === 'enhance') {
+      return (
+        <EnhanceResumePage
+          resumes={resumes}
+          onUpdateResume={handleUpdateResume}
+          onUpload={handleUploadResume}
+          onOpenBuilder={handleNewResume}
         />
       );
     }
@@ -294,7 +311,7 @@ export default function DashboardPage() {
 
   // The library and ATS Scan are self-contained screens with their own headers,
   // so the global dashboard Header (with its separate search) is hidden there.
-  const hideGlobalHeader = activeTab === 'library' || activeTab === 'ats';
+  const hideGlobalHeader = activeTab === 'library' || activeTab === 'ats' || activeTab === 'enhance';
 
   return (
     <div className={`app-container${sidebarCollapsed ? ' sidebar-collapsed' : ''}`}>

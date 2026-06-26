@@ -1,44 +1,17 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import {
   ScanLine, Check, X, ArrowRight, ArrowLeft, FileText, Upload, FilePlus,
-  CheckCircle2, AlertCircle, ChevronRight, Lightbulb, Mail, MapPin, Globe,
-  RefreshCw, Download, Sparkles,
+  CheckCircle2, AlertCircle, ChevronRight, Lightbulb, RefreshCw, Download, Sparkles,
 } from 'lucide-react';
-import { scanResume, scanRole, extractSkills, ROLE_PROFILES, profileForResume } from '../lib/atsKeywords';
+import { scanResume, scanRole, ROLE_PROFILES, profileForResume } from '../lib/atsKeywords';
+import { resumeFromUpload } from '../lib/resumeUpload';
 import { scoreColor } from '../lib/scoreColor';
+import ResumeDocument from '../components/dashboard/ResumeDocument';
 import './css/AtsScanPage.css';
-
-// Candidate identity for the preview — these are the signed-in user's resumes.
-const CANDIDATE = { name: 'Alex Johnson', email: 'alex.johnson@mail.com', location: 'San Francisco, CA', linkedin: 'linkedin.com/in/alexjohnson' };
 
 const ANALYZE_COUNT = 5;
 
 /* ── helpers ──────────────────────────────────────────────────────────────── */
-
-function roleFromFilename(name) {
-  const base = name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim();
-  const cleaned = base.replace(/\b(resume|cv|final|v?\d+|copy)\b/gi, '').replace(/\s+/g, ' ').trim();
-  const label = cleaned || base || 'Uploaded resume';
-  return label.replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function resumeFromUpload(file, text, isFirst) {
-  const skills = extractSkills(text);
-  const summary = text.replace(/\s+/g, ' ').trim().slice(0, 280);
-  return {
-    id: String(Date.now()),
-    role: roleFromFilename(file.name),
-    target: '',
-    score: Math.min(95, 55 + skills.length * 4),
-    status: 'Draft - Pending Review',
-    lastAppended: new Date().toISOString(),
-    summary,
-    experience: [],
-    skills,
-    isActive: isFirst,
-    uploaded: true,
-  };
-}
 
 function subScores(resume, result) {
   const skills = resume.skills || [];
@@ -169,58 +142,6 @@ function CheckRow({ check, active, onSelect }) {
         <ChevronRight size={16} className="ats-checkrow-chev" />
       </button>
       {active && <CheckDetail check={check} />}
-    </div>
-  );
-}
-
-function ResumePreview({ resume, matchedSet, highlight }) {
-  const exp = (resume.experience || []).slice(0, 3);
-  const skills = resume.skills || [];
-  const hl = (s) => `ats-doc-sec${highlight === s ? ' hl' : ''}`;
-  return (
-    <div className="ats-doc" role="img" aria-label={`Preview of ${resume.role} resume`}>
-      <div className="ats-doc-head">
-        <h3 className="ats-doc-name">{CANDIDATE.name}</h3>
-        <p className="ats-doc-role">{resume.role}{resume.target ? ` · ${resume.target}` : ''}</p>
-        <div className="ats-doc-contact">
-          <span><Mail size={11} /> {CANDIDATE.email}</span>
-          <span><MapPin size={11} /> {CANDIDATE.location}</span>
-          <span><Globe size={11} /> {CANDIDATE.linkedin}</span>
-        </div>
-      </div>
-      {resume.summary && (
-        <section className={hl('summary')}>
-          <h4 className="ats-doc-h">Summary</h4>
-          <p className="ats-doc-text">{resume.summary}</p>
-        </section>
-      )}
-      {exp.length > 0 && (
-        <section className={hl('experience')}>
-          <h4 className="ats-doc-h">Experience</h4>
-          {exp.map((e, i) => (
-            <div key={i} className="ats-doc-exp">
-              <div className="ats-doc-exp-row">
-                <span className="ats-doc-exp-role">{e.role}</span>
-                <span className="ats-doc-exp-period">{e.period}</span>
-              </div>
-              <div className="ats-doc-exp-co">{e.company}</div>
-              <ul className="ats-doc-bullets">
-                {(e.bullets || []).slice(0, 3).map((b, j) => <li key={j}>{b}</li>)}
-              </ul>
-            </div>
-          ))}
-        </section>
-      )}
-      {skills.length > 0 && (
-        <section className={hl('skills')}>
-          <h4 className="ats-doc-h">Skills</h4>
-          <div className="ats-doc-skills">
-            {skills.map((s) => (
-              <span key={s} className={`ats-doc-skill${matchedSet.has(s.toLowerCase()) ? ' hit' : ''}`}>{s}</span>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }
@@ -431,7 +352,7 @@ export default function AtsScanPage({ resumes, onNewResumeClick, onUpload, onEnh
           <aside className="ats-results-resume">
             <section className="card-widget ats-preview-card">
               <div className="ats-preview-scroll">
-                <ResumePreview resume={selected} matchedSet={matchedSet} highlight={activeCheckObj.section} />
+                <ResumeDocument resume={selected} matchedSet={matchedSet} highlight={activeCheckObj.section} />
               </div>
             </section>
           </aside>

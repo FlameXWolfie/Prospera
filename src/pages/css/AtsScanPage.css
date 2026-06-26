@@ -331,35 +331,7 @@
 .ats-preview-tag { margin-left: auto; font-size: 11px; font-weight: 600; color: #047857; background: var(--success-bg); padding: 3px 9px; border-radius: 999px; }
 .ats-preview-scroll { max-height: calc(100vh - 168px); min-height: 520px; overflow-y: auto; padding: 14px; background: var(--bg-main); }
 
-.ats-doc { background: #fff; border: 1px solid var(--border-dark); border-radius: 8px; box-shadow: var(--shadow-card); padding: 24px 22px; }
-.ats-doc-head { text-align: center; padding-bottom: 14px; border-bottom: 2px solid var(--text-main); }
-.ats-doc-name { font-family: var(--font-heading); font-size: 22px; font-weight: 800; letter-spacing: -0.3px; color: var(--text-main); margin: 0; }
-.ats-doc-role { font-size: 12.5px; font-weight: 600; color: var(--primary-accent); margin: 3px 0 8px; }
-.ats-doc-contact { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; font-size: 10.5px; color: var(--text-muted); }
-.ats-doc-contact span { display: inline-flex; align-items: center; gap: 4px; }
-.ats-doc-contact svg { color: var(--text-light); }
-.ats-doc-sec { margin-top: 16px; transition: background 0.2s, box-shadow 0.2s; }
-.ats-doc-sec.hl {
-  background: #f5f6ff;
-  box-shadow: inset 3px 0 0 var(--primary-accent);
-  border-radius: 6px;
-  padding: 12px 14px;
-  margin-left: -14px;
-  margin-right: -14px;
-}
-.ats-doc-h { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); margin: 0 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border-dark); }
-.ats-doc-text { font-size: 12px; line-height: 1.6; color: var(--text-muted); margin: 0; }
-.ats-doc-exp { margin-bottom: 12px; }
-.ats-doc-exp:last-child { margin-bottom: 0; }
-.ats-doc-exp-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.ats-doc-exp-role { font-size: 12.5px; font-weight: 700; color: var(--text-main); }
-.ats-doc-exp-period { font-size: 10.5px; color: var(--text-light); white-space: nowrap; }
-.ats-doc-exp-co { font-size: 11.5px; font-weight: 600; color: var(--primary-accent); margin-bottom: 5px; }
-.ats-doc-bullets { margin: 0; padding-left: 16px; display: flex; flex-direction: column; gap: 3px; }
-.ats-doc-bullets li { font-size: 11.5px; line-height: 1.5; color: var(--text-muted); }
-.ats-doc-skills { display: flex; flex-wrap: wrap; gap: 6px; }
-.ats-doc-skill { font-size: 11px; font-weight: 500; color: var(--text-muted); background: var(--bg-main); border: 1px solid var(--border-dark); border-radius: 6px; padding: 3px 9px; transition: all 0.2s; }
-.ats-doc-skill.hit { color: #047857; background: var(--success-bg); border-color: #6ee7b7; box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.12); font-weight: 600; }
+/* The resume document itself lives in components/dashboard/ResumeDocument.css */
 
 /* ── Improve CTA ──────────────────────────────────────────────────────────── */
 .ats-improve {

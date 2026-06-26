@@ -1,0 +1,26 @@
+/* ── Resume document preview (shared by ATS Scan + Enhance Resume) ─────────── */
+.rd-doc { background: #fff; border: 1px solid var(--border-dark); border-radius: 8px; box-shadow: var(--shadow-card); padding: 24px 22px; }
+.rd-head { text-align: center; padding-bottom: 14px; border-bottom: 2px solid var(--text-main); }
+.rd-name { font-family: var(--font-heading); font-size: 22px; font-weight: 800; letter-spacing: -0.3px; color: var(--text-main); margin: 0; }
+.rd-role { font-size: 12.5px; font-weight: 600; color: var(--primary-accent); margin: 3px 0 8px; }
+.rd-contact { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; font-size: 10.5px; color: var(--text-muted); }
+.rd-contact span { display: inline-flex; align-items: center; gap: 4px; }
+.rd-contact svg { color: var(--text-light); }
+
+.rd-sec { margin-top: 16px; transition: background 0.2s, box-shadow 0.2s; }
+.rd-sec.hl { background: #f5f6ff; box-shadow: inset 3px 0 0 var(--primary-accent); border-radius: 6px; padding: 12px 14px; margin-left: -14px; margin-right: -14px; }
+.rd-h { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); margin: 0 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border-dark); }
+.rd-text { font-size: 12px; line-height: 1.6; color: var(--text-muted); margin: 0; }
+
+.rd-exp { margin-bottom: 12px; }
+.rd-exp:last-child { margin-bottom: 0; }
+.rd-exp-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.rd-exp-role { font-size: 12.5px; font-weight: 700; color: var(--text-main); }
+.rd-exp-period { font-size: 10.5px; color: var(--text-light); white-space: nowrap; }
+.rd-exp-co { font-size: 11.5px; font-weight: 600; color: var(--primary-accent); margin-bottom: 5px; }
+.rd-bullets { margin: 0; padding-left: 16px; display: flex; flex-direction: column; gap: 3px; }
+.rd-bullets li { font-size: 11.5px; line-height: 1.5; color: var(--text-muted); }
+
+.rd-skills { display: flex; flex-wrap: wrap; gap: 6px; }
+.rd-skill { font-size: 11px; font-weight: 500; color: var(--text-muted); background: var(--bg-main); border: 1px solid var(--border-dark); border-radius: 6px; padding: 3px 9px; transition: all 0.2s; }
+.rd-skill.hit { color: #047857; background: var(--success-bg); border-color: #6ee7b7; box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.12); font-weight: 600; }
