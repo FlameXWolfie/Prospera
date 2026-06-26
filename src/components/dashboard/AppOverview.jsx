@@ -1,4 +1,3 @@
-import React from 'react';
 import './css/AppOverview.css';
 import { ChevronRight } from 'lucide-react';
 

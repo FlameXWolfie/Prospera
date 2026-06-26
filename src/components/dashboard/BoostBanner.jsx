@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './css/BoostBanner.css';
 import { Wand2, ArrowRight } from 'lucide-react';
 

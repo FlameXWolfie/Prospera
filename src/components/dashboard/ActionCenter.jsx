@@ -1,4 +1,3 @@
-import React from 'react';
 import './css/ActionCenter.css';
 import { 
   AlertTriangle, 

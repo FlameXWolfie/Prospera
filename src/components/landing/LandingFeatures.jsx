@@ -1,4 +1,3 @@
-import React from 'react';
 import { Cpu, Briefcase, GraduationCap, TrendingUp } from 'lucide-react';
 import './css/LandingFeatures.css';
 

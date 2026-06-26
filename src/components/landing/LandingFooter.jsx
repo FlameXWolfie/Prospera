@@ -1,4 +1,3 @@
-import React from 'react';
 import './css/LandingFooter.css';
 
 export default function LandingFooter({ onEnterApp }) {

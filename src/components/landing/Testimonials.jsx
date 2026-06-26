@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './css/Testimonials.css';
 
 export default function Testimonials() {

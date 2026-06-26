@@ -1,19 +1,13 @@
-import React from 'react';
 import './css/ResumesGrid.css';
 import { Plus, MoreVertical } from 'lucide-react';
+import { scoreColor } from '../../lib/scoreColor';
 
 export default function ResumesGrid({ resumes, onNewResumeClick, onViewAllClick }) {
-  const getScoreColor = (score) => {
-    if (score >= 80) return '#10b981'; // Emerald
-    if (score >= 75) return '#22c55e'; // Green
-    return '#f97316'; // Orange
-  };
-
   const renderScoreGauge = (score) => {
     const radius = 12;
     const circumference = 2 * Math.PI * radius;
     const offset = circumference - (score / 100) * circumference;
-    const color = getScoreColor(score);
+    const color = scoreColor(score);
 
     return (
       <div className="resume-score-gauge">

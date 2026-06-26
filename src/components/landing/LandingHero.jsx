@@ -1,4 +1,3 @@
-import React from 'react';
 import { Star, Play } from 'lucide-react';
 import './css/LandingHero.css';
 
