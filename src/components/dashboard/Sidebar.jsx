@@ -1,21 +1,22 @@
 import './css/Sidebar.css';
-import { 
-  LayoutDashboard, 
-  Cpu, 
-  Sparkles, 
-  FilePlus, 
-  Library, 
-  Briefcase, 
-  GraduationCap, 
-  UserSquare2, 
-  User, 
-  Settings, 
-  BookOpen, 
+import {
+  LayoutDashboard,
+  Cpu,
+  Sparkles,
+  FilePlus,
+  Library,
+  Briefcase,
+  GraduationCap,
+  UserSquare2,
+  User,
+  Settings,
+  BookOpen,
   Crown,
-  ChevronDown 
+  ChevronDown,
+  PanelLeftClose
 } from 'lucide-react';
 
-export default function Sidebar({ activeTab, setActiveTab }) {
+export default function Sidebar({ activeTab, setActiveTab, collapsed, onToggleCollapse }) {
   const resumeTools = [
     { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard },
     { id: 'ats', name: 'ATS Scan', icon: Cpu },
@@ -57,10 +58,18 @@ export default function Sidebar({ activeTab, setActiveTab }) {
   };
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar${collapsed ? ' collapsed' : ''}`}>
       <div className="logo-section">
         <div className="logo-icon">P</div>
         <span className="logo-text">Prospera</span>
+        <button
+          type="button"
+          className="sidebar-collapse-btn"
+          aria-label="Collapse sidebar"
+          onClick={onToggleCollapse}
+        >
+          <PanelLeftClose size={18} />
+        </button>
       </div>
 
       <nav className="nav-section">

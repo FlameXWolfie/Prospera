@@ -84,6 +84,67 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Collapsible sidebar */
+.sidebar {
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sidebar.collapsed {
+  transform: translateX(-100%);
+}
+.app-container.sidebar-collapsed .main-content {
+  margin-left: 0;
+  padding-left: 72px;
+}
+
+.sidebar-collapse-btn {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.sidebar-collapse-btn:hover {
+  background: var(--border-color);
+  color: var(--text-main);
+}
+
+.sidebar-reopen-btn {
+  position: fixed;
+  top: 22px;
+  left: 18px;
+  z-index: 200;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border-dark);
+  border-radius: 12px;
+  background: var(--bg-card);
+  color: var(--text-main);
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  animation: reopenIn 0.2s ease;
+  transition: var(--transition-smooth);
+}
+.sidebar-reopen-btn:hover {
+  background: var(--primary-light);
+  color: var(--primary-accent);
+  border-color: var(--primary-light);
+}
+@keyframes reopenIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 /* Dashboard Grid Component */

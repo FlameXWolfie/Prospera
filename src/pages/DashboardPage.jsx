@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PanelLeftOpen } from 'lucide-react';
 import Sidebar from '../components/dashboard/Sidebar';
 import Header from '../components/dashboard/Header';
 import BoostBanner from '../components/dashboard/BoostBanner';
@@ -7,10 +8,12 @@ import ResumesGrid from '../components/dashboard/ResumesGrid';
 import ActionCenter from '../components/dashboard/ActionCenter';
 import AnalyticsChart from '../components/dashboard/AnalyticsChart';
 import LibraryPage from './LibraryPage';
+import AtsScanPage from './AtsScanPage';
 import { initialResumes } from '../data/resumes';
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [resumes, setResumes] = useState(initialResumes);
   const [buildForm, setBuildForm] = useState({
@@ -55,6 +58,11 @@ export default function DashboardPage() {
     setResumes(prev => prev.filter(r => r.id !== id));
   };
 
+  // Add a resume created from an uploaded file (ATS Scan empty state)
+  const handleUploadResume = (resume) => {
+    setResumes(prev => [resume, ...prev]);
+  };
+
   // Promote one resume to the single active version (BoostBanner targets the active one)
   const handleSetActive = (id) => {
     setResumes(prev => prev.map(r => ({ ...r, isActive: r.id === id })));
@@ -97,6 +105,17 @@ export default function DashboardPage() {
           onClone={handleCloneResume}
           onDelete={handleDeleteResume}
           onSetActive={handleSetActive}
+        />
+      );
+    }
+
+    if (activeTab === 'ats') {
+      return (
+        <AtsScanPage
+          resumes={resumes}
+          onNewResumeClick={handleNewResume}
+          onUpload={handleUploadResume}
+          onEnhance={() => setActiveTab('enhance')}
         />
       );
     }
@@ -273,16 +292,32 @@ export default function DashboardPage() {
     );
   };
 
-  // The library is a self-contained screen with its own header + search,
-  // so the global dashboard Header (which has a separate search) is hidden there.
-  const isLibrary = activeTab === 'library';
+  // The library and ATS Scan are self-contained screens with their own headers,
+  // so the global dashboard Header (with its separate search) is hidden there.
+  const hideGlobalHeader = activeTab === 'library' || activeTab === 'ats';
 
   return (
-    <div className="app-container">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+    <div className={`app-container${sidebarCollapsed ? ' sidebar-collapsed' : ''}`}>
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
+      />
+
+      {sidebarCollapsed && (
+        <button
+          type="button"
+          className="sidebar-reopen-btn"
+          aria-label="Open sidebar"
+          onClick={() => setSidebarCollapsed(false)}
+        >
+          <PanelLeftOpen size={20} />
+        </button>
+      )}
 
       <main className="main-content">
-        {!isLibrary && (
+        {!hideGlobalHeader && (
           <Header
             onNewResumeClick={handleNewResume}
             onSearchChange={setSearchTerm}
