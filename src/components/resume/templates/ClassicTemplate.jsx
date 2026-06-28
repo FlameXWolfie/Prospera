@@ -1,5 +1,8 @@
 import CustomSections from './CustomSections';
 import SkillGroups from './SkillsSection';
+import Linked from './Linked';
+import ProjectLink from './ProjectLink';
+import { absUrl, mailto, tel } from '../../../lib/resume/resumeLinks';
 import './css/ClassicTemplate.css';
 
 // Classic — traditional, formal, ATS-safe. Centered serif header, single column,
@@ -10,7 +13,12 @@ const EMPTY_SET = new Set();
 
 export default function ClassicTemplate({ data, accent, matched }) {
   const m = matched || EMPTY_SET;
-  const contact = [data.email, data.phone, data.location, data.link].filter(Boolean);
+  const contact = [
+    data.email && { text: data.email, href: mailto(data.email) },
+    data.phone && { text: data.phone, href: tel(data.phone) },
+    data.location && { text: data.location },
+    data.link && { text: data.link, href: absUrl(data.link) },
+  ].filter(Boolean);
 
   return (
     <div className="tpl-classic" style={{ '--accent': accent }}>
@@ -24,7 +32,7 @@ export default function ClassicTemplate({ data, accent, matched }) {
             {contact.map((c, i) => (
               <span key={i} className="tplc-contact-item">
                 {i > 0 && <span className="tplc-sep">&middot;</span>}
-                {c}
+                <Linked href={c.href}>{c.text}</Linked>
               </span>
             ))}
           </p>
@@ -68,7 +76,7 @@ export default function ClassicTemplate({ data, accent, matched }) {
             <div className="tplc-entry" key={i}>
               <div className="tplc-entry-top">
                 <span className="tplc-entry-role">{p.name}</span>
-                {p.link && <span className="tplc-entry-period">{p.link}</span>}
+                {p.link && <ProjectLink url={p.link} />}
               </div>
               {p.bullets.length > 0 && (
                 <ul className="tplc-bullets">

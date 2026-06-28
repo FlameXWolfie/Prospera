@@ -2,9 +2,10 @@
 // the Bearer token); the server scopes every query to the signed-in user.
 import { apiFetch, apiBlob } from '../api';
 
-// Compile the resume content to a print-perfect PDF (server-side LaTeX/Tectonic).
+// Render a print-perfect PDF from a self-contained resume HTML document (built by
+// printDoc.js from the live template) via the server's headless-Chrome renderer.
 // Returns a PDF Blob.
-export const renderResumePdf = (content) => apiBlob('/resumes/render', { method: 'POST', body: content });
+export const renderResumePdf = (html) => apiBlob('/resumes/render', { method: 'POST', body: { html } });
 
 export const listResumes = () => apiFetch('/resumes');
 // The original uploaded file (base64) — fetched lazily, only when a preview needs it.

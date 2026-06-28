@@ -3,9 +3,9 @@
 .tpl-timeline {
   --accent: #4f46e5;
   box-sizing: border-box;
-  width: 794px;
+  width: var(--rt-w, 794px);
   min-height: 1123px;
-  padding: 52px 56px;
+  padding: 52px calc(56px * var(--rt-mgx, 1));
   color: #1f2937;
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 13px;

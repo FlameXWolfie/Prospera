@@ -1,6 +1,9 @@
 import { Mail, Phone, MapPin, Globe } from 'lucide-react';
 import CustomSections from './CustomSections';
 import SkillGroups from './SkillsSection';
+import Linked from './Linked';
+import ProjectLink from './ProjectLink';
+import { absUrl, mailto, tel } from '../../../lib/resume/resumeLinks';
 import './css/CompactTemplate.css';
 
 // Compact — full-width accent header, then a dense two-column body (skills +
@@ -12,10 +15,10 @@ const EMPTY_SET = new Set();
 export default function CompactTemplate({ data, accent, matched }) {
   const m = matched || EMPTY_SET;
   const contact = [
-    data.email && { icon: Mail, text: data.email },
-    data.phone && { icon: Phone, text: data.phone },
+    data.email && { icon: Mail, text: data.email, href: mailto(data.email) },
+    data.phone && { icon: Phone, text: data.phone, href: tel(data.phone) },
     data.location && { icon: MapPin, text: data.location },
-    data.link && { icon: Globe, text: data.link },
+    data.link && { icon: Globe, text: data.link, href: absUrl(data.link) },
   ].filter(Boolean);
 
   const hasLeft = data.summary || data.skills.length > 0 || data.education.length > 0;
@@ -32,7 +35,7 @@ export default function CompactTemplate({ data, accent, matched }) {
           <div className="tplk-contact">
             {contact.map((c, i) => {
               const Icon = c.icon;
-              return <span key={i}><Icon size={11} strokeWidth={2.2} /> {c.text}</span>;
+              return <span key={i}><Icon size={11} strokeWidth={2.2} /> <Linked href={c.href}>{c.text}</Linked></span>;
             })}
           </div>
         )}
@@ -110,7 +113,7 @@ export default function CompactTemplate({ data, accent, matched }) {
                     <div className="tplk-entry-top">
                       <span className="tplk-entry-role">{p.name}</span>
                     </div>
-                    {p.link && <div className="tplk-proj-link">{p.link}</div>}
+                    {p.link && <div className="tplk-proj-link"><ProjectLink url={p.link} /></div>}
                     {p.bullets.length > 0 && (
                       <ul className="tplk-bullets">
                         {p.bullets.map((b, j) => <li key={j}>{b}</li>)}

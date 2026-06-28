@@ -4,9 +4,9 @@
 .tpl-compact {
   --accent: #4f46e5;
   box-sizing: border-box;
-  width: 794px;
+  width: var(--rt-w, 794px);
   min-height: 1123px;
-  padding: 48px 52px;
+  padding: 48px calc(52px * var(--rt-mgx, 1));
   color: #1f2937;
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 12.5px;

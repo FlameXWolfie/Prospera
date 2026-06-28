@@ -1,6 +1,9 @@
 import { Mail, Phone, MapPin, Globe } from 'lucide-react';
 import CustomSections from './CustomSections';
 import SkillGroups from './SkillsSection';
+import Linked from './Linked';
+import ProjectLink from './ProjectLink';
+import { absUrl, mailto, tel } from '../../../lib/resume/resumeLinks';
 import './css/SidebarTemplate.css';
 
 // Sidebar — two-column A4: a solid accent left rail (name, contact, skills,
@@ -12,10 +15,10 @@ const EMPTY_SET = new Set();
 export default function SidebarTemplate({ data, accent, matched }) {
   const m = matched || EMPTY_SET;
   const contact = [
-    data.email && { icon: Mail, text: data.email },
-    data.phone && { icon: Phone, text: data.phone },
+    data.email && { icon: Mail, text: data.email, href: mailto(data.email) },
+    data.phone && { icon: Phone, text: data.phone, href: tel(data.phone) },
     data.location && { icon: MapPin, text: data.location },
-    data.link && { icon: Globe, text: data.link },
+    data.link && { icon: Globe, text: data.link, href: absUrl(data.link) },
   ].filter(Boolean);
 
   return (
@@ -36,7 +39,7 @@ export default function SidebarTemplate({ data, accent, matched }) {
                 return (
                   <li key={i}>
                     <Icon size={13} strokeWidth={2.2} />
-                    <span>{c.text}</span>
+                    <span><Linked href={c.href}>{c.text}</Linked></span>
                   </li>
                 );
               })}
@@ -112,7 +115,7 @@ export default function SidebarTemplate({ data, accent, matched }) {
               <div className="tpls-entry" key={i}>
                 <div className="tpls-entry-top">
                   <span className="tpls-entry-role">{p.name}</span>
-                  {p.link && <span className="tpls-entry-period">{p.link}</span>}
+                  {p.link && <ProjectLink url={p.link} />}
                 </div>
                 {p.bullets.length > 0 && (
                   <ul className="tpls-bullets">

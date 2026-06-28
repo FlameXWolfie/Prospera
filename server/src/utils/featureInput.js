@@ -114,6 +114,8 @@ const RESUME_SANITISERS = {
   isActive: asBool,
   template: (v) => asString(v, 40) || 'modern',
   accent: (v) => (typeof v === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(v.trim()) ? v.trim() : '#4f46e5'),
+  fontScale: (v) => clampNum(v, 0.6, 1.6, 1),
+  pageMargin: (v) => clampNum(v, 0.3, 2, 1),
   name: (v) => asString(v, 120),
   email: (v) => asString(v, 200),
   phone: (v) => asString(v, 60),

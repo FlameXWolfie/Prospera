@@ -8,7 +8,7 @@ export function resumeRoutes(config) {
 
   router.get('/', resumeController.list);
   router.get('/:id/file', resumeController.getFile);
-  router.post('/render', resumeController.render); // LaTeX → PDF (no :id; uses posted content)
+  router.post('/render', resumeController.render); // HTML → PDF via headless Chrome (no :id; uses posted HTML)
   router.post('/', resumeController.create);
   router.patch('/:id', resumeController.update);
   router.post('/:id/scan', resumeController.recordScan);

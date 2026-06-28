@@ -57,6 +57,10 @@ const resumeSchema = new mongoose.Schema({
   // Presentation: which preview template + accent colour the resume renders with.
   template: { type: String, default: 'modern', maxlength: 40 },
   accent: { type: String, default: '#4f46e5', maxlength: 20 },
+  // Layout controls (Studio "Advanced"): font scale + page-margin multiplier used
+  // to fit the resume to one/two pages. 1 = template default.
+  fontScale: { type: Number, default: 1, min: 0.6, max: 1.6 },
+  pageMargin: { type: Number, default: 1, min: 0.3, max: 2 },
   // Builder identity fields (the seed resumes never had these — the live preview
   // falls back to CANDIDATE when name/email are blank).
   name: { type: String, default: '', trim: true, maxlength: 120 },
@@ -116,6 +120,8 @@ resumeSchema.methods.toClientJSON = function toClientJSON() {
     isActive: this.isActive,
     template: this.template,
     accent: this.accent,
+    fontScale: this.fontScale,
+    pageMargin: this.pageMargin,
     name: this.name,
     email: this.email,
     phone: this.phone,

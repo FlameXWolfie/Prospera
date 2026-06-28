@@ -26,14 +26,21 @@ function renderTemplate(id, props) {
 // `matchedSet` glows matched skills (ATS Scan / Enhance). `template`/`accent`
 // override the resume's own saved values; both fall back to the template default.
 const EMPTY = new Set();
+// Templates whose design bleeds to the page edge (a full-height colored column) —
+// they get NO vertical page margin so the bleed is preserved.
+const FULL_BLEED = new Set(['sidebar']);
+const BASE_MARGIN = 50; // vertical page margin (px) at pageMargin = 1
 
-export default function ResumeDocument({ resume = {}, matchedSet, template, accent }) {
+export default function ResumeDocument({ resume = {}, matchedSet, template, accent, paged = false, onPageCount }) {
   const tplId = template || resume.template || 'modern';
   const data = normalizeResume(resume);
   const ac = accent || resume.accent || '#4f46e5';
+  const fontScale = resume.fontScale || 1;
+  const pageMargin = resume.pageMargin || 1;
+  const marginV = FULL_BLEED.has(tplId) ? 0 : Math.round(BASE_MARGIN * pageMargin);
 
   return (
-    <ResumePaper>
+    <ResumePaper paged={paged} onPageCount={onPageCount} fontScale={fontScale} marginV={marginV} marginX={pageMargin}>
       {renderTemplate(tplId, { data, accent: ac, matched: matchedSet || EMPTY })}
     </ResumePaper>
   );

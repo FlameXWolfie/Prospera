@@ -1,17 +1,6 @@
-import { execFile } from 'child_process';
-import { promisify } from 'util';
-import fs from 'fs/promises';
-import os from 'os';
-import path from 'path';
-import crypto from 'crypto';
 import { Resume } from '../models/Resume.js';
 import { sanitizeResume, sanitizeScan } from '../utils/featureInput.js';
-import { buildResumeTex } from '../services/latexResume.js';
-
-const execFileP = promisify(execFile);
-// The host needs the Tectonic TeX engine (https://tectonic-typesetting.github.io).
-// Configurable path; falls back to `tectonic` on PATH.
-const TECTONIC = process.env.TECTONIC_PATH || 'tectonic';
+import { htmlToPdf } from '../services/htmlPdf.js';
 
 // Content fields whose change invalidates a prior ATS scan (presentation-only
 // fields like template/accent don't). Used to flag `scanStale` on update.
@@ -67,32 +56,28 @@ export const resumeController = {
     }
   },
 
-  // Compile the resume to a print-perfect PDF via LaTeX (Tectonic). Body = resume
-  // content (sanitized); user text is escaped in buildResumeTex, and tectonic runs
-  // WITHOUT shell-escape, so untrusted content can't execute anything.
+  // Render the resume to a print-perfect A4 PDF via headless Chrome. Body = a
+  // self-contained HTML document built client-side from the SAME templates the
+  // editor shows (printDoc.js), so the PDF matches the on-screen preview exactly.
+  // The HTML is rendered with JS disabled + a request allowlist (data: + Google
+  // Fonts only), so untrusted content can't run scripts or do SSRF — see htmlPdf.js.
   async render(req, res, next) {
-    let dir;
     try {
-      const content = sanitizeResume(req.body);
-      const tex = buildResumeTex(content, { accent: content.accent });
-      dir = path.join(os.tmpdir(), `prospera-tex-${crypto.randomUUID()}`);
-      await fs.mkdir(dir, { recursive: true });
-      await fs.writeFile(path.join(dir, 'resume.tex'), tex, 'utf8');
-      await execFileP(TECTONIC, ['-X', 'compile', path.join(dir, 'resume.tex'), '--outdir', dir], { timeout: 45000 });
-      const pdf = await fs.readFile(path.join(dir, 'resume.pdf'));
+      const html = typeof req.body?.html === 'string' ? req.body.html : '';
+      if (html.length < 40) return res.status(400).json({ error: 'No resume content to render.' });
+      if (html.length > 3_000_000) return res.status(413).json({ error: 'Resume document is too large to render.' });
+      const pdf = await htmlToPdf(html);
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', 'attachment; filename="resume.pdf"');
       return res.send(pdf);
     } catch (err) {
-      const missing = err && (err.code === 'ENOENT');
-      console.error('[latex] render failed:', err && err.message);
+      const missing = err && err.code === 'ENOENT';
+      console.error('[pdf] render failed:', err && err.message);
       return res.status(missing ? 503 : 500).json({
         error: missing
-          ? 'PDF engine not installed on the server. Install Tectonic (or set TECTONIC_PATH) to enable LaTeX export.'
+          ? 'PDF engine unavailable: install Google Chrome/Chromium on the server (or set CHROME_PATH).'
           : 'Could not generate the PDF from this resume. Please try again.',
       });
-    } finally {
-      if (dir) fs.rm(dir, { recursive: true, force: true }).catch(() => {});
     }
   },
 

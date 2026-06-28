@@ -44,6 +44,10 @@ export function emptyDraft() {
     roleId: 'swe',
     template: null,
     accent: DEFAULT_ACCENT,
+    // Layout controls (Studio "Advanced"): font scale + page-margin multiplier,
+    // used to fit the resume to one/two pages. 1 = template default.
+    fontScale: 1,
+    pageMargin: 1,
   };
 }
 
@@ -241,6 +245,8 @@ export function resumeContentFromDraft(draft) {
     link: trimmed(draft.link),
     template: draft.template || DEFAULT_TEMPLATE,
     accent: draft.accent || DEFAULT_ACCENT,
+    fontScale: draft.fontScale || 1,
+    pageMargin: draft.pageMargin || 1,
   };
 }
 
@@ -290,6 +296,8 @@ export function draftFromResume(resume) {
     roleId: profileForResume(r).id,
     template: r.template || DEFAULT_TEMPLATE,
     accent: r.accent || DEFAULT_ACCENT,
+    fontScale: r.fontScale || 1,
+    pageMargin: r.pageMargin || 1,
     sourceId: r.id, // editing an existing resume → autosave in place
   };
 }

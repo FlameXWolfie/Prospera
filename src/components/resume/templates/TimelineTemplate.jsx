@@ -1,6 +1,9 @@
 import { Mail, Phone, MapPin, Globe } from 'lucide-react';
 import CustomSections from './CustomSections';
 import SkillGroups from './SkillsSection';
+import Linked from './Linked';
+import ProjectLink from './ProjectLink';
+import { absUrl, mailto, tel } from '../../../lib/resume/resumeLinks';
 import './css/TimelineTemplate.css';
 
 // Timeline — single column with a left-aligned accent header and an Experience
@@ -13,10 +16,10 @@ const EMPTY_SET = new Set();
 export default function TimelineTemplate({ data, accent, matched }) {
   const m = matched || EMPTY_SET;
   const contact = [
-    data.email && { icon: Mail, text: data.email },
-    data.phone && { icon: Phone, text: data.phone },
+    data.email && { icon: Mail, text: data.email, href: mailto(data.email) },
+    data.phone && { icon: Phone, text: data.phone, href: tel(data.phone) },
     data.location && { icon: MapPin, text: data.location },
-    data.link && { icon: Globe, text: data.link },
+    data.link && { icon: Globe, text: data.link, href: absUrl(data.link) },
   ].filter(Boolean);
 
   return (
@@ -30,7 +33,7 @@ export default function TimelineTemplate({ data, accent, matched }) {
               const Icon = c.icon;
               return (
                 <span className="tplt-contact-item" key={i}>
-                  <Icon size={12} strokeWidth={2.2} /> {c.text}
+                  <Icon size={12} strokeWidth={2.2} /> <Linked href={c.href}>{c.text}</Linked>
                 </span>
               );
             })}
@@ -77,7 +80,7 @@ export default function TimelineTemplate({ data, accent, matched }) {
             <div className="tplt-entry" key={i}>
               <div className="tplt-entry-top">
                 <span className="tplt-entry-role">{p.name}</span>
-                {p.link && <span className="tplt-entry-period">{p.link}</span>}
+                {p.link && <ProjectLink url={p.link} />}
               </div>
               {p.bullets.length > 0 && (
                 <ul className="tplt-bullets">

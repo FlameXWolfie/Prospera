@@ -3,7 +3,7 @@
 .tpl-sidebar {
   --accent: #4f46e5;
   box-sizing: border-box;
-  width: 794px;
+  width: var(--rt-w, 794px);
   min-height: 1123px;
   padding: 0;
   display: flex;

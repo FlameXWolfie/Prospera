@@ -13,18 +13,49 @@
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
+/* ── Paged mode: real A4 SHEETS with gaps (Studio editor) ─────────────────────
+   The stack is scaled like the single page; the hidden measurer drives breaks. */
+.rp-stack { position: absolute; top: 0; left: 0; transform-origin: top left; }
+.rp-measure { position: absolute; top: 0; left: 0; visibility: hidden; pointer-events: none; z-index: -1; }
+.rp-sheet {
+  position: relative;
+  box-sizing: border-box; /* per-page vertical padding fits inside the A4 height */
+  background: #fff;
+  color: #111827;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12), 0 22px 55px -22px rgba(15, 23, 42, 0.45);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+.rp-sheet-clip { overflow: hidden; }
+/* In paged mode the per-page top/bottom margin comes from the sheet, so the
+   template's own vertical page padding is dropped (avoids double margin on page 1
+   and gives every page the same top margin). Horizontal padding is kept. */
+.rp-measure > *, .rp-sheet-shift > * { padding-top: 0 !important; padding-bottom: 0 !important; }
+
 /* Safety net: long emails, URLs and unbroken tokens must wrap, never overflow the
    page. Date-range / link spans that opt into `white-space: nowrap` are allowed to
    wrap here so a long project URL can break instead of clipping. */
-.rp-page { overflow-wrap: anywhere; word-break: break-word; }
-.rp-page [class$="-entry-period"],
-.rp-page [class$="-plink"],
-.rp-page [class$="-proj-link"] { white-space: normal; overflow-wrap: anywhere; }
+.rp-page, .rp-sheet { overflow-wrap: anywhere; word-break: break-word; }
+/* Résumé links (contact / project) render as <a> so they're clickable in the
+   preview and exported PDF, but should look identical to the surrounding text. */
+.rp-page a, .rp-sheet a { color: inherit; text-decoration: none; }
+.rp-page [class$="-entry-period"], .rp-sheet [class$="-entry-period"],
+.rp-page [class$="-plink"], .rp-sheet [class$="-plink"],
+.rp-page [class$="-proj-link"], .rp-sheet [class$="-proj-link"] { white-space: normal; overflow-wrap: anywhere; }
+
+/* Project links shown as a compact, accent-coloured clickable label ("Live",
+   "GitHub", …) with an icon. Higher specificity than the link-inherit rule above. */
+.rp-page a.rp-projlink, .rp-sheet a.rp-projlink, a.rp-projlink {
+  display: inline-flex; align-items: center; gap: 4px;
+  color: var(--accent); font-weight: 600; text-decoration: none;
+  font-size: 11.5px; white-space: nowrap;
+}
+.rp-projlink-ico { width: 1em; height: 1em; flex-shrink: 0; }
 
 /* Matched-keyword glow (used by ATS Scan / Enhance previews). Templates add the
    `rmatch` class to any skill present in the matched set. Kept generic so it works
    regardless of how a template styles its skills. */
-.rp-page .rmatch {
+.rp-page .rmatch, .rp-sheet .rmatch {
   background: #ecfdf5 !important;
   color: #047857 !important;
   box-shadow: inset 0 0 0 1px #6ee7b7;
@@ -32,7 +63,8 @@
 }
 
 /* The page is content-height (templates author a full A4, but we don't force the
-   empty bottom of a short resume — avoids a big blank, scrollable void). */
+   empty bottom of a short resume — avoids a big blank, scrollable void). NOTE: not
+   applied to paged sheets, which intentionally show the full A4 sheet height. */
 .rp-page > * { min-height: 0 !important; }
 
 /* ── Print / "Download" → crisp A4 PDF (window.print → Save as PDF). Isolates the

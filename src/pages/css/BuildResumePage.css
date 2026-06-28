@@ -50,6 +50,8 @@
 .bld-change-tpl:hover { background: var(--bg-card); border-color: var(--text-light); }
 .bld-change-tpl svg { color: var(--primary-accent); }
 .bld-change-tpl-hint { font-size: 11px; font-weight: 600; color: var(--text-light); margin-left: 2px; padding-left: 8px; border-left: 1px solid var(--border-dark, #e2e8f0); }
+.bld-pagecount { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+.bld-pagecount svg { color: var(--text-light); }
 
 .bld-preview-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
 .bld-accent-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -58,6 +60,27 @@
 .bld-accent.active { box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 4px var(--text-main); }
 .bld-download-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border: 1px solid var(--primary-accent); border-radius: 10px; background: var(--primary-light, rgba(79, 70, 229, 0.1)); color: var(--primary-accent); font-size: 12.5px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background 0.15s, color 0.15s; }
 .bld-download-btn:hover { background: var(--primary-accent); color: var(--text-inverse); }
+
+/* Advanced layout popover (font size + margins → fit 1↔2 pages) */
+.bld-adv { position: relative; }
+.bld-adv-btn { display: inline-flex; align-items: center; gap: 5px; padding: 7px 11px; border: 1px solid var(--border-dark, #e2e8f0); border-radius: 10px; background: var(--bg-main, #f8fafc); color: var(--text-main); font-size: 12.5px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+.bld-adv-btn:hover, .bld-adv-btn.open { background: var(--bg-card); border-color: var(--text-light); }
+.bld-adv-btn svg { color: var(--text-muted); }
+.bld-adv-backdrop { position: fixed; inset: 0; z-index: 19; background: transparent; border: 0; cursor: default; }
+.bld-adv-pop { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; width: 232px; padding: 13px; background: var(--bg-card, #fff); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 14px 36px -10px rgba(15, 23, 42, 0.3); display: flex; flex-direction: column; gap: 12px; }
+.bld-adv-row { display: flex; flex-direction: column; align-items: stretch; gap: 6px; }
+.bld-adv-label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+.bld-adv-step { display: flex; align-items: stretch; border: 1px solid var(--border-dark, #e2e8f0); border-radius: 8px; overflow: hidden; }
+.bld-adv-step button { flex: 0 0 34px; height: 28px; border: 0; background: var(--bg-main, #f8fafc); color: var(--text-main); font-size: 16px; font-weight: 700; line-height: 1; cursor: pointer; }
+.bld-adv-step button:hover:not(:disabled) { background: var(--hover-bg, #eef2ff); color: var(--primary-accent); }
+.bld-adv-step button:disabled { opacity: 0.4; cursor: not-allowed; }
+.bld-adv-val { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 600; color: var(--text-main); border-left: 1px solid var(--border-dark, #e2e8f0); border-right: 1px solid var(--border-dark, #e2e8f0); }
+.bld-adv-seg { display: flex; border: 1px solid var(--border-dark, #e2e8f0); border-radius: 8px; overflow: hidden; }
+.bld-adv-seg button { flex: 1; padding: 6px 4px; border: 0; background: var(--bg-main, #f8fafc); color: var(--text-muted); font-size: 11.5px; font-weight: 600; font-family: inherit; cursor: pointer; }
+.bld-adv-seg button + button { border-left: 1px solid var(--border-dark, #e2e8f0); }
+.bld-adv-seg button.active { background: var(--primary-accent); color: var(--text-inverse); }
+.bld-adv-reset { padding: 6px; border: 1px solid var(--border-dark, #e2e8f0); border-radius: 8px; background: transparent; color: var(--text-muted); font-size: 11.5px; font-weight: 600; font-family: inherit; cursor: pointer; }
+.bld-adv-reset:hover { background: var(--bg-main, #f8fafc); color: var(--text-main); }
 
 /* save dialog form (reuses .bimp-* overlay/card) */
 .bsave-form { display: flex; flex-direction: column; gap: 14px; }

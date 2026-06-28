@@ -233,6 +233,12 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState('');
   const [downloading, setDownloading] = useState(false);
+  const [pageCount, setPageCount] = useState(1);
+  const [advOpen, setAdvOpen] = useState(false);
+  // Layout controls (Advanced): clamp font scale to a sane range.
+  const adjFont = (d) => set('fontScale', Math.max(0.7, Math.min(1.2, Math.round(((draft.fontScale || 1) + d) * 100) / 100)));
+  const fontPct = Math.round((draft.fontScale || 1) * 100);
+  const curMargin = draft.pageMargin || 1;
   const fileRef = useRef(null);
   const editing = Boolean(draft.sourceId); // editing a saved resume (autosaves) vs a new draft
   // The saved resume behind this edit (carries the real ATS scan + stale flag).
@@ -434,13 +440,15 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
     setActiveSection('personal');
   };
   const startBlank = () => { onChange(blankDraft('modern')); setActiveSection('personal'); };
-  // Download = compile the résumé to a print-perfect PDF via server-side LaTeX
-  // (Tectonic). Falls back to the browser print dialog if the engine is unavailable.
+  // Download = render the SAME template the editor shows to a print-perfect A4 PDF
+  // via headless Chrome (so the PDF matches the preview exactly, with clickable
+  // links). Falls back to the browser print dialog if the engine is unavailable.
   const handleDownload = async () => {
     if (downloading) return;
     setDownloading(true);
     try {
-      const blob = await renderResumePdf(resumeContentFromDraft(draft));
+      const { buildResumePrintHtml } = await import('../components/resume/printDoc');
+      const blob = await renderResumePdf(buildResumePrintHtml(resumeContentFromDraft(draft)));
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -859,6 +867,9 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
               <LayoutGrid size={14} /> {templateById(draft.template).name}
               <span className="bld-change-tpl-hint">Change</span>
             </button>
+            <span className="bld-pagecount" title="Pages in the exported PDF">
+              <FileText size={13} /> {pageCount} {pageCount === 1 ? 'page' : 'pages'}
+            </span>
             <div className="bld-preview-actions">
               <div className="bld-accent-row">
                 {ACCENTS.map((c) => (
@@ -872,13 +883,56 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
                   />
                 ))}
               </div>
+              <div className="bld-adv">
+                <button
+                  type="button"
+                  className={`bld-adv-btn${advOpen ? ' open' : ''}`}
+                  onClick={() => setAdvOpen((o) => !o)}
+                  title="Layout: font size & margins"
+                >
+                  Layout <ChevronDown size={13} />
+                </button>
+                {advOpen && (
+                  <>
+                    <button type="button" className="bld-adv-backdrop" aria-label="Close layout options" onClick={() => setAdvOpen(false)} />
+                    <div className="bld-adv-pop">
+                      <div className="bld-adv-row">
+                        <span className="bld-adv-label">Font size</span>
+                        <div className="bld-adv-step">
+                          <button type="button" onClick={() => adjFont(-0.05)} disabled={fontPct <= 70} aria-label="Smaller font">−</button>
+                          <span className="bld-adv-val">{fontPct}%</span>
+                          <button type="button" onClick={() => adjFont(0.05)} disabled={fontPct >= 120} aria-label="Larger font">+</button>
+                        </div>
+                      </div>
+                      <div className="bld-adv-row">
+                        <span className="bld-adv-label">Margins</span>
+                        <div className="bld-adv-seg">
+                          {[['Narrow', 0.6], ['Normal', 1], ['Wide', 1.4]].map(([lbl, v]) => (
+                            <button
+                              key={lbl}
+                              type="button"
+                              className={curMargin === v ? 'active' : ''}
+                              onClick={() => set('pageMargin', v)}
+                            >{lbl}</button>
+                          ))}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="bld-adv-reset"
+                        onClick={() => { set('fontScale', 1); set('pageMargin', 1); }}
+                      >Reset to default</button>
+                    </div>
+                  </>
+                )}
+              </div>
               <button type="button" className="bld-download-btn" onClick={handleDownload} disabled={downloading} title="Download as PDF">
                 {downloading ? <><Loader2 size={14} className="en-ai-spin" /> Preparing…</> : <><Download size={14} /> Download</>}
               </button>
             </div>
           </div>
           <div className="bld-canvas">
-            <ResumeDocument resume={draft} template={draft.template} accent={draft.accent} />
+            <ResumeDocument resume={draft} template={draft.template} accent={draft.accent} paged onPageCount={setPageCount} />
           </div>
         </aside>
       </div>

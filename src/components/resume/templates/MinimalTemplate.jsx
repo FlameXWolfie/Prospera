@@ -1,5 +1,8 @@
 import CustomSections from './CustomSections';
 import SkillGroups from './SkillsSection';
+import Linked from './Linked';
+import ProjectLink from './ProjectLink';
+import { absUrl, mailto, tel } from '../../../lib/resume/resumeLinks';
 import './css/MinimalTemplate.css';
 
 // Minimal — editorial and spare: centered serif name, single column, hairline
@@ -10,7 +13,12 @@ const EMPTY_SET = new Set();
 
 export default function MinimalTemplate({ data, accent, matched }) {
   const m = matched || EMPTY_SET;
-  const contact = [data.email, data.phone, data.location, data.link].filter(Boolean);
+  const contact = [
+    data.email && { text: data.email, href: mailto(data.email) },
+    data.phone && { text: data.phone, href: tel(data.phone) },
+    data.location && { text: data.location },
+    data.link && { text: data.link, href: absUrl(data.link) },
+  ].filter(Boolean);
 
   return (
     <div className="tpl-minimal" style={{ '--accent': accent }}>
@@ -22,10 +30,10 @@ export default function MinimalTemplate({ data, accent, matched }) {
         </p>
         {contact.length > 0 && (
           <p className="tplmin-contact">
-            {contact.map((t, i) => (
+            {contact.map((c, i) => (
               <span key={i} className="tplmin-citem">
                 {i > 0 && <span className="tplmin-dot">&middot;</span>}
-                {t}
+                <Linked href={c.href}>{c.text}</Linked>
               </span>
             ))}
           </p>
@@ -69,7 +77,7 @@ export default function MinimalTemplate({ data, accent, matched }) {
             <div className="tplmin-entry" key={i}>
               <div className="tplmin-row">
                 <span className="tplmin-title">{p.name}</span>
-                {p.link && <span className="tplmin-plink">{p.link}</span>}
+                {p.link && <ProjectLink url={p.link} />}
               </div>
               {p.bullets.length > 0 && (
                 <ul className="tplmin-bullets">
