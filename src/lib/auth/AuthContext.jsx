@@ -58,6 +58,29 @@ export function AuthProvider({ children }) {
     setStatus('guest');
   }, []);
 
-  const value = { user, status, signup, login, loginWithGoogle, logout };
+  // Account management (all require an active session).
+  const updateProfile = useCallback(
+    (payload) => apiFetch('/auth/me', { method: 'PATCH', body: payload }).then((data) => {
+      setUser(data.user);
+      return data.user;
+    }),
+    [],
+  );
+  const changePassword = useCallback(
+    (payload) => apiFetch('/auth/change-password', { method: 'POST', body: payload }).then((data) => {
+      if (data.user) setUser(data.user);
+      return data;
+    }),
+    [],
+  );
+  // Only hits the API (throws on a bad password). The caller navigates away from
+  // /app FIRST, then calls logout() to clear the session — same order as the
+  // logout button, so RequireAuth can't redirect to /login mid-flight.
+  const deleteAccount = useCallback(
+    (payload) => apiFetch('/auth/me', { method: 'DELETE', body: payload }),
+    [],
+  );
+
+  const value = { user, status, signup, login, loginWithGoogle, logout, updateProfile, changePassword, deleteAccount };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

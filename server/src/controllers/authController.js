@@ -1,8 +1,11 @@
 import bcrypt from 'bcryptjs';
 import { OAuth2Client } from 'google-auth-library';
 import { User } from '../models/User.js';
+import { Resume } from '../models/Resume.js';
+import { Application } from '../models/Application.js';
+import { Portfolio } from '../models/Portfolio.js';
 import { signToken } from '../utils/jwt.js';
-import { validateSignup, validateLogin } from '../utils/validators.js';
+import { validateSignup, validateLogin, validateName, validateNewPassword } from '../utils/validators.js';
 
 // Pre-computed once at startup. Login always runs a bcrypt compare — against the
 // real hash or this dummy — so response timing doesn't reveal whether an email
@@ -80,7 +83,9 @@ export function makeAuthController(config) {
         }
 
         const email = payload.email.toLowerCase();
-        let user = await User.findOne({ email });
+        // Load the hash so the issued session reports hasPassword correctly for a
+        // local account that is now signing in (and linking) via Google.
+        let user = await User.findOne({ email }).select('+passwordHash');
         if (!user) {
           user = await User.create({
             name: payload.name || email.split('@')[0],
@@ -103,6 +108,75 @@ export function makeAuthController(config) {
 
     async me(req, res) {
       return res.json({ user: req.user.toSafeJSON() });
+    },
+
+    // ── Authenticated account management (requireAuth attaches req.user with the
+    // hash loaded) ────────────────────────────────────────────────────────────
+
+    async updateProfile(req, res, next) {
+      try {
+        const { name } = req.body || {};
+        const nameErr = validateName(name);
+        if (nameErr) {
+          return res.status(422).json({ error: 'Please fix the highlighted fields.', fields: { name: nameErr } });
+        }
+        req.user.name = String(name).trim();
+        await req.user.save();
+        return res.json({ user: req.user.toSafeJSON() });
+      } catch (err) {
+        return next(err);
+      }
+    },
+
+    async changePassword(req, res, next) {
+      try {
+        const { currentPassword, newPassword } = req.body || {};
+        const pwErr = validateNewPassword(newPassword);
+        if (pwErr) {
+          return res.status(422).json({ error: 'Please fix the highlighted fields.', fields: { newPassword: pwErr } });
+        }
+        // req.user already carries the hash (requireAuth selects it).
+        // If a password exists, the current one must match. Google-only accounts
+        // (no hash) can set one here without a current password.
+        if (req.user.passwordHash) {
+          const ok = typeof currentPassword === 'string'
+            && await bcrypt.compare(currentPassword, req.user.passwordHash);
+          if (!ok) {
+            return res.status(422).json({ error: 'Your current password is incorrect.', fields: { currentPassword: 'Incorrect password.' } });
+          }
+        }
+        req.user.passwordHash = await bcrypt.hash(newPassword, 12);
+        await req.user.save();
+        return res.json({ ok: true, user: req.user.toSafeJSON() });
+      } catch (err) {
+        return next(err);
+      }
+    },
+
+    async deleteAccount(req, res, next) {
+      try {
+        const { password } = req.body || {};
+        // Accounts with a password must confirm it. Google-only accounts are
+        // gated by the typed confirmation in the UI + their valid session.
+        if (req.user.passwordHash) {
+          const ok = typeof password === 'string'
+            && await bcrypt.compare(password, req.user.passwordHash);
+          if (!ok) {
+            return res.status(422).json({ error: 'Password is incorrect.', fields: { password: 'Incorrect password.' } });
+          }
+        }
+        const userId = req.user._id;
+        // Remove all per-user feature data, then the account itself.
+        await Promise.all([
+          Resume.deleteMany({ user: userId }),
+          Application.deleteMany({ user: userId }),
+          Portfolio.deleteMany({ user: userId }),
+        ]);
+        await User.findByIdAndDelete(userId);
+        return res.json({ ok: true });
+      } catch (err) {
+        return next(err);
+      }
     },
 
     // JWTs are stateless; logout is handled client-side by discarding the token.

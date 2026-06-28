@@ -18,3 +18,16 @@ export function validateLogin({ email, password } = {}) {
   if (typeof password !== 'string' || !password) errors.password = 'Password is required.';
   return errors;
 }
+
+// Single-field helpers for the authenticated account endpoints (profile / password).
+export function validateName(name) {
+  if (typeof name !== 'string' || !name.trim()) return 'Name is required.';
+  if (name.trim().length > 80) return 'Name must be 80 characters or fewer.';
+  return null;
+}
+
+export function validateNewPassword(password) {
+  if (typeof password !== 'string' || password.length < 8) return 'Password must be at least 8 characters.';
+  if (password.length > 200) return 'Password is too long.';
+  return null;
+}

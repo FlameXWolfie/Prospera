@@ -22,5 +22,10 @@ export function authRoutes(config) {
   router.get('/me', requireAuth(config), c.me);
   router.post('/logout', c.logout);
 
+  // Authenticated account management.
+  router.patch('/me', requireAuth(config), c.updateProfile);
+  router.post('/change-password', credentialLimiter, requireAuth(config), c.changePassword);
+  router.delete('/me', credentialLimiter, requireAuth(config), c.deleteAccount);
+
   return router;
 }

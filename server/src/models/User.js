@@ -35,6 +35,10 @@ userSchema.methods.toSafeJSON = function toSafeJSON() {
     email: this.email,
     avatar: this.avatar,
     provider: this.provider,
+    // Whether a password is set (Google-only accounts have none). Drives the
+    // Settings UI: "Set a password" vs "Change password". Accurate only when the
+    // hash is loaded — requireAuth + login/google all .select('+passwordHash').
+    hasPassword: !!this.passwordHash,
     createdAt: this.createdAt,
   };
 };

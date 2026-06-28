@@ -1,0 +1,74 @@
+/* ── Account screens (Profile + Settings) ───────────────────────────────────── */
+.acc-page { max-width: 720px; margin: 0 auto; padding: 4px 0 48px; display: flex; flex-direction: column; gap: 18px; }
+
+.acc-bar { margin-bottom: 2px; }
+.acc-title { font-family: var(--font-heading); font-size: 26px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; margin: 0; }
+.acc-subtitle { font-size: 14px; color: var(--text-muted); margin: 6px 0 0; }
+
+.acc-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 22px 24px; box-shadow: 0 4px 20px -2px rgb(0 0 0 / 0.04); }
+.acc-card-head { margin-bottom: 16px; }
+.acc-card-head h2 { display: flex; align-items: center; gap: 8px; font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; }
+.acc-card-head p { font-size: 13px; color: var(--text-muted); margin: 5px 0 0; line-height: 1.5; }
+
+/* Identity header */
+.acc-identity { display: flex; align-items: center; gap: 18px; }
+.acc-id-avatar { width: 68px; height: 68px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.acc-id-avatar-mono { display: grid; place-items: center; background: var(--primary-accent); color: var(--text-inverse); font-family: var(--font-heading); font-size: 28px; font-weight: 700; }
+.acc-id-main { min-width: 0; flex: 1; }
+.acc-id-name { font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--text-main); letter-spacing: -0.3px; }
+.acc-id-email { font-size: 14px; color: var(--text-muted); margin-top: 2px; word-break: break-all; }
+.acc-id-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; font-size: 12.5px; color: var(--text-light); }
+.acc-id-meta span { display: inline-flex; align-items: center; gap: 5px; }
+.acc-badge { padding: 3px 10px; border-radius: 999px; background: var(--chip-bg); border: 1px solid var(--border-color); color: var(--text-muted); font-weight: 600; font-size: 11.5px; }
+
+/* Forms */
+.acc-form { display: flex; flex-direction: column; gap: 14px; }
+.acc-field { display: flex; flex-direction: column; gap: 6px; }
+.acc-label { font-size: 12.5px; font-weight: 600; color: var(--text-main); }
+.acc-input-wrap { position: relative; display: flex; align-items: center; }
+.acc-input { width: 100%; padding: 11px 13px; border: 1px solid var(--border-dark); border-radius: 11px; font-size: 14px; font-family: inherit; color: var(--text-main); background: var(--bg-card); transition: border-color 0.15s, box-shadow 0.15s; }
+.acc-input:focus { outline: none; border-color: var(--primary-accent); box-shadow: 0 0 0 3px var(--primary-light); }
+.acc-input:disabled { background: var(--bg-inset); color: var(--text-muted); cursor: not-allowed; }
+.acc-input.invalid { border-color: var(--danger); }
+.acc-input-pw { padding-right: 42px; }
+.acc-eye { position: absolute; right: 8px; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: none; border-radius: 7px; background: transparent; color: var(--text-light); cursor: pointer; }
+.acc-eye:hover { color: var(--text-main); background: var(--hover-bg); }
+.acc-err { font-size: 11.5px; color: var(--danger); font-weight: 500; }
+.acc-hint { font-size: 11.5px; color: var(--text-light); }
+
+.acc-actions { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+.acc-btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 18px; border: none; border-radius: 10px; font-size: 13.5px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background 0.15s, opacity 0.15s; }
+.acc-btn-primary { background: var(--primary-accent); color: var(--text-inverse); }
+.acc-btn-primary:hover:not(:disabled) { background: var(--primary-accent-hover); }
+.acc-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.acc-btn-ghost { background: var(--bg-inset); color: var(--text-main); border: 1px solid var(--border-color); }
+.acc-btn-ghost:hover:not(:disabled) { background: var(--hover-bg); }
+.acc-btn-danger { background: var(--danger); color: #fff; }
+.acc-btn-danger:hover:not(:disabled) { filter: brightness(0.94); }
+.acc-saved { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 600; color: var(--success); }
+.acc-formerr { display: flex; align-items: flex-start; gap: 8px; padding: 10px 13px; border-radius: 10px; background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger-text); font-size: 12.5px; line-height: 1.4; }
+
+/* Appearance / theme toggle */
+.acc-theme { display: flex; gap: 10px; }
+.acc-theme-opt { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px; border: 1.5px solid var(--border-color); border-radius: 12px; background: var(--bg-card); color: var(--text-muted); font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; }
+.acc-theme-opt:hover { border-color: var(--border-strong); color: var(--text-main); }
+.acc-theme-opt.active { border-color: var(--primary-accent); color: var(--primary-accent); background: var(--primary-light); }
+
+/* Settings row (e.g. sign out) */
+.acc-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.acc-row-text h2 { display: flex; align-items: center; gap: 8px; font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0; }
+.acc-row-text p { font-size: 13px; color: var(--text-muted); margin: 5px 0 0; line-height: 1.5; }
+
+/* Danger zone */
+.acc-card-danger { border-color: var(--danger-border); }
+.acc-card-danger .acc-card-head h2 { color: var(--danger); }
+
+/* Confirm-delete modal */
+.acc-modal-backdrop { position: fixed; inset: 0; background: var(--overlay); display: grid; place-items: center; padding: 20px; z-index: 50; }
+.acc-modal { width: 100%; max-width: 440px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 26px; box-shadow: 0 24px 60px -12px rgb(0 0 0 / 0.35); }
+.acc-modal-icon { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; background: var(--danger-bg); color: var(--danger); margin-bottom: 14px; }
+.acc-modal h3 { font-family: var(--font-heading); font-size: 19px; font-weight: 700; color: var(--text-main); margin: 0 0 8px; }
+.acc-modal p { font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin: 0 0 16px; }
+.acc-modal p b { color: var(--text-main); }
+.acc-modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+.acc-modal-actions .acc-btn { flex: 1; justify-content: center; }
