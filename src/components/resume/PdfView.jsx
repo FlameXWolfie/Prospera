@@ -12,7 +12,7 @@ function base64ToBytes(b64) {
 }
 
 // Renders an actual PDF (the user's original upload) as crisp page canvases,
-// stacked and scaled to the container width — so the preview IS their résumé,
+// stacked and scaled to the container width — so the preview IS their resume,
 // not the extracted text re-rendered in a template. Uses the same lazily-loaded
 // pdf.js as the text-extraction fallback in resumeFile.js.
 export default function PdfView({ dataUri }) {
@@ -65,7 +65,7 @@ export default function PdfView({ dataUri }) {
   return (
     <div className="pdfv">
       <div className="pdfv-pages" ref={pagesRef} />
-      {status === 'loading' && <div className="pdfv-msg">Loading your résumé…</div>}
+      {status === 'loading' && <div className="pdfv-msg">Loading your resume…</div>}
       {status === 'error' && <div className="pdfv-msg">Couldn’t display this PDF.</div>}
     </div>
   );

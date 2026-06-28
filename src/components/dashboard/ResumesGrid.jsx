@@ -3,7 +3,7 @@ import { Plus, MoreVertical } from 'lucide-react';
 import { scoreColor, scanScore } from '../../lib/resume/scoreColor';
 
 export default function ResumesGrid({ resumes, onNewResumeClick, onViewAllClick }) {
-  // `score` is null until the résumé has actually been scanned — render a muted
+  // `score` is null until the resume has actually been scanned — render a muted
   // empty gauge with a dash instead of a fabricated number.
   const renderScoreGauge = (score) => {
     const scanned = typeof score === 'number';

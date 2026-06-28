@@ -41,9 +41,9 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const go = (tab) => navigate(`/app/${tab}`);
-  // Open a specific saved résumé in the Studio (load it into the draft, THEN
+  // Open a specific saved resume in the Studio (load it into the draft, THEN
   // navigate) — so "Enhance my resume" / "Open in builder" carry the selection
-  // across instead of dropping you on a blank/other résumé.
+  // across instead of dropping you on a blank/other resume.
   const goStudioWith = (id) => {
     const r = resumes.find((x) => x.id === id);
     if (r) setBuildDraft(draftFromResume(r));
@@ -65,7 +65,7 @@ export default function DashboardLayout() {
     try { localStorage.setItem(BUILD_DRAFT_KEY, JSON.stringify(buildDraft)); } catch { /* ignore */ }
   }, [buildDraft]);
 
-  // Auto-save edits made to an EXISTING résumé opened in the Studio (the draft
+  // Auto-save edits made to an EXISTING resume opened in the Studio (the draft
   // carries `sourceId`). Debounced via the cleanup; state updates happen only in
   // the async resolve, never synchronously in the effect body (keeps the
   // react-compiler "no setState in effect" rule happy). The editor mutates the
@@ -153,7 +153,7 @@ export default function DashboardLayout() {
   };
 
 
-  // Create a résumé from a new Studio draft. Returns the saved résumé so the Studio
+  // Create a resume from a new Studio draft. Returns the saved resume so the Studio
   // can adopt its server id as `sourceId` (further edits then autosave in place
   // instead of creating duplicates).
   const handleSaveBuiltResume = async (resume) => {

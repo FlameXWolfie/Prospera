@@ -1,7 +1,7 @@
-// Turns an uploaded résumé (or pasted text) into structured fields.
+// Turns an uploaded resume (or pasted text) into structured fields.
 //
 // Preferred path: Mistral — OCR the PDF/image on the server (handles scanned
-// résumés) then parse it into structured fields. Fallback (no API key / failure):
+// resumes) then parse it into structured fields. Fallback (no API key / failure):
 // pdf.js text extraction on-device + the regex heuristic. Either way the caller
 // gets the same `{ name, role, email, phone, ..., experience[], education[], skills[] }`.
 import { parseResumeText } from './resumeParse';
@@ -24,7 +24,7 @@ export function fileToBase64(file) {
 const isPdfFile = (file) => /pdf$/i.test(file?.type || '') || /\.pdf$/i.test(file?.name || '');
 
 // Read the original file we want to keep around so previews can show the user's
-// REAL résumé (not the extracted text re-rendered in a template). Only PDFs are
+// REAL resume (not the extracted text re-rendered in a template). Only PDFs are
 // kept — they're the one format we can faithfully render back. Returns the fields
 // `resumeFromParsed` persists; non-PDFs get empty `fileData` (preview falls back
 // to the template render).
@@ -120,7 +120,7 @@ export async function extractPdfLinks(file) {
 
 const stripProto = (s) => String(s || '').replace(/^https?:\/\//i, '').replace(/\/$/, '');
 
-// Fill blank links on a parsed résumé from the recovered annotation links. Safety
+// Fill blank links on a parsed resume from the recovered annotation links. Safety
 // net for both paths: contact link (linkedin > github > portfolio) when missing,
 // and a project's link when an annotation's anchor text matches the project name.
 // Conservative — never overwrites an existing link, never guesses by position.
@@ -145,7 +145,7 @@ export function applyPdfLinks(parsed, links) {
 
 const looksParsed = (r) => Boolean(r && (r.name || r.summary || (r.skills || []).length || (r.experience || []).length));
 
-// File → structured résumé fields (Mistral OCR+parse when enabled, else pdf.js+heuristic).
+// File → structured resume fields (Mistral OCR+parse when enabled, else pdf.js+heuristic).
 // Hyperlinks live in the PDF annotation layer (invisible to OCR + getTextContent),
 // so we extract them separately and (a) hand them to the AI to attach in context,
 // then (b) backfill any blanks client-side — works whether AI is on or off.

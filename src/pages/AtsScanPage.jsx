@@ -237,7 +237,7 @@ export default function AtsScanPage({ resumes, onNewResumeClick, onUpload, onEnh
     e.target.value = '';
     if (!file) return;
     setUploading(true);
-    setUploadNote(aiEnabled ? 'Reading your résumé with AI…' : 'Reading your résumé…');
+    setUploadNote(aiEnabled ? 'Reading your resume with AI…' : 'Reading your resume…');
     try {
       const parsed = await importResumeFields(file, { aiEnabled });
       const source = await readSourceFile(file);
@@ -245,7 +245,7 @@ export default function AtsScanPage({ resumes, onNewResumeClick, onUpload, onEnh
       // Await the save so we select by the real server id (and key the cached PDF
       // to it) — otherwise the temp client id never matches the reconciled list.
       const saved = await onUpload(resume);
-      if (!saved) { setUploadNote('Could not save that résumé — please try again.'); return; }
+      if (!saved) { setUploadNote('Could not save that resume — please try again.'); return; }
       if (source.fileData) cachePdfDataUri(saved.id, `data:${source.fileType};base64,${source.fileData}`);
       setSelectedId(saved.id);
       setRoleId(profileForResume(saved).id);
@@ -254,7 +254,7 @@ export default function AtsScanPage({ resumes, onNewResumeClick, onUpload, onEnh
           ? `Added “${saved.role}” — pulled ${saved.skills.length} skill${saved.skills.length === 1 ? '' : 's'} from your file.`
           : `Added “${saved.role}”. Add the details in the builder.`,
       );
-      // An uploaded résumé is obviously the one to scan — skip re-picking and jump
+      // An uploaded resume is obviously the one to scan — skip re-picking and jump
       // straight to choosing a target.
       setStep(2);
     } catch {
@@ -284,7 +284,7 @@ export default function AtsScanPage({ resumes, onNewResumeClick, onUpload, onEnh
     setActiveCheck(null);
     setPhase('analyzing');
 
-    // Persist the real scan result so this résumé's ATS score becomes "real"
+    // Persist the real scan result so this resume's ATS score becomes "real"
     // everywhere it's shown (Library, dashboard). The deterministic score lands
     // immediately; if AI refines it below, we record that final score instead.
     const rid = selected.id;
@@ -327,7 +327,7 @@ export default function AtsScanPage({ resumes, onNewResumeClick, onUpload, onEnh
           actions={(
             <>
               <button className="fr-btn fr-btn-primary" onClick={openFilePicker} disabled={uploading}>
-                {uploading ? <><span className="ats-spin" /> Reading your résumé…</> : <><Upload size={16} /> Upload resume</>}
+                {uploading ? <><span className="ats-spin" /> Reading your resume…</> : <><Upload size={16} /> Upload resume</>}
               </button>
               <button className="fr-btn fr-btn-ghost" onClick={onNewResumeClick} disabled={uploading}><FilePlus size={16} /> Build one instead</button>
             </>
@@ -494,7 +494,7 @@ export default function AtsScanPage({ resumes, onNewResumeClick, onUpload, onEnh
               ))}
               <button className="ats-choice ats-choice-upload" onClick={openFilePicker} disabled={uploading}>
                 <div className="ats-choice-ic">{uploading ? <span className="ats-spin" /> : <Upload size={18} />}</div>
-                <div className="ats-choice-main"><span className="ats-choice-title">{uploading ? 'Reading your résumé…' : 'Upload a resume'}</span><span className="ats-choice-meta">.txt, .pdf, .doc — read on your device</span></div>
+                <div className="ats-choice-main"><span className="ats-choice-title">{uploading ? 'Reading your resume…' : 'Upload a resume'}</span><span className="ats-choice-meta">.txt, .pdf, .doc — read on your device</span></div>
                 {!uploading && <ArrowRight size={18} className="ats-choice-arrow" />}
               </button>
             </div>

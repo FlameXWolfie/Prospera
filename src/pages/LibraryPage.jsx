@@ -139,7 +139,7 @@ function useFocusTrap(onClose) {
 
 /* ── Primitives ─────────────────────────────────────────────────────────────── */
 
-// `score` is null when the résumé hasn't been scanned — render an empty grey ring
+// `score` is null when the resume hasn't been scanned — render an empty grey ring
 // with a dash rather than a fabricated number.
 function ScoreRing({ score, size, stroke }) {
   const scanned = typeof score === 'number';
@@ -410,7 +410,7 @@ function ResumeDrawer({ resume, onClose, onOpenBuilder, onClone, onSetActive, on
                 >
                   Run an ATS scan
                 </button>
-                {' '}to see this résumé&rsquo;s real match.
+                {' '}to see this resume&rsquo;s real match.
               </span>
             </div>
           )}

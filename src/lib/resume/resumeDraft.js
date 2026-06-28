@@ -82,7 +82,7 @@ export function blankDraft(templateId, accent) {
   return { ...emptyDraft(), template: templateId || DEFAULT_TEMPLATE, accent: accent || DEFAULT_ACCENT };
 }
 
-// Upload/paste → map parsed résumé fields into a draft, keeping a usable shape.
+// Upload/paste → map parsed resume fields into a draft, keeping a usable shape.
 export function draftFromParsed(parsed = {}, templateId, accent) {
   const base = emptyDraft();
   const experience = (parsed.experience || []).length
@@ -194,7 +194,7 @@ export function deriveSectionStatus(draft, scan) {
 
 // The cleaned CONTENT fields of a draft (no id/score/status/timestamps) — strips
 // placeholder/blank entries, trims, dedupes skills. Used both as the body of an
-// in-place autosave PATCH (editing an existing résumé) and as the base of
+// in-place autosave PATCH (editing an existing resume) and as the base of
 // draftToResume (creating a new one). PURE.
 export function resumeContentFromDraft(draft) {
   const experience = realRoles(draft.experience).map((e) => ({
@@ -248,7 +248,7 @@ export function resumeContentFromDraft(draft) {
   };
 }
 
-// New résumé from a draft (impure: id + date — called only from the Save handler).
+// New resume from a draft (impure: id + date — called only from the Save handler).
 export function draftToResume(draft, score, label) {
   const content = resumeContentFromDraft(draft);
   return {
@@ -262,7 +262,7 @@ export function draftToResume(draft, score, label) {
   };
 }
 
-// Inverse of draftToResume: load a saved résumé INTO the builder draft so the
+// Inverse of draftToResume: load a saved resume INTO the builder draft so the
 // Studio can edit it. Adds transient `_id`s for the editable lists, infers the
 // target-role profile, and carries `sourceId` so save knows to update-in-place
 // (autosave) rather than create a duplicate.
@@ -294,7 +294,7 @@ export function draftFromResume(resume) {
     roleId: profileForResume(r).id,
     template: r.template || DEFAULT_TEMPLATE,
     accent: r.accent || DEFAULT_ACCENT,
-    sourceId: r.id, // editing an existing résumé → autosave in place
+    sourceId: r.id, // editing an existing resume → autosave in place
   };
 }
 

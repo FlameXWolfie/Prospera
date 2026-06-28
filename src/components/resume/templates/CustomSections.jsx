@@ -1,4 +1,4 @@
-// Renders arbitrary résumé sections (Achievements, Certifications, Awards,
+// Renders arbitrary resume sections (Achievements, Certifications, Awards,
 // Publications, Languages, …) using a template's OWN prefix classes, so any
 // layout stays consistent and no new CSS is needed. `cx` is the template's class
 // prefix (e.g. "tplm"); entries reuse the same heading/meta/bullets markup as

@@ -18,7 +18,7 @@ function createApp() {
   app.disable('x-powered-by');
   app.use(helmet());
   app.use(cors({ origin: config.clientOrigins, credentials: true }));
-  app.use(express.json({ limit: '15mb' })); // generous — résumé PDFs are sent base64 to /api/ai/parse-resume
+  app.use(express.json({ limit: '15mb' })); // generous — resume PDFs are sent base64 to /api/ai/parse-resume
 
   app.get('/api/health', (req, res) => res.json({ ok: true, time: new Date().toISOString() }));
   app.use('/api/auth', authRoutes(config));

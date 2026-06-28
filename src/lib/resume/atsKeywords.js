@@ -77,7 +77,7 @@ export function extractSkills(text) {
 
 // Per-role competency baselines, used when the user scans without a specific job
 // posting. Each role is a set of CATEGORIES, and a category is "covered" if the
-// résumé mentions ANY of its equivalent terms — so a different-but-valid stack
+// resume mentions ANY of its equivalent terms — so a different-but-valid stack
 // (Go/Node where the list happens to mention Java) isn't unfairly penalised. A
 // single hardcoded keyword list can't capture "any backend language"; categories
 // can. (When the Mistral key is set, the report uses AI's judgement instead —
@@ -196,7 +196,7 @@ export function scanRole(keywords, resume) {
 }
 
 // Category-aware role match: each competency category counts as covered when the
-// résumé mentions ANY of its equivalent terms, so a valid alternative stack isn't
+// resume mentions ANY of its equivalent terms, so a valid alternative stack isn't
 // penalised. `matched` are the actual terms found; `missing` is one canonical term
 // to add per uncovered competency (so "Add" suggestions stay concrete); `detected`
 // is the list of competency labels. Score = covered categories / total.

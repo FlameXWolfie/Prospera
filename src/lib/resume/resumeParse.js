@@ -1,5 +1,5 @@
-// Heuristic résumé parser: turns raw résumé text (pasted, or extracted from an
-// uploaded .txt/.pdf) into draft fields, so "upload your résumé" actually fills
+// Heuristic resume parser: turns raw resume text (pasted, or extracted from an
+// uploaded .txt/.pdf) into draft fields, so "upload your resume" actually fills
 // the builder. Contact info + skills + summary are reliable; experience/education
 // are best-effort. No NLP — regex + section heuristics. All pure (no Date/random).
 import { extractSkills } from './atsKeywords';
@@ -53,7 +53,7 @@ function looksLikeHeading(line) {
 }
 
 // Split into the known sections (keyed) PLUS an ordered list of arbitrary custom
-// sections, so nothing in the résumé is silently dropped.
+// sections, so nothing in the resume is silently dropped.
 function splitSections(lines) {
   const known = { header: [] };
   const custom = []; // [{ title, lines: [] }]

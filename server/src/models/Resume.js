@@ -20,7 +20,7 @@ const projectSchema = new mongoose.Schema({
   bullets: { type: [String], default: [] },
 }, { _id: false });
 
-// Generic, DYNAMIC section — anything a résumé has beyond the structured core
+// Generic, DYNAMIC section — anything a resume has beyond the structured core
 // (Achievements, Certifications, Awards, Publications, Leadership, Languages, …).
 const sectionEntrySchema = new mongoose.Schema({
   heading: { type: String, default: '', trim: true },
@@ -45,7 +45,7 @@ const resumeSchema = new mongoose.Schema({
   experience: { type: [experienceSchema], default: [] },
   education: { type: [educationSchema], default: [] },
   projects: { type: [projectSchema], default: [] },
-  // Dynamic, arbitrary sections (so any résumé layout is preserved, not just the
+  // Dynamic, arbitrary sections (so any resume layout is preserved, not just the
   // hardcoded ones).
   sections: { type: [sectionSchema], default: [] },
   skills: { type: [String], default: [] },
@@ -60,7 +60,7 @@ const resumeSchema = new mongoose.Schema({
   phone: { type: String, default: '', trim: true, maxlength: 60 },
   location: { type: String, default: '', trim: true, maxlength: 200 },
   link: { type: String, default: '', trim: true, maxlength: 300 },
-  // Original uploaded file so previews can show the user's REAL résumé, not just
+  // Original uploaded file so previews can show the user's REAL resume, not just
   // the extracted text re-rendered in a template. `fileData` is base64 (no data:
   // prefix) and `select: false` so it never loads on the list query — fetched
   // on demand via GET /resumes/:id/file. `hasFile` is the cheap flag the client
@@ -74,7 +74,7 @@ const resumeSchema = new mongoose.Schema({
   // real score"; `scanTarget` records what it was scanned against (for display).
   scannedAt: { type: Date, default: null },
   scanTarget: { type: String, default: '', maxlength: 120 },
-  // True when the résumé's content changed AFTER its last scan, so the shown score
+  // True when the resume's content changed AFTER its last scan, so the shown score
   // is out of date. Set by the update controller, cleared by recordScan.
   scanStale: { type: Boolean, default: false },
 }, { timestamps: true });

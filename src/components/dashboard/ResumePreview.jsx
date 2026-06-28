@@ -36,7 +36,7 @@ export default function ResumePreview({ resume, matchedSet }) {
 
   if (wantsPdf) {
     if (dataUri) return <PdfView dataUri={dataUri} />;
-    return <div className="pdfv-msg" style={{ padding: 24 }}>Loading your résumé…</div>;
+    return <div className="pdfv-msg" style={{ padding: 24 }}>Loading your resume…</div>;
   }
   return <ResumeDocument resume={resume} matchedSet={matchedSet} />;
 }

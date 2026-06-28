@@ -21,7 +21,7 @@ export default function DashboardHome({ resumes, applications, onNavigate }) {
   const filteredResumes = resumes.filter((r) =>
     (r.role || '').toLowerCase().includes(searchTerm.toLowerCase()),
   );
-  // The active résumé, else the most recently updated (resumes arrive sorted by
+  // The active resume, else the most recently updated (resumes arrive sorted by
   // updatedAt desc). No score-based pick — scores aren't real until scanned.
   const boostResume = resumes.find((r) => r.isActive) || resumes[0] || null;
 

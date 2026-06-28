@@ -14,11 +14,11 @@ export function roleFromFilename(name) {
 
 // Build a resume object from already-structured fields (Mistral- or heuristic-parsed).
 // `source` (from readSourceFile) carries the original PDF so the preview can show
-// the user's real résumé; it's empty for non-PDF uploads.
+// the user's real resume; it's empty for non-PDF uploads.
 export function resumeFromParsed(file, parsed, isFirst, source = {}) {
   const p = parsed || {};
   const skills = Array.isArray(p.skills) ? p.skills : [];
-  // No fabricated score — a résumé has no ATS score until it's actually scanned.
+  // No fabricated score — a resume has no ATS score until it's actually scanned.
   return {
     id: String(Date.now()),
     label: '',

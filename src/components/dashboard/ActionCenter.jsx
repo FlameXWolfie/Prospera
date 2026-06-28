@@ -64,13 +64,13 @@ function buildInsights(resumes, applications) {
     }
   });
 
-  // Nudge to actually scan the active résumé when it has no real score yet.
+  // Nudge to actually scan the active resume when it has no real score yet.
   const activeUnscanned = resumes.find((r) => r.isActive && scanScore(r) === null);
   if (activeUnscanned) {
     out.push({
       priority: 4,
       title: `Scan ${activeUnscanned.role} to get its ATS score`,
-      desc: 'See how your active résumé matches a target role.',
+      desc: 'See how your active resume matches a target role.',
       icon: ScanLine, color: '#6366f1', bgColor: '#eef2ff', tab: 'ats',
     });
   }

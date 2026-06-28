@@ -48,7 +48,7 @@ const EDITOR_TIP = {
   education: 'Keep it brief: degree, school, and graduation year. Recent grads can lead with this; everyone else puts it after experience.',
   skills: 'Keyword score reflects your summary, experience & skills — education and projects aren’t scanned for keywords. Add the terms you genuinely have.',
   projects: 'Projects are gold for career-changers and juniors. Show the impact or scale, and link to something live if you can.',
-  sections: 'Use the real section titles from your résumé. Each item can have a heading, a short detail/date, and bullet points — nothing gets dropped.',
+  sections: 'Use the real section titles from your resume. Each item can have a heading, a short detail/date, and bullet points — nothing gets dropped.',
 };
 
 function ContactField({ label, icon: Icon, value, onChange, placeholder, full }) {
@@ -101,8 +101,8 @@ function TemplateGallery({ onUse, onBlank, onImport, onBack, mode = 'start', cur
         {!isSwitch && (
           <div className="bgal-actions">
             {resumes.length > 0 && (
-              <select className="en-select" aria-label="Edit a saved résumé" value="__placeholder__" onChange={(e) => onPick && onPick(e.target.value)}>
-                <option value="__placeholder__" disabled>Edit a saved résumé…</option>
+              <select className="en-select" aria-label="Edit a saved resume" value="__placeholder__" onChange={(e) => onPick && onPick(e.target.value)}>
+                <option value="__placeholder__" disabled>Edit a saved resume…</option>
                 {resumes.map((r) => <option key={r.id} value={r.id}>{r.label || r.role || 'Untitled'}</option>)}
               </select>
             )}
@@ -230,8 +230,8 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState('');
   const fileRef = useRef(null);
-  const editing = Boolean(draft.sourceId); // editing a saved résumé (autosaves) vs a new draft
-  // The saved résumé behind this edit (carries the real ATS scan + stale flag).
+  const editing = Boolean(draft.sourceId); // editing a saved resume (autosaves) vs a new draft
+  // The saved resume behind this edit (carries the real ATS scan + stale flag).
   const sourceResume = editing ? resumes.find((r) => r.id === draft.sourceId) : null;
   const sourceScan = scanScore(sourceResume);
   const sourceStale = isScanStale(sourceResume);
@@ -336,20 +336,20 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
     setSavedMsg({ name: label });
   };
   const handleClear = () => {
-    if (window.confirm('Start a new résumé? Your current edits to a saved résumé are already kept; an unsaved new draft will be cleared.')) {
+    if (window.confirm('Start a new resume? Your current edits to a saved resume are already kept; an unsaved new draft will be cleared.')) {
       onChange(emptyDraft());
       setActiveSection('personal');
       setSavedMsg(null);
     }
   };
 
-  // ── résumé picker: edit a saved résumé in place, or start a new one ──
+  // ── resume picker: edit a saved resume in place, or start a new one ──
   const draftHasContent = (d) => Boolean(d && (
     (d.name || '').trim() || (d.summary || '').trim() || (d.skills || []).length ||
     (d.experience || []).some((e) => (e.company || '').trim() || (e.role || '').trim() || (e.bullets || []).some((b) => (b || '').trim()))
   ));
-  // Only a NEW draft with content is at risk on switch (existing résumés autosave).
-  const confirmLeaveNew = () => editing || !draftHasContent(draft) || window.confirm('Discard your unsaved new résumé?');
+  // Only a NEW draft with content is at risk on switch (existing resumes autosave).
+  const confirmLeaveNew = () => editing || !draftHasContent(draft) || window.confirm('Discard your unsaved new resume?');
   const pickResume = (id) => {
     if (id === '__new__') {
       if (!confirmLeaveNew()) return;
@@ -397,7 +397,7 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
   const handleDownload = () => { if (typeof window !== 'undefined') window.print(); };
   const hasContent = (p) => p && (p.name || p.summary || (p.skills || []).length || (p.experience || []).length);
   const applyParsedFields = (parsed) => {
-    // Keep sourceId/roleId so importing INTO a saved résumé updates it in place
+    // Keep sourceId/roleId so importing INTO a saved resume updates it in place
     // (autosaves) rather than spawning a new draft.
     onChange((d) => ({ ...draftFromParsed(parsed, d.template || 'modern', d.accent), sourceId: d.sourceId, roleId: d.roleId }));
     setActiveSection('personal');
@@ -477,11 +477,11 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
           <h1 className="bld-title">Resume Studio</h1>
           <select
             className="en-select bld-resume-picker"
-            aria-label="Choose a résumé to edit"
+            aria-label="Choose a resume to edit"
             value={draft.sourceId || '__new__'}
             onChange={(e) => pickResume(e.target.value)}
           >
-            <option value="__new__">＋ New résumé</option>
+            <option value="__new__">＋ New resume</option>
             {resumes.map((r) => <option key={r.id} value={r.id}>{r.label || r.role || 'Untitled'}</option>)}
           </select>
           <span className="bld-pill">
@@ -711,7 +711,7 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
                 {(draft.sections || []).length === 0 && (
                   <div className="bld-optional-empty">
                     <LayoutList size={22} style={{ color: 'var(--text-light)' }} />
-                    <p>Add any extra sections your résumé has — Achievements, Certifications, Awards, Languages, Volunteering, anything.</p>
+                    <p>Add any extra sections your resume has — Achievements, Certifications, Awards, Languages, Volunteering, anything.</p>
                   </div>
                 )}
                 {(draft.sections || []).map((sec, si) => (
@@ -809,9 +809,9 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
           <div className="en-ai-modal" onClick={(e) => e.stopPropagation()}>
             <button type="button" className="en-ai-x" onClick={() => setAiOpen(false)} aria-label="Close"><X size={18} /></button>
             <h2 className="en-ai-title"><Sparkles size={18} /> AI suggestions</h2>
-            <p className="en-ai-sub">Mistral reviewed your résumé for {profile.label}. Apply what fits.</p>
+            <p className="en-ai-sub">Mistral reviewed your resume for {profile.label}. Apply what fits.</p>
 
-            {aiLoading && <div className="en-ai-loading"><Loader2 size={22} className="en-ai-spin" /> Analyzing your résumé…</div>}
+            {aiLoading && <div className="en-ai-loading"><Loader2 size={22} className="en-ai-spin" /> Analyzing your resume…</div>}
             {aiError && <p className="en-ai-error"><AlertCircle size={14} /> {aiError} <button type="button" className="en-btn-mini" onClick={runAi}>Retry</button></p>}
 
             {aiResult && !aiLoading && (

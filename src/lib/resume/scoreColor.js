@@ -15,13 +15,13 @@ export function scoreBand(score) {
   return '<70';
 }
 
-// A résumé's ATS score is only real once it has actually been scanned against a
+// A resume's ATS score is only real once it has actually been scanned against a
 // target (`scannedAt` is set server-side by POST /resumes/:id/scan). Until then
 // there is NO score to show — returns null so the UI renders "Not scanned" rather
-// than a fabricated number. Use this everywhere a per-résumé score is displayed.
+// than a fabricated number. Use this everywhere a per-resume score is displayed.
 export const scanScore = (resume) =>
   (resume && resume.scannedAt && typeof resume.score === 'number' ? resume.score : null);
 
-// The résumé was scanned, but its content has changed since — the shown score is
+// The resume was scanned, but its content has changed since — the shown score is
 // out of date until a re-scan. UIs should surface an "edited — re-scan" cue.
 export const isScanStale = (resume) => Boolean(resume && resume.scannedAt && resume.scanStale);
