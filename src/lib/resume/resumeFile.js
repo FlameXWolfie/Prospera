@@ -146,6 +146,16 @@ export function applyPdfLinks(parsed, links) {
 
 const looksParsed = (r) => Boolean(r && (r.name || r.summary || (r.skills || []).length || (r.experience || []).length));
 
+// Recovered hyperlinks belong on the contact line / a project's link — NEVER as a
+// raw "Links / Hyperlinks / URLs" section. The AI sometimes dumps the hyperlink
+// hint list into such a section (often mashing anchor+URL together), so drop it.
+const LINK_SECTION_RE = /^\s*(hyper[\s-]*links?|links?|urls?|web\s*links?|online\s*presence|social\s*(links?|media))\s*$/i;
+function stripLinkSections(parsed) {
+  if (!parsed || !Array.isArray(parsed.sections) || !parsed.sections.length) return parsed;
+  const sections = parsed.sections.filter((s) => !LINK_SECTION_RE.test((s && s.title) || ''));
+  return sections.length === parsed.sections.length ? parsed : { ...parsed, sections };
+}
+
 // File → structured resume fields (Mistral OCR+parse when enabled, else pdf.js+heuristic).
 // Hyperlinks live in the PDF annotation layer (invisible to OCR + getTextContent),
 // so we extract them separately and (a) hand them to the AI to attach in context,
@@ -159,11 +169,11 @@ export async function importResumeFields(file, { aiEnabled } = {}) {
       // Fold any duplicate "skills" section back into the skills field, then attach
       // recovered hyperlinks. Both run on the AI AND the heuristic result, so a
       // grouped TECHNICAL SKILLS block never renders twice no matter the path.
-      if (looksParsed(result)) return applyPdfLinks(foldSkillSectionsIntoSkills(result), links);
+      if (looksParsed(result)) return applyPdfLinks(foldSkillSectionsIntoSkills(stripLinkSections(result)), links);
     } catch { /* fall back to on-device extraction */ }
   }
   const text = await extractFileText(file);
-  return applyPdfLinks(foldSkillSectionsIntoSkills(parseResumeText(text)), links);
+  return applyPdfLinks(foldSkillSectionsIntoSkills(stripLinkSections(parseResumeText(text))), links);
 }
 
 // Pasted text → structured fields (Mistral parse when enabled, else heuristic).
@@ -172,8 +182,8 @@ export async function parseResumeSmart(text, { aiEnabled } = {}) {
   if (aiEnabled && t.trim().length > 40) {
     try {
       const { result } = await aiParseResume({ text: t });
-      if (looksParsed(result)) return foldSkillSectionsIntoSkills(result);
+      if (looksParsed(result)) return foldSkillSectionsIntoSkills(stripLinkSections(result));
     } catch { /* fall back */ }
   }
-  return foldSkillSectionsIntoSkills(parseResumeText(t));
+  return foldSkillSectionsIntoSkills(stripLinkSections(parseResumeText(t)));
 }
