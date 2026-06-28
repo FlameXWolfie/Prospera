@@ -24,12 +24,12 @@
 .logo-icon {
   width: 28px;
   height: 28px;
-  background: linear-gradient(135deg, var(--primary-accent), #6366f1);
+  background: linear-gradient(135deg, var(--primary-accent), var(--primary));
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--text-inverse);
   font-weight: 700;
   font-family: var(--font-heading);
   font-size: 16px;
@@ -72,16 +72,17 @@
 }
 
 .nav-item:hover {
-  background-color: var(--border-color);
+  background-color: var(--hover-bg);
   color: var(--text-main);
 }
 
+/* Active = restrained: subtle wash + accent text/icon (no heavy solid fill). */
 .nav-item.active {
-  background-color: var(--primary-accent);
-  color: white;
+  background-color: var(--primary-light);
+  color: var(--primary-accent);
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(54, 63, 245, 0.2);
 }
+.nav-item.active .icon { color: var(--primary-accent); }
 
 .nav-item .icon {
   width: 18px;
@@ -91,15 +92,15 @@
 /* Go Pro Box */
 .go-pro-card {
   background: var(--primary-light);
-  border-radius: 99px;
-  padding: 10px 18px;
+  border-radius: 14px;
+  padding: 13px 16px;
   margin-top: auto;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  border: 1px solid rgba(54, 63, 245, 0.08);
+  border: 1px solid var(--border-dark);
   transition: var(--transition-smooth);
 }
 
