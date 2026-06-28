@@ -144,6 +144,44 @@ const APPLICATION_SANITISERS = {
   notes: (v) => asString(v, 4000),
 };
 
+// Portfolio (one per user). Whitelist + coerce every field, same contract as the
+// resume sanitizer (never spread req.body into the model).
+const PORTFOLIO_SANITISERS = {
+  template: (v) => asString(v, 40) || 'aurora',
+  accent: (v) => (typeof v === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(v.trim()) ? v.trim() : '#f97316'),
+  name: (v) => asString(v, 120),
+  headline: (v) => asString(v, 160),
+  tagline: (v) => asString(v, 280),
+  location: (v) => asString(v, 160),
+  email: (v) => asString(v, 200),
+  phone: (v) => asString(v, 60),
+  website: (v) => asString(v, 300),
+  about: (v) => asString(v, 4000),
+  experience: (v) => arrayOf(v, 30, (e) => ({
+    company: asString(e?.company, 200),
+    role: asString(e?.role, 200),
+    period: asString(e?.period, 100),
+    location: asString(e?.location, 160),
+    bullets: asStringArray(e?.bullets, 30, 500),
+  })),
+  projects: (v) => arrayOf(v, 40, (p) => ({
+    name: asString(p?.name, 200),
+    link: asString(p?.link, 300),
+    bullets: asStringArray(p?.bullets, 30, 500),
+    tags: asStringArray(p?.tags, 20, 40),
+  })),
+  education: (v) => arrayOf(v, 20, (e) => ({
+    school: asString(e?.school, 200),
+    degree: asString(e?.degree, 200),
+    period: asString(e?.period, 100),
+  })),
+  skills: (v) => asStringArray(v, 80, 80),
+  socials: (v) => arrayOf(v, 12, (s) => ({
+    label: asString(s?.label, 40),
+    url: asString(s?.url, 300),
+  })),
+};
+
 // Recording a real ATS scan result: a numeric score + what it was scanned
 // against. `scannedAt` is set server-side (never trusted from the client).
 const SCAN_SANITISERS = {
@@ -153,4 +191,5 @@ const SCAN_SANITISERS = {
 
 export const sanitizeResume = (body) => pick(body, RESUME_SANITISERS);
 export const sanitizeApplication = (body) => pick(body, APPLICATION_SANITISERS);
+export const sanitizePortfolio = (body) => pick(body, PORTFOLIO_SANITISERS);
 export const sanitizeScan = (body) => pick(body, SCAN_SANITISERS);

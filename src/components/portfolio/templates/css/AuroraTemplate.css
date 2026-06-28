@@ -1,0 +1,190 @@
+/* Aurora — minimal light portfolio. Self-contained (own colors/fonts), themed by
+   one variable: --pf-accent. Premium and restrained: whitespace, hairline rules,
+   a single accent, subtle SVG hero texture, gentle motion. */
+.pf-aurora {
+  --pf-ink: #0a0b0d;
+  --pf-muted: #5b626e;
+  --pf-faint: #8b93a1;
+  --pf-line: #ececee;
+  --pf-bg: #ffffff;
+  --pf-surface: #fbfbfc;
+  background: var(--pf-bg);
+  color: var(--pf-ink);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
+}
+.pf-aurora a { text-decoration: none; }
+/* Low-specificity color reset so class-based link colors (filled buttons etc.) always win. */
+:where(.pf-aurora a) { color: inherit; }
+
+/* Top bar */
+.pfa-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px clamp(22px, 6vw, 64px);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: saturate(160%) blur(10px);
+  border-bottom: 1px solid var(--pf-line);
+}
+.pfa-brand { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: -0.02em; }
+.pfa-nav { display: flex; gap: 26px; align-items: center; }
+.pfa-nav a { font-size: 14px; color: var(--pf-muted); transition: color 0.2s ease; }
+.pfa-nav a:hover { color: var(--pf-ink); }
+.pfa-nav-cta {
+  color: var(--pf-ink) !important;
+  font-weight: 600;
+  padding: 7px 15px;
+  border: 1px solid var(--pf-line);
+  border-radius: 999px;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.pfa-nav-cta:hover { border-color: var(--pf-accent); background: color-mix(in srgb, var(--pf-accent) 8%, transparent); }
+
+/* Hero */
+.pfa-hero {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(64px, 13vw, 150px) clamp(22px, 6vw, 64px) clamp(54px, 9vw, 100px);
+  border-bottom: 1px solid var(--pf-line);
+}
+.pfa-hero-grid {
+  position: absolute;
+  inset: 0;
+  color: var(--pf-ink);
+  opacity: 0.05;
+  -webkit-mask-image: radial-gradient(120% 80% at 70% 0%, #000 0%, transparent 72%);
+  mask-image: radial-gradient(120% 80% at 70% 0%, #000 0%, transparent 72%);
+  pointer-events: none;
+}
+.pfa-hero-grid circle { fill: currentColor; }
+.pfa-hero-orb {
+  position: absolute;
+  top: -160px;
+  right: -120px;
+  width: 460px;
+  height: 460px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, color-mix(in srgb, var(--pf-accent) 38%, transparent), transparent 64%);
+  filter: blur(30px);
+  pointer-events: none;
+  animation: pfaFloat 14s ease-in-out infinite alternate;
+}
+@keyframes pfaFloat { from { transform: translate(0, 0); } to { transform: translate(-26px, 26px); } }
+.pfa-hero-inner { position: relative; max-width: 860px; margin: 0 auto; }
+.pfa-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 500; color: var(--pf-muted);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.pfa-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--pf-accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--pf-accent) 18%, transparent); }
+.pfa-name {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: clamp(40px, 8vw, 76px);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  margin: 16px 0 0;
+}
+.pfa-headline {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 500;
+  color: var(--pf-accent);
+  margin: 10px 0 0;
+  letter-spacing: -0.02em;
+}
+.pfa-tagline { font-size: clamp(16px, 2vw, 19px); color: var(--pf-muted); max-width: 620px; margin: 18px 0 0; line-height: 1.55; }
+.pfa-cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.pfa-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 11px 20px; border-radius: 999px;
+  background: var(--pf-ink); color: #fff;
+  font-size: 14.5px; font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.pfa-btn svg { transition: transform 0.2s ease; }
+.pfa-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -12px rgba(10, 11, 13, 0.5); }
+.pfa-btn:hover svg { transform: translate(2px, -2px); }
+.pfa-btn.ghost { background: transparent; color: var(--pf-ink); border: 1px solid var(--pf-line); }
+.pfa-btn.ghost:hover { border-color: var(--pf-accent); color: var(--pf-accent); box-shadow: none; }
+
+/* Sections */
+.pfa-sec { max-width: 860px; margin: 0 auto; padding: clamp(46px, 8vw, 84px) clamp(22px, 6vw, 64px); border-bottom: 1px solid var(--pf-line); }
+.pfa-h {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em;
+  color: var(--pf-ink);
+  display: flex; align-items: center; gap: 12px;
+  margin: 0 0 28px;
+}
+.pfa-h-num { color: var(--pf-accent); font-variant-numeric: tabular-nums; font-weight: 700; }
+.pfa-about { font-size: clamp(18px, 2.4vw, 23px); line-height: 1.6; color: #2a2e35; max-width: 720px; letter-spacing: -0.015em; }
+
+/* Experience */
+.pfa-timeline { display: flex; flex-direction: column; gap: 30px; }
+.pfa-exp { padding-left: 22px; border-left: 2px solid var(--pf-line); position: relative; }
+.pfa-exp::before { content: ''; position: absolute; left: -7px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--pf-bg); border: 2px solid var(--pf-accent); }
+.pfa-exp-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+.pfa-exp-role { font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 18px; }
+.pfa-exp-co { color: var(--pf-muted); font-weight: 500; }
+.pfa-exp-period { font-size: 13.5px; color: var(--pf-faint); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pfa-bullets { margin: 12px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.pfa-bullets li { position: relative; padding-left: 18px; color: #3a3f47; font-size: 15px; line-height: 1.55; }
+.pfa-bullets li::before { content: ''; position: absolute; left: 2px; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--pf-accent); }
+
+/* Projects */
+.pfa-projects { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.pfa-proj {
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 22px; border: 1px solid var(--pf-line); border-radius: 16px;
+  background: var(--pf-surface);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+.pfa-proj:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--pf-accent) 45%, var(--pf-line)); box-shadow: 0 18px 40px -22px rgba(10, 11, 13, 0.35); }
+.pfa-proj-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.pfa-proj-name { font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em; }
+.pfa-proj-arrow { color: var(--pf-faint); transition: transform 0.22s ease, color 0.22s ease; }
+.pfa-proj:hover .pfa-proj-arrow { color: var(--pf-accent); transform: translate(3px, -3px); }
+.pfa-proj-desc { color: var(--pf-muted); font-size: 14.5px; line-height: 1.55; margin: 0; }
+.pfa-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: auto; padding-top: 6px; }
+.pfa-tag { font-size: 12px; color: var(--pf-muted); padding: 3px 9px; border: 1px solid var(--pf-line); border-radius: 999px; }
+
+/* Skills */
+.pfa-skills { display: flex; flex-wrap: wrap; gap: 9px; }
+.pfa-skill {
+  font-size: 14px; color: #2a2e35; padding: 8px 14px;
+  border: 1px solid var(--pf-line); border-radius: 999px; background: var(--pf-surface);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.pfa-skill:hover { border-color: var(--pf-accent); color: var(--pf-accent); }
+
+/* Education */
+.pfa-edu { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 10px 0; }
+.pfa-edu + .pfa-edu { border-top: 1px solid var(--pf-line); }
+
+/* Footer */
+.pfa-footer { max-width: 860px; margin: 0 auto; padding: clamp(60px, 11vw, 120px) clamp(22px, 6vw, 64px); text-align: center; }
+.pfa-foot-h { font-family: 'Outfit', sans-serif; font-size: clamp(28px, 5vw, 48px); font-weight: 700; letter-spacing: -0.03em; margin: 0; }
+.pfa-foot-mail {
+  display: inline-block; margin-top: 18px; font-size: clamp(18px, 2.5vw, 24px); font-weight: 600;
+  color: var(--pf-accent);
+  border-bottom: 2px solid transparent; transition: border-color 0.2s ease;
+}
+.pfa-foot-mail:hover { border-color: var(--pf-accent); }
+.pfa-foot-socials { display: flex; justify-content: center; flex-wrap: wrap; gap: 22px; margin-top: 28px; }
+.pfa-foot-socials a { font-size: 14px; color: var(--pf-muted); transition: color 0.2s ease; }
+.pfa-foot-socials a:hover { color: var(--pf-ink); }
+.pfa-foot-credit { display: block; margin-top: 40px; font-size: 13px; color: var(--pf-faint); }
+
+@media (max-width: 720px) {
+  .pfa-nav { gap: 16px; }
+  .pfa-nav a:not(.pfa-nav-cta) { display: none; }
+  .pfa-projects { grid-template-columns: 1fr; }
+}

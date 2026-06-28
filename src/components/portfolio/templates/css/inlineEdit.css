@@ -1,0 +1,81 @@
+/* Inline portfolio editing affordances. Active only when a template renders in
+   edit mode; view/published render uses none of these. Accent comes from the
+   template's --pf-accent. Colors are deliberately neutral-on-light (portfolios
+   are always light). */
+.pf-edit {
+  outline: none;
+  cursor: text;
+  border-radius: 4px;
+  transition: box-shadow 0.15s ease, background 0.15s ease;
+  min-width: 8px;
+  display: inline-block;
+}
+.pf-edit:hover { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pf-accent, #f97316) 55%, transparent); background: rgba(0, 0, 0, 0.018); }
+.pf-edit:focus { box-shadow: 0 0 0 2px var(--pf-accent, #f97316); background: rgba(0, 0, 0, 0.012); }
+.pf-edit:empty::before { content: attr(data-ph); color: #aab0bd; pointer-events: none; }
+
+/* List items become hover targets for the reorder/delete toolbar. */
+.pf-item { position: relative; }
+.pf-item-ctrl {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  display: none;
+  gap: 2px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+  padding: 3px;
+  box-shadow: 0 6px 18px -6px rgba(15, 23, 42, 0.25);
+  z-index: 4;
+}
+.pf-item:hover > .pf-item-ctrl { display: inline-flex; }
+.pf-item-ctrl button {
+  display: inline-flex; align-items: center; justify-content: center;
+  border: none; background: transparent; padding: 4px; border-radius: 6px;
+  color: #475569; cursor: pointer;
+}
+.pf-item-ctrl button:hover:not(:disabled) { background: #f1f5f9; color: #0f172a; }
+.pf-item-ctrl button.danger:hover:not(:disabled) { background: #fef2f2; color: #dc2626; }
+.pf-item-ctrl button:disabled { opacity: 0.3; cursor: default; }
+
+.pf-add-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 14px;
+  padding: 8px 14px;
+  border: 1px dashed color-mix(in srgb, var(--pf-accent, #f97316) 60%, #cbd5e1);
+  background: transparent;
+  color: var(--pf-accent, #f97316);
+  border-radius: 9px;
+  font: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.pf-add-btn:hover { background: color-mix(in srgb, var(--pf-accent, #f97316) 9%, transparent); }
+
+/* Edit-mode contact block */
+.pf-contact-editor { margin-top: 18px; text-align: left; }
+.pf-ce-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 640px) { .pf-ce-grid { grid-template-columns: 1fr; } }
+.pf-ce-row { display: flex; flex-direction: column; gap: 4px; }
+.pf-ce-row > span { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #94a3b8; }
+.pf-ce-row .pf-edit { font-size: 14px; padding: 8px 10px; border: 1px solid #e5e7eb; border-radius: 8px; color: #0f172a; background: #fff; }
+.pf-ce-links { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.pf-ce-link { display: flex; align-items: center; gap: 8px; }
+.pf-ce-link-label .pf-edit, .pf-ce-link-url .pf-edit { font-size: 13px; padding: 7px 10px; border: 1px solid #e5e7eb; border-radius: 8px; color: #0f172a; background: #fff; }
+.pf-ce-link-label { flex: 0 0 32%; }
+.pf-ce-link-label .pf-edit { width: 100%; }
+.pf-ce-link-url { flex: 1; }
+.pf-ce-link-url .pf-edit { width: 100%; }
+.pf-ce-x { display: inline-flex; border: none; background: transparent; color: #94a3b8; cursor: pointer; padding: 6px; border-radius: 6px; }
+.pf-ce-x:hover { background: #fef2f2; color: #dc2626; }
+
+/* Small inline remove (× ) on a bullet / skill chip in edit mode */
+.pf-li-x { margin-left: 6px; border: none; background: transparent; color: #cbd5e1; cursor: pointer; font-size: 15px; line-height: 1; vertical-align: middle; padding: 0 2px; }
+.pf-li-x:hover { color: #dc2626; }
+li.pf-li-add { list-style: none; margin-top: 4px; }
+li.pf-li-add::before { display: none !important; }
+.pf-proj-linkedit { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #94a3b8; margin-top: 6px; }
+.pf-proj-linkedit > span:first-child { text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+.pf-proj-linkedit .pf-edit { color: #475569; }
+.pf-skill-edit { display: inline-flex; align-items: center; }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { PanelLeftOpen, Loader2, AlertCircle, X } from 'lucide-react';
 import Sidebar from '../components/dashboard/Sidebar';
@@ -8,11 +8,14 @@ import BuildResumePage from './BuildResumePage';
 import ApplicationsPage from './ApplicationsPage';
 import DashboardHome from './DashboardHome';
 import ComingSoon from './ComingSoon';
+import PortfolioBuilderPage from './PortfolioBuilderPage';
 import { useAuth } from '../lib/auth/AuthContext';
 import { emptyDraft, resumeContentFromDraft, draftFromResume } from '../lib/resume/resumeDraft';
 import { ApiError } from '../lib/api';
 import { listResumes, createResume, updateResume, activateResume, deleteResume, recordResumeScan } from '../lib/resume/resumesApi';
 import { listApplications, createApplication, updateApplication, deleteApplication } from '../lib/applications/applicationsApi';
+import { getPortfolio, savePortfolio } from '../lib/portfolio/portfolioApi';
+import { portfolioDraft, portfolioFromResume, portfolioContent, hasPortfolioContent } from '../lib/portfolio/portfolioModel';
 
 // Server-managed fields the client must never send back on create/update.
 const stripServerFields = (obj) => {
@@ -34,6 +37,9 @@ const loadBuildDraft = () => {
   } catch { /* ignore corrupt/blocked storage */ }
   return emptyDraft();
 };
+
+// The resume a fresh portfolio prefills from: the active one, else the most recent.
+const activeResumeOf = (list) => (list || []).find((r) => r.isActive) || (list || [])[0] || null;
 
 // App shell for the signed-in experience. Owns the shared resume/application
 // state + data loading, renders the sidebar, and routes each section.
@@ -60,10 +66,35 @@ export default function DashboardLayout() {
   const [loadError, setLoadError] = useState('');
   const [actionError, setActionError] = useState('');
   const [buildDraft, setBuildDraft] = useState(loadBuildDraft);
+  // Portfolio: the saved doc (or null) + the editing draft. The draft is prefilled
+  // from the active resume on first visit and autosaves once the user edits.
+  const [portfolio, setPortfolio] = useState(null);
+  const [pfDraft, setPfDraftState] = useState(null);
+  const portfolioTouched = useRef(false);
+
+  // Mark "touched" so the autosave only fires after a real edit (never auto-creates
+  // a portfolio just from the resume prefill).
+  const setPfDraft = (updater) => { portfolioTouched.current = true; setPfDraftState(updater); };
+  const handlePrefillPortfolio = (resumeId) => {
+    const r = resumes.find((x) => x.id === resumeId);
+    if (r) setPfDraft(portfolioDraft(portfolioFromResume(r)));
+  };
 
   useEffect(() => {
     try { localStorage.setItem(BUILD_DRAFT_KEY, JSON.stringify(buildDraft)); } catch { /* ignore */ }
   }, [buildDraft]);
+
+  // Debounced portfolio autosave — only after the user has edited (touched) and the
+  // draft has real content. setState happens only in the async resolve.
+  useEffect(() => {
+    if (!portfolioTouched.current || !pfDraft || !hasPortfolioContent(pfDraft)) return undefined;
+    const t = setTimeout(() => {
+      savePortfolio(portfolioContent(pfDraft))
+        .then((res) => { if (res) setPortfolio(res.portfolio); })
+        .catch((err) => setActionError(err instanceof ApiError ? err.message : 'Could not save your portfolio.'));
+    }, 700);
+    return () => clearTimeout(t);
+  }, [pfDraft]);
 
   // Auto-save edits made to an EXISTING resume opened in the Studio (the draft
   // carries `sourceId`). Debounced via the cleanup; state updates happen only in
@@ -85,9 +116,12 @@ export default function DashboardLayout() {
     setDataStatus('loading');
     setLoadError('');
     try {
-      const [r, a] = await Promise.all([listResumes(), listApplications()]);
+      const [r, a, p] = await Promise.all([listResumes(), listApplications(), getPortfolio()]);
       setResumes(r.resumes);
       setApplications(a.applications);
+      portfolioTouched.current = false;
+      setPortfolio(p.portfolio || null);
+      setPfDraftState(portfolioDraft(p.portfolio || portfolioFromResume(activeResumeOf(r.resumes))));
       setDataStatus('ready');
     } catch (err) {
       setLoadError(err instanceof ApiError ? err.message : 'Could not load your workspace.');
@@ -99,10 +133,13 @@ export default function DashboardLayout() {
     let active = true;
     (async () => {
       try {
-        const [r, a] = await Promise.all([listResumes(), listApplications()]);
+        const [r, a, p] = await Promise.all([listResumes(), listApplications(), getPortfolio()]);
         if (!active) return;
         setResumes(r.resumes);
         setApplications(a.applications);
+        portfolioTouched.current = false;
+        setPortfolio(p.portfolio || null);
+        setPfDraftState(portfolioDraft(p.portfolio || portfolioFromResume(activeResumeOf(r.resumes))));
         setDataStatus('ready');
       } catch (err) {
         if (!active) return;
@@ -250,7 +287,7 @@ export default function DashboardLayout() {
         <Route path="library" element={<LibraryPage resumes={resumes} onNewResumeClick={() => go('studio')} onClone={handleCloneResume} onDelete={handleDeleteResume} onSetActive={handleSetActive} onScan={() => go('ats')} onEditInStudio={goStudioWith} />} />
         <Route path="applications" element={<ApplicationsPage applications={applications} resumes={resumes} onSave={handleSaveApplication} onMove={handleMoveApplication} onDelete={handleDeleteApplication} />} />
         <Route path="interview" element={<ComingSoon name="Interview Prep" onHome={() => go('dashboard')} />} />
-        <Route path="portfolio" element={<ComingSoon name="Portfolio" onHome={() => go('dashboard')} />} />
+        <Route path="portfolio" element={<PortfolioBuilderPage draft={pfDraft} onChange={setPfDraft} resumes={resumes} saved={portfolio} onPrefill={handlePrefillPortfolio} onNavigate={go} />} />
         <Route path="profile" element={<ComingSoon name="Profile" onHome={() => go('dashboard')} />} />
         <Route path="settings" element={<ComingSoon name="Settings" onHome={() => go('dashboard')} />} />
         <Route path="resources" element={<ComingSoon name="Resources" onHome={() => go('dashboard')} />} />

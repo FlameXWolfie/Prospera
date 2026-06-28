@@ -6,6 +6,7 @@ import { connectDB } from './config/db.js';
 import { authRoutes } from './routes/authRoutes.js';
 import { resumeRoutes } from './routes/resumeRoutes.js';
 import { applicationRoutes } from './routes/applicationRoutes.js';
+import { portfolioRoutes } from './routes/portfolioRoutes.js';
 import { aiRoutes } from './routes/aiRoutes.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 
@@ -24,6 +25,7 @@ function createApp() {
   app.use('/api/auth', authRoutes(config));
   app.use('/api/resumes', resumeRoutes(config));
   app.use('/api/applications', applicationRoutes(config));
+  app.use('/api/portfolio', portfolioRoutes(config));
   app.use('/api/ai', aiRoutes(config));
 
   app.use(notFound);
