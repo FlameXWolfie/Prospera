@@ -4,7 +4,8 @@ import {
   Trash2, FileText, Code2, BarChart3, Briefcase, Megaphone, Palette,
   Library, Sparkles
 } from 'lucide-react';
-import { scoreColor, scoreBand } from '../lib/scoreColor';
+import { scoreColor, scoreBand, scanScore, isScanStale } from '../lib/resume/scoreColor';
+import FirstRun, { LibraryVisual } from '../components/dashboard/FirstRun';
 import './css/LibraryPage.css';
 
 /* ── Helpers (module scope so Date calls never run during component render) ── */
@@ -66,16 +67,19 @@ function filterAndSort(resumes, { search, status, band, sort }) {
   const q = search.trim().toLowerCase();
   const out = resumes.filter((r) => {
     if (q) {
-      const hay = [r.role, r.target, ...(r.skills || [])].join(' ').toLowerCase();
+      const hay = [r.label, r.role, r.target, ...(r.skills || [])].join(' ').toLowerCase();
       if (!hay.includes(q)) return false;
     }
     if (status !== 'All' && normalizeStatus(r.status) !== status) return false;
-    if (band !== 'All' && scoreBand(r.score ?? 0) !== band) return false;
+    if (band !== 'All') {
+      const sc = scanScore(r);
+      if (sc === null || scoreBand(sc) !== band) return false; // unscanned matches no band
+    }
     return true;
   });
   const byRecent = (a, b) => new Date(b.lastAppended || 0) - new Date(a.lastAppended || 0);
   const sorted = [...out];
-  if (sort === 'score') sorted.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+  if (sort === 'score') sorted.sort((a, b) => (scanScore(b) ?? -1) - (scanScore(a) ?? -1)); // unscanned sink to bottom
   else if (sort === 'role') sorted.sort((a, b) => (a.role || '').localeCompare(b.role || ''));
   else if (sort === 'status') sorted.sort((a, b) => normalizeStatus(a.status).localeCompare(normalizeStatus(b.status)));
   else sorted.sort((a, b) => (b.isActive ? 1 : 0) - (a.isActive ? 1 : 0) || byRecent(a, b));
@@ -135,30 +139,35 @@ function useFocusTrap(onClose) {
 
 /* ── Primitives ─────────────────────────────────────────────────────────────── */
 
+// `score` is null when the résumé hasn't been scanned — render an empty grey ring
+// with a dash rather than a fabricated number.
 function ScoreRing({ score, size, stroke }) {
-  const s = Math.max(0, Math.min(100, score));
+  const scanned = typeof score === 'number';
+  const s = scanned ? Math.max(0, Math.min(100, score)) : 0;
   const r = size / 2 - stroke * 2;
   const circ = 2 * Math.PI * r;
-  const color = scoreColor(s);
+  const color = scanned ? scoreColor(s) : '#cbd5e1';
   const fs = size >= 72 ? 22 : size >= 48 ? 14 : 11;
   return (
     <span className="library-ring" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="library-ring-svg">
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e5e7eb" strokeWidth={stroke} />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          fill="none"
-          stroke={color}
-          strokeWidth={stroke}
-          strokeDasharray={circ}
-          strokeDashoffset={circ - (s / 100) * circ}
-          strokeLinecap="round"
-          transform={`rotate(-90 ${size / 2} ${size / 2})`}
-        />
+        {scanned && (
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={r}
+            fill="none"
+            stroke={color}
+            strokeWidth={stroke}
+            strokeDasharray={circ}
+            strokeDashoffset={circ - (s / 100) * circ}
+            strokeLinecap="round"
+            transform={`rotate(-90 ${size / 2} ${size / 2})`}
+          />
+        )}
       </svg>
-      <span className="library-ring-text" style={{ fontSize: fs, color }}>{s}</span>
+      <span className="library-ring-text" style={{ fontSize: scanned ? fs : Math.round(fs * 0.95), color }}>{scanned ? s : '–'}</span>
     </span>
   );
 }
@@ -248,13 +257,14 @@ function ResumeCard({ resume, selected, onOpen, items }) {
   const Icon = meta.Icon;
   const skills = resume.skills || [];
   const ns = normalizeStatus(resume.status);
+  const sc = scanScore(resume);
   return (
     <div className={`library-card${selected ? ' selected' : ''}`}>
       <button
         type="button"
         className="library-card-open"
         onClick={onOpen}
-        aria-label={`${resume.role} resume, ATS ${resume.score ?? 0}, ${STATUS_PILL[ns].label}${resume.isActive ? ', active' : ''}. Open details.`}
+        aria-label={`${resume.role} resume, ATS ${sc === null ? 'not scanned' : sc}, ${STATUS_PILL[ns].label}${resume.isActive ? ', active' : ''}. Open details.`}
       >
         <div className="library-thumb">
           {resume.isActive && <span className="library-active-badge">Active</span>}
@@ -266,7 +276,7 @@ function ResumeCard({ resume, selected, onOpen, items }) {
             <span key={i} className="library-thumb-line" style={{ width: `${w}%` }} />
           ))}
         </div>
-        <div className="library-card-title" title={resume.role}>{resume.role}</div>
+        <div className="library-card-title" title={resume.label || resume.role}>{resume.label || resume.role}</div>
         <div className="library-card-target" title={resume.target || ''}>Targeting {resume.target || resume.role}</div>
         <div className="library-card-meta">
           <StatusPill status={resume.status} />
@@ -279,7 +289,7 @@ function ResumeCard({ resume, selected, onOpen, items }) {
             ))}
             {skills.length > 2 && <span className="library-skill-mini muted">+{skills.length - 2}</span>}
           </span>
-          <ScoreRing score={resume.score ?? 0} size={36} stroke={3} />
+          <ScoreRing score={sc} size={36} stroke={3} />
         </div>
       </button>
       <div className="library-card-menu">
@@ -291,19 +301,21 @@ function ResumeCard({ resume, selected, onOpen, items }) {
 
 function ResumeRow({ resume, selected, onOpen, items }) {
   const ns = normalizeStatus(resume.status);
+  const sc = scanScore(resume);
+  const stale = isScanStale(resume);
   return (
     <div className={`library-row${selected ? ' selected' : ''}`}>
       <button
         type="button"
         className="library-row-open"
         onClick={onOpen}
-        aria-label={`${resume.role} resume, ATS ${resume.score ?? 0}, ${STATUS_PILL[ns].label}${resume.isActive ? ', active' : ''}. Open details.`}
+        aria-label={`${resume.role} resume, ATS ${sc === null ? 'not scanned' : sc}, ${STATUS_PILL[ns].label}${resume.isActive ? ', active' : ''}. Open details.`}
       >
         <span className="library-row-main">
           <FileText size={16} className="library-row-icon" />
           <span className="library-row-titles">
             <span className="library-row-title">
-              {resume.role}
+              {resume.label || resume.role}
               {resume.isActive && <span className="library-active-badge static sm">Active</span>}
             </span>
             <span className="library-row-target">Targeting {resume.target || resume.role}</span>
@@ -311,8 +323,10 @@ function ResumeRow({ resume, selected, onOpen, items }) {
         </span>
         <span className="library-row-status"><StatusPill status={resume.status} /></span>
         <span className="library-row-ats">
-          <ScoreRing score={resume.score ?? 0} size={28} stroke={3} />
-          <span className="library-row-ats-num" style={{ color: scoreColor(resume.score ?? 0) }}>{resume.score ?? 0}/100</span>
+          <ScoreRing score={sc} size={28} stroke={3} />
+          <span className="library-row-ats-num" style={{ color: sc === null ? '#94a3b8' : stale ? '#d97706' : scoreColor(sc) }}>
+            {sc === null ? 'Not scanned' : stale ? `${sc} · re-scan` : `${sc}/100`}
+          </span>
         </span>
         <span className="library-row-date" title={absDate(resume.lastAppended)}>{ago(resume.lastAppended)}</span>
       </button>
@@ -325,13 +339,24 @@ function ResumeRow({ resume, selected, onOpen, items }) {
 
 /* ── Drawer ─────────────────────────────────────────────────────────────────── */
 
-function ResumeDrawer({ resume, onClose, onOpenBuilder, onClone, onSetActive, onDelete }) {
+function ResumeDrawer({ resume, onClose, onOpenBuilder, onClone, onSetActive, onDelete, onScan }) {
   const ref = useFocusTrap(onClose);
   const skills = resume.skills || [];
   const exp = resume.experience || [];
-  const score = resume.score ?? 0;
+  const sc = scanScore(resume);
+  const scanned = sc !== null;
+  const stale = isScanStale(resume);
   const band =
-    score >= 85 ? 'Excellent — this resume is ATS-ready' : score >= 70 ? 'Good — a few tweaks could lift your score' : 'Needs work — optimize keywords and formatting';
+    sc >= 85 ? 'Excellent — this resume is ATS-ready' : sc >= 70 ? 'Good — a few tweaks could lift your score' : 'Needs work — optimize keywords and formatting';
+  const rescanBtn = (
+    <button
+      type="button"
+      onClick={onScan}
+      style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: '#363ff5', textDecoration: 'underline', cursor: 'pointer' }}
+    >
+      Re-scan
+    </button>
+  );
   return (
     <>
       <div className="library-backdrop" onClick={onClose} />
@@ -357,17 +382,38 @@ function ResumeDrawer({ resume, onClose, onOpenBuilder, onClone, onSetActive, on
               <X size={16} />
             </button>
             <div className="library-drawer-ring">
-              <ScoreRing score={score} size={72} stroke={5} />
+              <ScoreRing score={sc} size={72} stroke={5} />
               <span className="library-drawer-ring-label">ATS Score</span>
             </div>
           </div>
         </div>
 
         <div className="library-drawer-body">
-          <div className="library-drawer-band" style={{ borderLeftColor: scoreColor(score) }}>
-            <span className="library-drawer-band-score" style={{ color: scoreColor(score) }}>{score}/100</span>
-            <span className="library-drawer-band-text">{band}</span>
-          </div>
+          {scanned ? (
+            <div className="library-drawer-band" style={{ borderLeftColor: stale ? '#d97706' : scoreColor(sc) }}>
+              <span className="library-drawer-band-score" style={{ color: stale ? '#d97706' : scoreColor(sc) }}>{sc}/100</span>
+              <span className="library-drawer-band-text">
+                {stale
+                  ? <>Edited since the last scan — this score is out of date. {rescanBtn} to update.</>
+                  : <>{band}{resume.scanTarget ? ` · vs ${resume.scanTarget}` : ''}{resume.scannedAt ? ` · scanned ${ago(resume.scannedAt)}` : ''}</>}
+              </span>
+            </div>
+          ) : (
+            <div className="library-drawer-band" style={{ borderLeftColor: '#cbd5e1' }}>
+              <span className="library-drawer-band-score" style={{ color: '#94a3b8', fontSize: 20 }}>–</span>
+              <span className="library-drawer-band-text">
+                Not scanned yet.{' '}
+                <button
+                  type="button"
+                  onClick={onScan}
+                  style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: '#363ff5', textDecoration: 'underline', cursor: 'pointer' }}
+                >
+                  Run an ATS scan
+                </button>
+                {' '}to see this résumé&rsquo;s real match.
+              </span>
+            </div>
+          )}
 
           <section className="library-drawer-section">
             <h3 className="library-drawer-h3"><Sparkles size={14} /> Summary</h3>
@@ -412,7 +458,7 @@ function ResumeDrawer({ resume, onClose, onOpenBuilder, onClone, onSetActive, on
 
         <div className="library-drawer-actions">
           <button type="button" className="new-resume-btn library-drawer-primary" onClick={onOpenBuilder}>
-            <Plus size={15} /> Open in builder
+            <Sparkles size={15} /> Edit in Studio
           </button>
           <div className="library-drawer-action-row">
             <button type="button" className="library-action-btn" onClick={onClone}>
@@ -626,7 +672,7 @@ function ResultMeta({ shown, total, filters, onClearAll }) {
 
 /* ── Page ───────────────────────────────────────────────────────────────────── */
 
-export default function LibraryPage({ resumes, onNewResumeClick, onClone, onDelete, onSetActive }) {
+export default function LibraryPage({ resumes, onNewResumeClick, onClone, onDelete, onSetActive, onScan, onEditInStudio }) {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('All');
   const [band, setBand] = useState('All');
@@ -668,8 +714,20 @@ export default function LibraryPage({ resumes, onNewResumeClick, onClone, onDele
   if (resumes.length === 0) {
     return (
       <div className="library-page">
-        <LibraryHeader total={0} activeCount={0} onNewResumeClick={onNewResumeClick} />
-        <LibraryEmptyState variant="no-data" onCreate={onNewResumeClick} />
+        <FirstRun
+          eyebrow={<><Library size={13} /> Resume Library</>}
+          title="One home for every version of your resume"
+          subtitle="Build a master resume, then clone and tailor it per role. Scan any version against a role to see its real ATS match — so you always send your strongest one."
+          actions={(
+            <button className="fr-btn fr-btn-primary" onClick={onNewResumeClick}><Plus size={16} /> Create your first resume</button>
+          )}
+          steps={[
+            { icon: Plus, title: 'Build it once', text: 'Create an ATS-ready master resume in the guided builder.' },
+            { icon: Target, title: 'Tailor per role', text: 'Clone it and tweak keywords to fit each job you target.' },
+            { icon: BarChart3, title: 'Scan to score', text: 'Run an ATS scan on any version to see its real match, then pick the best.' },
+          ]}
+          visual={<LibraryVisual />}
+        />
       </div>
     );
   }
@@ -718,10 +776,11 @@ export default function LibraryPage({ resumes, onNewResumeClick, onClone, onDele
         <ResumeDrawer
           resume={selected}
           onClose={() => setSelectedId(null)}
-          onOpenBuilder={onNewResumeClick}
+          onOpenBuilder={() => onEditInStudio(selected.id)}
           onClone={() => onClone(selected.id)}
           onSetActive={() => onSetActive(selected.id)}
           onDelete={() => setConfirmId(selected.id)}
+          onScan={onScan}
         />
       )}
 

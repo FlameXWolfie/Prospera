@@ -1,0 +1,102 @@
+/* Classic template — traditional, formal, ATS-safe. Authored at true A4 px
+   (ResumePaper scales to fit). All classes are prefixed .tplc- to avoid global
+   collisions. Accent is used only as a subtle rule / role tint. */
+.tpl-classic {
+  --accent: #4f46e5;
+  box-sizing: border-box;
+  width: 794px;
+  min-height: 1123px;
+  padding: 52px 56px;
+  color: #1a1a1a;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Centered header */
+.tplc-head {
+  text-align: center;
+  padding-bottom: 14px;
+  border-bottom: 1.5px solid #1a1a1a;
+}
+.tplc-name {
+  margin: 0;
+  font-size: 33px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #111111;
+}
+.tplc-role {
+  margin: 6px 0 0;
+  font-size: 14.5px;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent);
+}
+.tplc-contact {
+  margin: 9px 0 0;
+  font-size: 12px;
+  color: #333333;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+.tplc-contact-item { white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
+.tplc-sep { margin: 0 8px; color: #999999; }
+
+/* Sections */
+.tplc-sec { margin-top: 20px; }
+.tplc-h {
+  margin: 0 0 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #111111;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #cfcfcf;
+}
+
+.tplc-summary { margin: 0; color: #2b2b2b; text-align: justify; }
+
+/* Entries */
+.tplc-entry { margin-bottom: 13px; }
+.tplc-entry:last-child { margin-bottom: 0; }
+.tplc-entry-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+.tplc-entry-role { font-size: 14px; font-weight: 700; color: #111111; }
+.tplc-entry-period {
+  font-size: 11.5px;
+  font-style: italic;
+  color: #555555;
+  white-space: nowrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.tplc-entry-sub {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin-top: 1px;
+}
+.tplc-entry-co { font-size: 12.5px; font-style: italic; color: #2b2b2b; }
+.tplc-entry-loc { font-size: 11.5px; font-style: italic; color: #777777; white-space: nowrap; }
+
+.tplc-bullets {
+  margin: 6px 0 0;
+  padding-left: 20px;
+  list-style: disc;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.tplc-bullets li { font-size: 12.5px; line-height: 1.5; color: #2b2b2b; }
+.tplc-bullets li::marker { color: #1a1a1a; }
+
+/* Skills — inline, middot separated, ATS friendly */
+.tplc-skills { margin: 0; color: #2b2b2b; }
+.tplc-skill { font-size: 12.5px; color: #2b2b2b; }
+.tplc-skill-sep { margin: 0 8px; color: #999999; }

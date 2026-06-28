@@ -1,9 +1,9 @@
 import './css/Sidebar.css';
+import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
   Cpu,
   Sparkles,
-  FilePlus,
   Library,
   Briefcase,
   GraduationCap,
@@ -12,16 +12,19 @@ import {
   Settings,
   BookOpen,
   Crown,
-  ChevronDown,
+  LogOut,
   PanelLeftClose
 } from 'lucide-react';
+import { useAuth } from '../../lib/auth/AuthContext';
 
-export default function Sidebar({ activeTab, setActiveTab, collapsed, onToggleCollapse }) {
+export default function Sidebar({ collapsed, onToggleCollapse, onLogout }) {
+  const { user, logout } = useAuth();
+  const initial = (user?.name || 'A').charAt(0).toUpperCase();
+  const handleLogout = onLogout || logout;
   const resumeTools = [
     { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard },
     { id: 'ats', name: 'ATS Scan', icon: Cpu },
-    { id: 'enhance', name: 'Enhance Resume', icon: Sparkles },
-    { id: 'build', name: 'Build Resume', icon: FilePlus },
+    { id: 'studio', name: 'Resume Studio', icon: Sparkles },
     { id: 'library', name: 'Resume Library', icon: Library },
   ];
 
@@ -43,16 +46,15 @@ export default function Sidebar({ activeTab, setActiveTab, collapsed, onToggleCo
   const renderNavItems = (items) => {
     return items.map((item) => {
       const Icon = item.icon;
-      const isActive = activeTab === item.id;
       return (
-        <div 
-          key={item.id} 
-          className={`nav-item ${isActive ? 'active' : ''}`}
-          onClick={() => setActiveTab(item.id)}
+        <NavLink
+          key={item.id}
+          to={`/app/${item.id}`}
+          className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
         >
           <Icon className="icon" />
           <span>{item.name}</span>
-        </div>
+        </NavLink>
       );
     });
   };
@@ -91,17 +93,17 @@ export default function Sidebar({ activeTab, setActiveTab, collapsed, onToggleCo
         <Crown className="go-pro-badge" size={16} />
       </div>
 
-      <div className="user-card" onClick={() => alert('User Menu Clicked')}>
-        <img 
-          src="/assets/alex_avatar.png" 
-          alt="Alex Johnson avatar" 
-          className="user-avatar" 
-        />
+      <div className="user-card">
+        {user?.avatar
+          ? <img src={user.avatar} alt="" className="user-avatar" referrerPolicy="no-referrer" />
+          : <span className="user-avatar user-avatar-mono">{initial}</span>}
         <div className="user-info">
-          <div className="user-name">Alex Johnson</div>
-          <div className="user-email">alex.johnson@mail.com</div>
+          <div className="user-name">{user?.name || 'Account'}</div>
+          <div className="user-email">{user?.email || ''}</div>
         </div>
-        <ChevronDown className="user-menu-arrow" />
+        <button type="button" className="user-logout" onClick={handleLogout} aria-label="Log out" title="Log out">
+          <LogOut size={16} />
+        </button>
       </div>
     </aside>
   );

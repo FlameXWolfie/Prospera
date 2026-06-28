@@ -130,7 +130,6 @@
   padding: 10px 8px;
   border-top: 1px solid var(--border-color);
   padding-top: 16px;
-  cursor: pointer;
 }
 
 .user-avatar {
@@ -139,6 +138,36 @@
   border-radius: 50%;
   object-fit: cover;
   background-color: var(--border-dark);
+  flex-shrink: 0;
+}
+
+.user-avatar-mono {
+  display: grid;
+  place-items: center;
+  background: var(--primary-light);
+  color: var(--primary-accent);
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.user-logout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.user-logout:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
 }
 
 .user-info {

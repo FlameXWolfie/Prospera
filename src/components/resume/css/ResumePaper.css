@@ -1,0 +1,55 @@
+/* A4 paper host: reserves the scaled height; the page is absolutely positioned
+   and transform-scaled from the top-left so it always fills the host width. */
+.rp-host { position: relative; width: 100%; }
+.rp-page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+  background: #fff;
+  color: #111827;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12), 0 22px 55px -22px rgba(15, 23, 42, 0.45);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Safety net: long emails, URLs and unbroken tokens must wrap, never overflow the
+   page. Date-range / link spans that opt into `white-space: nowrap` are allowed to
+   wrap here so a long project URL can break instead of clipping. */
+.rp-page { overflow-wrap: anywhere; word-break: break-word; }
+.rp-page [class$="-entry-period"],
+.rp-page [class$="-plink"],
+.rp-page [class$="-proj-link"] { white-space: normal; overflow-wrap: anywhere; }
+
+/* Matched-keyword glow (used by ATS Scan / Enhance previews). Templates add the
+   `rmatch` class to any skill present in the matched set. Kept generic so it works
+   regardless of how a template styles its skills. */
+.rp-page .rmatch {
+  background: #ecfdf5 !important;
+  color: #047857 !important;
+  box-shadow: inset 0 0 0 1px #6ee7b7;
+  border-radius: 4px;
+}
+
+/* The page is content-height (templates author a full A4, but we don't force the
+   empty bottom of a short resume — avoids a big blank, scrollable void). */
+.rp-page > * { min-height: 0 !important; }
+
+/* ── Print / "Download" → crisp A4 PDF (window.print → Save as PDF). Isolates the
+   resume page, un-scales it to true A4, and keeps template colours. ─────────── */
+@media print {
+  @page { size: A4; margin: 0; }
+  body { background: #fff !important; }
+  .sidebar, .sidebar-reopen-btn, .bld-topbar, .bld-work, .bld-preview-bar { display: none !important; }
+  .app-container, .main-content, .bld-page, .bld-grid, .bld-preview, .bld-canvas, .rp-host {
+    display: block !important; margin: 0 !important; padding: 0 !important; border: none !important;
+    width: auto !important; height: auto !important; max-height: none !important; overflow: visible !important;
+    background: #fff !important; box-shadow: none !important;
+  }
+  .main-content { margin-left: 0 !important; }
+  .rp-page {
+    position: static !important; transform: none !important; box-shadow: none !important;
+    width: 794px !important; margin: 0 auto !important;
+  }
+  .rp-page, .rp-page * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+}

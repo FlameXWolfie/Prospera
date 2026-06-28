@@ -1,0 +1,51 @@
+/* Modern template — authored at true A4 px (ResumePaper scales to fit).
+   All classes are prefixed .tplm- to avoid global collisions. */
+.tpl-modern {
+  --accent: #4f46e5;
+  box-sizing: border-box;
+  width: 794px;
+  min-height: 1123px;
+  padding: 54px 60px;
+  color: #1f2937;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.tplm-head { padding-bottom: 16px; border-bottom: 2.5px solid var(--accent); }
+.tplm-name { margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.8px; color: #0f172a; }
+.tplm-role { margin: 4px 0 12px; font-size: 16px; font-weight: 600; color: var(--accent); }
+.tplm-contact { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 12px; color: #4b5563; }
+.tplm-contact span { display: inline-flex; align-items: center; gap: 6px; }
+.tplm-contact svg { color: var(--accent); }
+
+.tplm-sec { margin-top: 22px; }
+.tplm-h {
+  margin: 0 0 10px;
+  font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+  color: #0f172a;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #e5e7eb;
+  position: relative;
+}
+.tplm-h::after { content: ''; position: absolute; left: 0; bottom: -1px; width: 38px; height: 2px; background: var(--accent); }
+
+.tplm-summary { margin: 0; color: #374151; }
+
+.tplm-entry { margin-bottom: 14px; }
+.tplm-entry:last-child { margin-bottom: 0; }
+.tplm-entry-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.tplm-entry-role { font-size: 15px; font-weight: 700; color: #0f172a; }
+.tplm-entry-period { font-size: 12px; color: #6b7280; white-space: nowrap; }
+.tplm-entry-sub { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-top: 1px; }
+.tplm-entry-co { font-size: 13px; font-weight: 600; color: var(--accent); }
+.tplm-entry-loc { font-size: 12px; color: #9ca3af; white-space: nowrap; }
+.tplm-bullets { margin: 7px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.tplm-bullets li { font-size: 13px; line-height: 1.5; color: #374151; }
+.tplm-bullets li::marker { color: var(--accent); }
+
+.tplm-skills { display: flex; flex-wrap: wrap; gap: 7px; }
+.tplm-skill {
+  font-size: 12.5px; font-weight: 500; color: #374151;
+  background: #f3f4f6; border-radius: 6px; padding: 4px 11px;
+}

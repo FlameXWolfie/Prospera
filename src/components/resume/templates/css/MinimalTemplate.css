@@ -1,0 +1,116 @@
+/* Minimal template — editorial, spare, single column with generous whitespace.
+   Authored at true A4 px (ResumePaper scales to fit). Accent is used sparingly
+   (role line only). All classes are prefixed .tplmin- to avoid global collisions. */
+.tpl-minimal {
+  --accent: #4f46e5;
+  box-sizing: border-box;
+  width: 794px;
+  min-height: 1123px;
+  padding: 60px 64px;
+  color: #374151;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Header — centered, editorial; one hairline rule, serif name */
+.tplmin-head {
+  text-align: center;
+  padding-bottom: 22px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.tplmin-name {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: #111827;
+}
+.tplmin-role {
+  margin: 8px 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: var(--accent);
+}
+.tplmin-target { color: #9ca3af; font-weight: 400; }
+.tplmin-contact {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #6b7280;
+}
+.tplmin-citem { word-break: break-word; overflow-wrap: anywhere; }
+.tplmin-dot { margin: 0 8px; color: #d1d5db; }
+
+/* Sections — generous top margin, small muted uppercase headers, no underline */
+.tplmin-sec { margin-top: 28px; }
+.tplmin-h {
+  margin: 0 0 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  color: #9ca3af;
+}
+.tplmin-summary { margin: 0; color: #374151; line-height: 1.55; }
+
+/* Entries */
+.tplmin-entry { margin-bottom: 16px; }
+.tplmin-entry:last-child { margin-bottom: 0; }
+.tplmin-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+.tplmin-sub { margin-top: 2px; }
+.tplmin-title { font-size: 13.5px; font-weight: 600; color: #111827; }
+.tplmin-period { font-size: 12px; color: #9ca3af; white-space: nowrap; }
+.tplmin-co { font-size: 12.5px; color: #6b7280; }
+.tplmin-loc { font-size: 12px; color: #9ca3af; white-space: nowrap; }
+.tplmin-plink {
+  max-width: 46%;
+  font-size: 12px;
+  color: #9ca3af;
+  text-align: right;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.tplmin-bullets {
+  margin: 8px 0 0;
+  padding-left: 16px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.tplmin-bullets li {
+  position: relative;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #374151;
+}
+.tplmin-bullets li::before {
+  content: '';
+  position: absolute;
+  left: -14px;
+  top: 7.5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #d1d5db;
+}
+
+/* Skills — understated hairline chips; .rmatch (global) turns them green */
+.tplmin-skills { display: flex; flex-wrap: wrap; gap: 7px; }
+.tplmin-skill {
+  font-size: 12px;
+  color: #4b5563;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 4px 11px;
+}

@@ -1,0 +1,91 @@
+/* Compact template — authored at true A4 px (ResumePaper scales to fit).
+   Dense two-column body. All classes are prefixed .tplk- to avoid global
+   collisions. */
+.tpl-compact {
+  --accent: #4f46e5;
+  box-sizing: border-box;
+  width: 794px;
+  min-height: 1123px;
+  padding: 48px 52px;
+  color: #1f2937;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+/* Header — full width, name/role left, contact right */
+.tplk-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  padding-bottom: 14px;
+  border-bottom: 2.5px solid var(--accent);
+}
+.tplk-head-left { min-width: 0; }
+.tplk-name {
+  margin: 0;
+  font-size: 32px; font-weight: 800; letter-spacing: -0.6px;
+  line-height: 1.1; color: var(--accent);
+}
+.tplk-role { margin: 5px 0 0; font-size: 14.5px; font-weight: 600; color: #374151; }
+.tplk-contact {
+  display: flex; flex-direction: column; gap: 4px;
+  flex-shrink: 0; max-width: 250px;
+  font-size: 11.5px; color: #4b5563; text-align: right;
+}
+.tplk-contact span {
+  display: inline-flex; align-items: center; justify-content: flex-end; gap: 6px;
+  word-break: break-word; overflow-wrap: anywhere;
+}
+.tplk-contact svg { color: var(--accent); flex-shrink: 0; }
+
+/* Two-column body */
+.tplk-body {
+  display: grid;
+  grid-template-columns: 34% 1fr;
+  gap: 26px;
+  margin-top: 22px;
+}
+.tplk-col { min-width: 0; }
+
+/* Sections */
+.tplk-sec { margin-bottom: 20px; }
+.tplk-sec:last-child { margin-bottom: 0; }
+.tplk-h {
+  margin: 0 0 9px;
+  font-size: 12.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.4px;
+  color: var(--accent);
+  padding-bottom: 5px;
+  border-bottom: 1.5px solid #e5e7eb;
+}
+
+.tplk-summary { margin: 0; font-size: 12px; color: #374151; }
+
+/* Skills */
+.tplk-skills { display: flex; flex-wrap: wrap; gap: 6px; }
+.tplk-skill {
+  font-size: 11.5px; font-weight: 500; color: #374151;
+  background: #f3f4f6; border-radius: 5px; padding: 3px 9px;
+}
+
+/* Education (left column) */
+.tplk-edu { margin-bottom: 11px; }
+.tplk-edu:last-child { margin-bottom: 0; }
+.tplk-edu-deg { font-size: 12.5px; font-weight: 700; color: #0f172a; }
+.tplk-edu-school { margin-top: 1px; font-size: 12px; font-weight: 600; color: var(--accent); }
+.tplk-edu-period { margin-top: 1px; font-size: 11px; color: #6b7280; }
+
+/* Experience / Projects (right column) */
+.tplk-entry { margin-bottom: 14px; }
+.tplk-entry:last-child { margin-bottom: 0; }
+.tplk-entry-top { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; }
+.tplk-entry-role { font-size: 13.5px; font-weight: 700; color: #0f172a; }
+.tplk-entry-period { font-size: 11px; color: #6b7280; white-space: nowrap; flex-shrink: 0; }
+.tplk-entry-sub { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; margin-top: 1px; }
+.tplk-entry-co { font-size: 12px; font-weight: 600; color: var(--accent); }
+.tplk-entry-loc { font-size: 11px; color: #9ca3af; white-space: nowrap; flex-shrink: 0; }
+.tplk-proj-link { margin-top: 1px; font-size: 11px; color: var(--accent); word-break: break-word; overflow-wrap: anywhere; }
+.tplk-bullets { margin: 6px 0 0; padding-left: 16px; display: flex; flex-direction: column; gap: 3px; }
+.tplk-bullets li { font-size: 12px; line-height: 1.45; color: #374151; }
+.tplk-bullets li::marker { color: var(--accent); }

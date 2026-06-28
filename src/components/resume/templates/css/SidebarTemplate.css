@@ -1,0 +1,95 @@
+/* Sidebar template — authored at true A4 px (ResumePaper scales to fit).
+   All classes are prefixed .tpls- to avoid global collisions. */
+.tpl-sidebar {
+  --accent: #4f46e5;
+  box-sizing: border-box;
+  width: 794px;
+  min-height: 1123px;
+  padding: 0;
+  display: flex;
+  color: #1f2937;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ---- Left rail (accent background, white text) ---- */
+.tpls-rail {
+  box-sizing: border-box;
+  width: 34%;
+  background: var(--accent);
+  color: #ffffff;
+  padding: 40px 30px;
+}
+
+.tpls-head { padding-bottom: 20px; margin-bottom: 22px; border-bottom: 1px solid rgba(255, 255, 255, 0.28); }
+.tpls-name { margin: 0; font-size: 30px; font-weight: 800; line-height: 1.12; letter-spacing: -0.6px; color: #ffffff; }
+.tpls-role { margin: 10px 0 0; font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, 0.95); }
+.tpls-target { margin: 3px 0 0; font-size: 12px; font-weight: 500; color: rgba(255, 255, 255, 0.78); }
+
+.tpls-rail-sec { margin-bottom: 24px; }
+.tpls-rail-sec:last-child { margin-bottom: 0; }
+.tpls-rail-h {
+  margin: 0 0 12px;
+  font-size: 12.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.6px;
+  color: #ffffff;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+.tpls-contact { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.tpls-contact li {
+  display: flex; align-items: flex-start; gap: 9px;
+  font-size: 12px; color: rgba(255, 255, 255, 0.95);
+}
+.tpls-contact li svg { flex-shrink: 0; margin-top: 1px; color: #ffffff; }
+.tpls-contact li span { word-break: break-word; overflow-wrap: anywhere; min-width: 0; }
+
+.tpls-skills { display: flex; flex-wrap: wrap; gap: 7px; }
+.tpls-skill {
+  font-size: 11.5px; font-weight: 500; color: #ffffff;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px; padding: 4px 11px;
+  word-break: break-word;
+}
+
+.tpls-edu { margin-bottom: 13px; }
+.tpls-edu:last-child { margin-bottom: 0; }
+.tpls-edu-degree { margin: 0; font-size: 12.5px; font-weight: 700; color: #ffffff; }
+.tpls-edu-school { margin: 2px 0 0; font-size: 12px; color: rgba(255, 255, 255, 0.9); }
+.tpls-edu-period { margin: 2px 0 0; font-size: 11.5px; color: rgba(255, 255, 255, 0.72); }
+
+/* ---- Right main column (white background, dark text) ---- */
+.tpls-main {
+  box-sizing: border-box;
+  flex: 1;
+  min-width: 0;
+  background: #ffffff;
+  padding: 40px 34px;
+}
+
+.tpls-sec { margin-bottom: 24px; }
+.tpls-sec:last-child { margin-bottom: 0; }
+.tpls-h {
+  margin: 0 0 12px;
+  font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+  color: #0f172a;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #e5e7eb;
+  position: relative;
+}
+.tpls-h::after { content: ''; position: absolute; left: 0; bottom: -1px; width: 38px; height: 2px; background: var(--accent); }
+
+.tpls-summary { margin: 0; color: #374151; }
+
+.tpls-entry { margin-bottom: 15px; }
+.tpls-entry:last-child { margin-bottom: 0; }
+.tpls-entry-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.tpls-entry-role { font-size: 14.5px; font-weight: 700; color: #0f172a; }
+.tpls-entry-period { font-size: 11.5px; color: #6b7280; white-space: nowrap; }
+.tpls-entry-sub { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-top: 1px; }
+.tpls-entry-co { font-size: 12.5px; font-weight: 600; color: var(--accent); }
+.tpls-entry-loc { font-size: 11.5px; color: #9ca3af; white-space: nowrap; }
+.tpls-bullets { margin: 7px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.tpls-bullets li { font-size: 12.5px; line-height: 1.5; color: #374151; }
+.tpls-bullets li::marker { color: var(--accent); }

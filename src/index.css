@@ -80,12 +80,81 @@ body {
 .main-content {
   margin-left: var(--sidebar-width);
   flex-grow: 1;
+  /* min-width:0 lets the panel shrink to its flex share instead of expanding to
+     its content's min-width — otherwise a wide child (e.g. the kanban board)
+     pushes the whole page past the viewport and clips with no scrollbar. */
+  min-width: 0;
   padding: 24px 32px 40px 32px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Workspace load / empty / error states (DashboardPage) */
+.data-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 60vh;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+}
+.data-state p { margin: 0; max-width: 420px; }
+.data-state-spin { color: var(--primary-accent, #363ff5); animation: dataSpin 0.9s linear infinite; }
+@keyframes dataSpin { to { transform: rotate(360deg); } }
+
+/* Transient banner when a save/delete fails */
+.action-error {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 16px;
+  padding: 11px 14px;
+  border-radius: 11px;
+  background: var(--danger-bg, #fef2f2);
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 13px;
+}
+.action-error span { flex: 1; }
+.action-error button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: #b91c1c;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 6px;
+}
+.action-error button:hover { background: rgba(185, 28, 28, 0.1); }
+
+/* Empty states inside dashboard widgets (interviews / action center) */
+.widget-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 28px 14px;
+  text-align: center;
+  color: #64748b;
+}
+.widget-empty p { margin: 0; font-size: 13.5px; line-height: 1.5; max-width: 280px; }
+
+.analytics-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  text-align: center;
+}
+.analytics-empty p { margin: 0; font-size: 13.5px; color: #94a3b8; max-width: 340px; line-height: 1.5; }
 
 /* Collapsible sidebar */
 .sidebar {

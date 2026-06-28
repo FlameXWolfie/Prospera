@@ -141,3 +141,31 @@
 @media (max-width: 800px) {
   .en-3 { grid-template-columns: 1fr; grid-template-areas: "nav" "editor" "resume"; }
 }
+
+/* ── AI (Mistral) suggestions: CTA + modal ────────────────────────────────── */
+.en-ai-cta { width: 100%; margin-top: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border: none; border-radius: 11px; background: linear-gradient(135deg, #4f46e5, #6366f1); color: #fff; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; box-shadow: 0 10px 22px -10px rgba(79, 70, 229, 0.7); transition: transform 0.12s, opacity 0.15s; }
+.en-ai-cta:hover { transform: translateY(-1px); opacity: 0.96; }
+
+.en-ai-overlay { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(3px); }
+.en-ai-modal { position: relative; width: 100%; max-width: 560px; max-height: 86vh; overflow-y: auto; background: var(--bg-card, #fff); border-radius: 18px; padding: 26px 28px; box-shadow: 0 30px 70px -20px rgba(15, 23, 42, 0.5); }
+.en-ai-x { position: absolute; top: 14px; right: 14px; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: none; border-radius: 9px; background: transparent; color: var(--text-light); cursor: pointer; }
+.en-ai-x:hover { background: var(--bg-main); color: var(--text-main); }
+.en-ai-title { display: flex; align-items: center; gap: 8px; margin: 0; font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--text-main); }
+.en-ai-title svg { color: var(--primary-accent); }
+.en-ai-sub { font-size: 13.5px; color: var(--text-muted); margin: 6px 0 18px; }
+.en-ai-loading { display: flex; align-items: center; gap: 10px; padding: 24px 4px; color: var(--text-muted); font-size: 14px; }
+.en-ai-spin { color: var(--primary-accent); animation: enAiSpin 0.9s linear infinite; }
+@keyframes enAiSpin { to { transform: rotate(360deg); } }
+/* White spinner on the dark primary upload button (the accent colour would blend in). */
+.fr-btn-primary .en-ai-spin { color: #fff; }
+.fr-btn:disabled, .en-upload-link:disabled { opacity: 0.7; cursor: default; }
+.en-ai-error { display: flex; align-items: center; gap: 8px; color: var(--danger); font-size: 13px; }
+.en-ai-body { display: flex; flex-direction: column; gap: 18px; }
+.en-ai-block { display: flex; flex-direction: column; gap: 8px; }
+.en-ai-block-h { display: flex; align-items: center; justify-content: space-between; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-light); }
+.en-ai-text { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--text-main); background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 10px; padding: 11px 13px; }
+.en-ai-bullet { background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 10px; padding: 11px 13px; }
+.en-ai-orig { margin: 0 0 6px; font-size: 12px; color: var(--text-light); text-decoration: line-through; }
+.en-ai-improved { margin: 0 0 8px; font-size: 13px; line-height: 1.5; color: var(--text-main); font-weight: 500; }
+.en-ai-tips { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+.en-ai-tips li { font-size: 13px; line-height: 1.5; color: var(--text-muted); }

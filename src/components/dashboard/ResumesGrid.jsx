@@ -1,29 +1,34 @@
 import './css/ResumesGrid.css';
 import { Plus, MoreVertical } from 'lucide-react';
-import { scoreColor } from '../../lib/scoreColor';
+import { scoreColor, scanScore } from '../../lib/resume/scoreColor';
 
 export default function ResumesGrid({ resumes, onNewResumeClick, onViewAllClick }) {
+  // `score` is null until the résumé has actually been scanned — render a muted
+  // empty gauge with a dash instead of a fabricated number.
   const renderScoreGauge = (score) => {
+    const scanned = typeof score === 'number';
     const radius = 12;
     const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (score / 100) * circumference;
-    const color = scoreColor(score);
+    const offset = circumference - ((scanned ? score : 0) / 100) * circumference;
+    const color = scanned ? scoreColor(score) : '#cbd5e1';
 
     return (
-      <div className="resume-score-gauge">
+      <div className="resume-score-gauge" title={scanned ? `ATS score ${score}` : 'Not scanned yet'}>
         <svg className="resume-score-svg">
           <circle cx="16" cy="16" r={radius} className="resume-score-bg" />
-          <circle 
-            cx="16" 
-            cy="16" 
-            r={radius} 
-            className="resume-score-fill" 
-            stroke={color}
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-          />
+          {scanned && (
+            <circle
+              cx="16"
+              cy="16"
+              r={radius}
+              className="resume-score-fill"
+              stroke={color}
+              strokeDasharray={circumference}
+              strokeDashoffset={offset}
+            />
+          )}
         </svg>
-        <span className="resume-score-text">{score}</span>
+        <span className="resume-score-text" style={scanned ? undefined : { color: '#94a3b8' }}>{scanned ? score : '–'}</span>
       </div>
     );
   };
@@ -54,7 +59,7 @@ export default function ResumesGrid({ resumes, onNewResumeClick, onViewAllClick 
             <div className="resume-card-date">{resume.updatedAt}</div>
 
             <div className="resume-card-footer">
-              {renderScoreGauge(resume.score)}
+              {renderScoreGauge(scanScore(resume))}
               <button 
                 className="resume-actions-btn" 
                 onClick={() => alert(`Options for: ${resume.title}`)}

@@ -1,7 +1,8 @@
 import { ChevronDown } from 'lucide-react';
 import './css/LandingHeader.css';
 
-export default function LandingHeader({ onEnterApp }) {
+export default function LandingHeader({ onEnterApp, onLogin }) {
+  const handleLogin = onLogin || onEnterApp;
   return (
     <header className="landing-header">
       <div className="navbar">
@@ -31,7 +32,7 @@ export default function LandingHeader({ onEnterApp }) {
         </nav>
 
         <div className="nav-actions">
-          <button className="btn-secondary-nav" onClick={onEnterApp}>Log In</button>
+          <button className="btn-secondary-nav" onClick={handleLogin}>Log In</button>
           <button className="btn-primary-nav" onClick={onEnterApp}>Get Started</button>
         </div>
       </div>
