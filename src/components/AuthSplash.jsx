@@ -7,7 +7,7 @@ export default function AuthSplash() {
         <div
           style={{
             width: 52, height: 52, borderRadius: 16, display: 'grid', placeItems: 'center',
-            background: 'var(--primary-accent)', color: '#fff', fontFamily: 'var(--font-heading)',
+            background: 'var(--primary-accent)', color: 'var(--text-inverse)', fontFamily: 'var(--font-heading)',
             fontWeight: 800, fontSize: 24, boxShadow: '0 10px 30px -8px rgba(54,63,245,0.5)',
             animation: 'authPulse 1.4s ease-in-out infinite',
           }}

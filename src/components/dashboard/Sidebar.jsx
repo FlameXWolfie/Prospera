@@ -16,6 +16,7 @@ import {
   PanelLeftClose
 } from 'lucide-react';
 import { useAuth } from '../../lib/auth/AuthContext';
+import ThemeToggle from '../ThemeToggle';
 
 export default function Sidebar({ collapsed, onToggleCollapse, onLogout }) {
   const { user, logout } = useAuth();
@@ -101,6 +102,7 @@ export default function Sidebar({ collapsed, onToggleCollapse, onLogout }) {
           <div className="user-name">{user?.name || 'Account'}</div>
           <div className="user-email">{user?.email || ''}</div>
         </div>
+        <ThemeToggle className="sidebar-theme-toggle" />
         <button type="button" className="user-logout" onClick={handleLogout} aria-label="Log out" title="Log out">
           <LogOut size={16} />
         </button>

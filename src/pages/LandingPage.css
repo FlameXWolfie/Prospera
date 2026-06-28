@@ -2,7 +2,7 @@
 
 .landing-container {
   font-family: var(--font-sans);
-  background-color: #ffffff;
+  background-color: var(--bg-card);
   color: var(--text-main);
   min-height: 100vh;
   width: 100%;

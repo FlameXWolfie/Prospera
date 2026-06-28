@@ -13,7 +13,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: white;
+  color: var(--text-inverse);
   box-shadow: 0 12px 30px rgba(54, 63, 245, 0.25);
   position: relative;
   overflow: hidden;
@@ -37,7 +37,7 @@
 }
 
 .newsletter-title {
-  color: white;
+  color: var(--text-inverse);
   font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -52,7 +52,7 @@
 
 .newsletter-form {
   display: flex;
-  background-color: white;
+  background-color: var(--bg-card);
   border-radius: 14px;
   padding: 6px;
   width: 100%;
@@ -78,7 +78,7 @@
 
 .btn-subscribe {
   background-color: var(--primary-accent);
-  color: white;
+  color: var(--text-inverse);
   border: none;
   font-size: 14px;
   font-weight: 600;

@@ -11,9 +11,9 @@
 .bld-topbar-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
 .bld-title { font-family: var(--font-heading); font-size: 24px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; margin: 0; }
 .bld-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; padding: 5px 11px; border-radius: 999px; background: var(--bg-main); color: var(--text-muted); border: 1px solid var(--border-color); white-space: nowrap; }
-.bld-pill.saved { color: #047857; background: var(--success-bg); border-color: #a7f3d0; }
+.bld-pill.saved { color: var(--success-strong); background: var(--success-bg); border-color: #a7f3d0; }
 .bld-pill svg { flex-shrink: 0; }
-.bld-save-btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border: none; border-radius: 12px; background: var(--primary-accent); color: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: inherit; box-shadow: 0 6px 16px -6px rgba(54, 63, 245, 0.5); transition: opacity 0.15s, transform 0.1s; }
+.bld-save-btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border: none; border-radius: 12px; background: var(--primary-accent); color: var(--text-inverse); font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: inherit; box-shadow: 0 6px 16px -6px rgba(54, 63, 245, 0.5); transition: opacity 0.15s, transform 0.1s; }
 .bld-save-btn:hover:not(:disabled) { opacity: 0.94; transform: translateY(-1px); }
 .bld-save-btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
 
@@ -47,17 +47,17 @@
 /* preview header: "change template" link + quick accent picker */
 .bld-preview-bar { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 11px; background: var(--bg-card, #fff); border: 1px solid var(--border-color); border-radius: 13px; }
 .bld-change-tpl { display: inline-flex; align-items: center; gap: 7px; padding: 7px 11px; border: 1px solid var(--border-dark, #e2e8f0); border-radius: 10px; background: var(--bg-main, #f8fafc); color: var(--text-main); font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
-.bld-change-tpl:hover { background: #fff; border-color: var(--text-light); }
+.bld-change-tpl:hover { background: var(--bg-card); border-color: var(--text-light); }
 .bld-change-tpl svg { color: var(--primary-accent); }
 .bld-change-tpl-hint { font-size: 11px; font-weight: 600; color: var(--text-light); margin-left: 2px; padding-left: 8px; border-left: 1px solid var(--border-dark, #e2e8f0); }
 
 .bld-preview-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
 .bld-accent-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.bld-accent { width: 19px; height: 19px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--border-dark, #e2e8f0); cursor: pointer; padding: 0; transition: transform 0.12s; }
+.bld-accent { width: 19px; height: 19px; border-radius: 50%; border: 2px solid var(--bg-card); box-shadow: 0 0 0 1px var(--border-dark, #e2e8f0); cursor: pointer; padding: 0; transition: transform 0.12s; }
 .bld-accent:hover { transform: scale(1.12); }
-.bld-accent.active { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--text-main); }
+.bld-accent.active { box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 4px var(--text-main); }
 .bld-download-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border: 1px solid var(--primary-accent); border-radius: 10px; background: var(--primary-light, rgba(79, 70, 229, 0.1)); color: var(--primary-accent); font-size: 12.5px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background 0.15s, color 0.15s; }
-.bld-download-btn:hover { background: var(--primary-accent); color: #fff; }
+.bld-download-btn:hover { background: var(--primary-accent); color: var(--text-inverse); }
 
 /* save dialog form (reuses .bimp-* overlay/card) */
 .bsave-form { display: flex; flex-direction: column; gap: 14px; }
@@ -87,7 +87,7 @@
 /* status pip on each section row (sits in the trailing .en-nav-stat slot) */
 .bld-pip { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; border: 2px solid var(--border-dark); background: transparent; }
 .bld-pip.partial { border-color: var(--warning); background: radial-gradient(circle, var(--warning) 0 45%, transparent 46%); }
-.bld-pip.done { border-color: var(--success); background: var(--success); box-shadow: inset 0 0 0 2px #fff; }
+.bld-pip.done { border-color: var(--success); background: var(--success); box-shadow: inset 0 0 0 2px var(--text-inverse); }
 
 .bld-rail-foot { margin-top: auto; display: flex; flex-direction: column; gap: 10px; padding-top: 16px; border-top: 1px solid var(--border-color); }
 .bld-rail-foot-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); }
@@ -190,7 +190,7 @@
   transition: transform 0.12s, background 0.15s, border-color 0.15s;
 }
 .bgal-btn:hover { background: var(--bg-main); transform: translateY(-1px); }
-.bgal-btn.primary { background: var(--primary-accent); border-color: var(--primary-accent); color: #fff; box-shadow: 0 10px 22px -10px rgba(79, 70, 229, 0.7); }
+.bgal-btn.primary { background: var(--primary-accent); border-color: var(--primary-accent); color: var(--text-inverse); box-shadow: 0 10px 22px -10px rgba(79, 70, 229, 0.7); }
 
 .bgal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .bgal-card {
@@ -199,8 +199,8 @@
   transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
 }
 .bgal-card:hover { transform: translateY(-3px); box-shadow: 0 18px 40px -18px rgba(15, 23, 42, 0.32); border-color: var(--border-dark); }
-.bgal-thumb { position: relative; height: 300px; overflow: hidden; background: #fff; }
-.bgal-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 56px; background: linear-gradient(transparent, #fff); pointer-events: none; }
+.bgal-thumb { position: relative; height: 300px; overflow: hidden; background: var(--bg-card); }
+.bgal-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 56px; background: linear-gradient(transparent, var(--bg-card)); pointer-events: none; }
 .bgal-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 16px; border-top: 1px solid var(--border-color); }
 .bgal-meta-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .bgal-name { font-size: 14.5px; font-weight: 700; color: var(--text-main); }
@@ -208,7 +208,7 @@
 .bgal-use {
   display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
   padding: 8px 14px; border: none; border-radius: 9px; background: var(--primary-accent);
-  color: #fff; font-size: 12.5px; font-weight: 600; font-family: inherit; cursor: pointer;
+  color: var(--text-inverse); font-size: 12.5px; font-weight: 600; font-family: inherit; cursor: pointer;
   transition: opacity 0.15s, transform 0.12s;
 }
 .bgal-use:hover { opacity: 0.95; transform: translateY(-1px); }
@@ -217,7 +217,7 @@
 @media (max-width: 720px) { .bgal-grid { grid-template-columns: 1fr; } }
 
 /* ── Import dialog ────────────────────────────────────────────────────────── */
-.bimp-overlay { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(3px); }
+.bimp-overlay { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; background: var(--overlay); backdrop-filter: blur(3px); }
 .bimp { position: relative; width: 100%; max-width: 460px; background: var(--bg-card, #fff); border-radius: 18px; padding: 28px; box-shadow: 0 30px 70px -20px rgba(15, 23, 42, 0.5); }
 .bimp-x { position: absolute; top: 14px; right: 14px; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: none; border-radius: 9px; background: transparent; color: var(--text-light); cursor: pointer; }
 .bimp-x:hover { background: var(--bg-main); color: var(--text-main); }

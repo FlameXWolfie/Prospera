@@ -10,7 +10,7 @@ export default function ResumesGrid({ resumes, onNewResumeClick, onViewAllClick 
     const radius = 12;
     const circumference = 2 * Math.PI * radius;
     const offset = circumference - ((scanned ? score : 0) / 100) * circumference;
-    const color = scanned ? scoreColor(score) : '#cbd5e1';
+    const color = scanned ? scoreColor(score) : 'var(--border-strong)';
 
     return (
       <div className="resume-score-gauge" title={scanned ? `ATS score ${score}` : 'Not scanned yet'}>
@@ -28,7 +28,7 @@ export default function ResumesGrid({ resumes, onNewResumeClick, onViewAllClick 
             />
           )}
         </svg>
-        <span className="resume-score-text" style={scanned ? undefined : { color: '#94a3b8' }}>{scanned ? score : '–'}</span>
+        <span className="resume-score-text" style={scanned ? undefined : { color: 'var(--text-light)' }}>{scanned ? score : '–'}</span>
       </div>
     );
   };
@@ -48,7 +48,7 @@ export default function ResumesGrid({ resumes, onNewResumeClick, onViewAllClick 
             <div className="resume-preview-box">
               {resume.isActive && <span className="preview-badge">Active</span>}
               {/* Fake layout preview blocks */}
-              <div style={{ width: '40%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '4px', marginBottom: '8px' }}></div>
+              <div style={{ width: '40%', height: '8px', backgroundColor: 'var(--border-dark)', borderRadius: '4px', marginBottom: '8px' }}></div>
               <div className="skeleton-line" style={{ width: '80%' }}></div>
               <div className="skeleton-line" style={{ width: '90%' }}></div>
               <div className="skeleton-line" style={{ width: '60%' }}></div>

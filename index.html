@@ -6,6 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Prospera Dashboard - ATS Scanner & Resume Builder</title>
     <meta name="description" content="Optimize your resume with real-time ATS scanning, track your job applications, schedule mock interviews, and build professional resumes." />
+    <!-- Set the theme BEFORE first paint (no flash). Saved choice wins, else OS. -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('prospera_theme');
+          if (t !== 'light' && t !== 'dark') {
+            t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', t);
+          document.documentElement.style.colorScheme = t;
+        } catch (e) { /* default light */ }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

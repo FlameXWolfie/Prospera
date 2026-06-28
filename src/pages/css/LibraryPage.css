@@ -115,7 +115,7 @@
   color: var(--text-main);
 }
 .library-chip.active {
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .library-sort {
@@ -218,7 +218,7 @@
 .library-card-open {
   width: 100%;
   text-align: left;
-  background: #f8fafc;
+  background: var(--bg-main);
   border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 14px;
@@ -262,14 +262,14 @@
 }
 .library-thumb-line {
   height: 4px;
-  background: #eef2f7;
+  background: var(--bg-inset);
   border-radius: 2px;
   width: 100%;
 }
 .library-thumb-line.lg {
   width: 45%;
   height: 5px;
-  background: #cbd5e1;
+  background: var(--border-strong);
   margin-bottom: 2px;
 }
 .library-cat-chip {
@@ -330,7 +330,7 @@
 .library-skill-mini {
   font-size: 10.5px;
   background: var(--border-color);
-  color: #475569;
+  color: var(--text-muted);
   border-radius: 5px;
   padding: 2px 7px;
   font-weight: 500;
@@ -360,8 +360,8 @@
   font-weight: 700;
   padding: 2px 7px;
   border-radius: 5px;
-  background: #ecfdf5;
-  color: #059669;
+  background: var(--success-bg);
+  color: var(--success-strong);
   z-index: 1;
 }
 .library-active-badge.static {
@@ -411,7 +411,7 @@
   border-bottom: none;
 }
 .library-row.selected {
-  background: #f5f8ff;
+  background: var(--bg-inset);
   box-shadow: inset 3px 0 0 var(--primary-accent);
 }
 .library-row-open {
@@ -428,7 +428,7 @@
   font-family: inherit;
 }
 .library-row-open:hover {
-  background: #f8fafc;
+  background: var(--bg-main);
 }
 .library-row-main {
   display: flex;
@@ -534,7 +534,7 @@
   font-family: inherit;
 }
 .library-menu-item:hover:not(:disabled) {
-  background: #f8fafc;
+  background: var(--bg-main);
 }
 .library-menu-item:disabled {
   color: var(--text-light);
@@ -551,7 +551,7 @@
 .library-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.45);
+  background: var(--overlay);
   z-index: 100;
   animation: libFade 0.2s ease;
 }
@@ -650,7 +650,7 @@
   border: 1px solid var(--border-color);
   border-left: 4px solid var(--border-color);
   border-radius: 10px;
-  background: #f8fafc;
+  background: var(--bg-main);
 }
 .library-drawer-band-score {
   font-size: 18px;
@@ -678,7 +678,7 @@
 }
 .library-drawer-summary {
   font-size: 13px;
-  color: #374151;
+  color: var(--text-main);
   line-height: 1.65;
   margin: 0;
 }
@@ -725,7 +725,7 @@
 }
 .library-exp-bullets li {
   font-size: 12px;
-  color: #475569;
+  color: var(--text-muted);
   line-height: 1.5;
 }
 .library-skill-wrap {
@@ -783,7 +783,7 @@
 }
 .library-action-btn.danger {
   color: var(--danger);
-  border-color: #fecaca;
+  border-color: var(--danger-border);
 }
 .library-action-btn.danger:hover:not(:disabled) {
   background: var(--danger-bg);
@@ -793,7 +793,7 @@
 .library-confirm-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.5);
+  background: var(--overlay);
   z-index: 200;
   display: flex;
   align-items: center;
@@ -836,14 +836,14 @@
   border: none;
   border-radius: 9px;
   background: var(--danger);
-  color: #fff;
+  color: var(--text-inverse);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
 }
 .library-confirm-delete:hover {
-  background: #dc2626;
+  background: var(--danger);
 }
 
 /* Empty states */

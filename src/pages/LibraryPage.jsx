@@ -41,12 +41,12 @@ function getCat(role) {
 }
 
 const CAT_META = {
-  'Software Engineering': { color: '#363ff5', bg: '#eef2ff', Icon: Code2 },
-  'Data & Analytics': { color: '#0891b2', bg: '#ecfeff', Icon: BarChart3 },
-  'Product': { color: '#8b5cf6', bg: '#f5f3ff', Icon: Briefcase },
-  'Marketing': { color: '#d97706', bg: '#fffbeb', Icon: Megaphone },
-  'Design': { color: '#db2777', bg: '#fdf2f8', Icon: Palette },
-  'Other': { color: '#64748b', bg: '#f1f5f9', Icon: FileText },
+  'Software Engineering': { color: 'var(--primary-accent)', bg: 'var(--bg-inset)', Icon: Code2 },
+  'Data & Analytics': { color: '#0891b2', bg: 'var(--bg-inset)', Icon: BarChart3 },
+  'Product': { color: 'var(--purple-accent)', bg: 'var(--purple-bg)', Icon: Briefcase },
+  'Marketing': { color: 'var(--warning)', bg: 'var(--warning-bg)', Icon: Megaphone },
+  'Design': { color: '#db2777', bg: 'var(--bg-inset)', Icon: Palette },
+  'Other': { color: 'var(--text-muted)', bg: 'var(--bg-inset)', Icon: FileText },
 };
 
 function normalizeStatus(status) {
@@ -58,10 +58,10 @@ function normalizeStatus(status) {
 }
 
 const STATUS_PILL = {
-  Verified: { bg: '#ecfdf5', fg: '#059669', label: 'Verified' },
-  Tailored: { bg: '#f5f3ff', fg: '#7c3aed', label: 'Tailored' },
-  Draft: { bg: '#fffbeb', fg: '#d97706', label: 'Draft' },
-  Other: { bg: '#f1f5f9', fg: '#64748b', label: 'Other' },
+  Verified: { bg: 'var(--success-bg)', fg: 'var(--success-strong)', label: 'Verified' },
+  Tailored: { bg: 'var(--purple-bg)', fg: '#7c3aed', label: 'Tailored' },
+  Draft: { bg: 'var(--warning-bg)', fg: 'var(--warning)', label: 'Draft' },
+  Other: { bg: 'var(--bg-inset)', fg: 'var(--text-muted)', label: 'Other' },
 };
 
 function filterAndSort(resumes, { search, status, band, sort }) {
@@ -147,12 +147,12 @@ function ScoreRing({ score, size, stroke }) {
   const s = scanned ? Math.max(0, Math.min(100, score)) : 0;
   const r = size / 2 - stroke * 2;
   const circ = 2 * Math.PI * r;
-  const color = scanned ? scoreColor(s) : '#cbd5e1';
+  const color = scanned ? scoreColor(s) : 'var(--border-strong)';
   const fs = size >= 72 ? 22 : size >= 48 ? 14 : 11;
   return (
     <span className="library-ring" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="library-ring-svg">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e5e7eb" strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--border-dark)" strokeWidth={stroke} />
         {scanned && (
           <circle
             cx={size / 2}
@@ -325,7 +325,7 @@ function ResumeRow({ resume, selected, onOpen, items }) {
         <span className="library-row-status"><StatusPill status={resume.status} /></span>
         <span className="library-row-ats">
           <ScoreRing score={sc} size={28} stroke={3} />
-          <span className="library-row-ats-num" style={{ color: sc === null ? '#94a3b8' : stale ? '#d97706' : scoreColor(sc) }}>
+          <span className="library-row-ats-num" style={{ color: sc === null ? 'var(--text-light)' : stale ? 'var(--warning)' : scoreColor(sc) }}>
             {sc === null ? 'Not scanned' : stale ? `${sc} · re-scan` : `${sc}/100`}
           </span>
         </span>
@@ -353,7 +353,7 @@ function ResumeDrawer({ resume, onClose, onOpenBuilder, onClone, onSetActive, on
     <button
       type="button"
       onClick={onScan}
-      style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: '#363ff5', textDecoration: 'underline', cursor: 'pointer' }}
+      style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'var(--primary-accent)', textDecoration: 'underline', cursor: 'pointer' }}
     >
       Re-scan
     </button>
@@ -391,8 +391,8 @@ function ResumeDrawer({ resume, onClose, onOpenBuilder, onClone, onSetActive, on
 
         <div className="library-drawer-body">
           {scanned ? (
-            <div className="library-drawer-band" style={{ borderLeftColor: stale ? '#d97706' : scoreColor(sc) }}>
-              <span className="library-drawer-band-score" style={{ color: stale ? '#d97706' : scoreColor(sc) }}>{sc}/100</span>
+            <div className="library-drawer-band" style={{ borderLeftColor: stale ? 'var(--warning)' : scoreColor(sc) }}>
+              <span className="library-drawer-band-score" style={{ color: stale ? 'var(--warning)' : scoreColor(sc) }}>{sc}/100</span>
               <span className="library-drawer-band-text">
                 {stale
                   ? <>Edited since the last scan — this score is out of date. {rescanBtn} to update.</>
@@ -400,14 +400,14 @@ function ResumeDrawer({ resume, onClose, onOpenBuilder, onClone, onSetActive, on
               </span>
             </div>
           ) : (
-            <div className="library-drawer-band" style={{ borderLeftColor: '#cbd5e1' }}>
-              <span className="library-drawer-band-score" style={{ color: '#94a3b8', fontSize: 20 }}>–</span>
+            <div className="library-drawer-band" style={{ borderLeftColor: 'var(--border-strong)' }}>
+              <span className="library-drawer-band-score" style={{ color: 'var(--text-light)', fontSize: 20 }}>–</span>
               <span className="library-drawer-band-text">
                 Not scanned yet.{' '}
                 <button
                   type="button"
                   onClick={onScan}
-                  style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: '#363ff5', textDecoration: 'underline', cursor: 'pointer' }}
+                  style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'var(--primary-accent)', textDecoration: 'underline', cursor: 'pointer' }}
                 >
                   Run an ATS scan
                 </button>
@@ -584,7 +584,7 @@ function LibraryToolbar({ search, onSearch, status, onStatus, band, onBand, sort
       <div className="library-chip-group" role="group" aria-label="Filter by status">
         {statusOpts.map((opt) => {
           const active = status === opt;
-          const color = opt === 'All' ? '#363ff5' : STATUS_PILL[opt].fg;
+          const color = opt === 'All' ? 'var(--primary-accent)' : STATUS_PILL[opt].fg;
           return (
             <button
               key={opt}
@@ -592,7 +592,7 @@ function LibraryToolbar({ search, onSearch, status, onStatus, band, onBand, sort
               className={`library-chip${active ? ' active' : ''}`}
               aria-pressed={active}
               onClick={() => onStatus(opt)}
-              style={active ? { background: color, borderColor: color, color: '#fff' } : undefined}
+              style={active ? { background: color, borderColor: color, color: 'var(--text-inverse)' } : undefined}
             >
               {opt}
             </button>
@@ -603,7 +603,7 @@ function LibraryToolbar({ search, onSearch, status, onStatus, band, onBand, sort
       <div className="library-chip-group" role="group" aria-label="Filter by ATS score">
         {bandOpts.map((opt) => {
           const active = band === opt;
-          const color = opt === '85+' ? '#10b981' : opt === '70-84' ? '#f59e0b' : opt === '<70' ? '#ef4444' : '#363ff5';
+          const color = opt === '85+' ? 'var(--success)' : opt === '70-84' ? 'var(--warning)' : opt === '<70' ? 'var(--danger)' : 'var(--primary-accent)';
           return (
             <button
               key={opt}
@@ -611,7 +611,7 @@ function LibraryToolbar({ search, onSearch, status, onStatus, band, onBand, sort
               className={`library-chip${active ? ' active' : ''}`}
               aria-pressed={active}
               onClick={() => onBand(opt)}
-              style={active ? { background: color, borderColor: color, color: '#fff' } : undefined}
+              style={active ? { background: color, borderColor: color, color: 'var(--text-inverse)' } : undefined}
             >
               {opt === 'All' ? 'All scores' : opt}
             </button>

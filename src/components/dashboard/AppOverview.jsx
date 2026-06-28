@@ -10,10 +10,10 @@ export default function AppOverview() {
   // Rejected: 6 (18.75%) -> Dash = 47.12, Offset = -204.20
   
   const segments = [
-    { name: 'In Progress', count: 14, percent: 44, color: '#3b82f6', dash: '109.95 251.32', offset: '0' },
+    { name: 'In Progress', count: 14, percent: 44, color: 'var(--info)', dash: '109.95 251.32', offset: '0' },
     { name: 'Interview', count: 8, percent: 25, color: '#4f46e5', dash: '62.83 251.32', offset: '-109.95' },
-    { name: 'Offer', count: 4, percent: 12, color: '#10b981', dash: '31.42 251.32', offset: '-172.78' },
-    { name: 'Rejected', count: 6, percent: 19, color: '#ef4444', dash: '47.12 251.32', offset: '-204.20' }
+    { name: 'Offer', count: 4, percent: 12, color: 'var(--success)', dash: '31.42 251.32', offset: '-172.78' },
+    { name: 'Rejected', count: 6, percent: 19, color: 'var(--danger)', dash: '47.12 251.32', offset: '-204.20' }
   ];
 
   return (
@@ -31,7 +31,7 @@ export default function AppOverview() {
         <div className="doughnut-visual">
           <svg className="doughnut-svg" viewBox="0 0 100 100">
             {/* Background ring */}
-            <circle cx="50" cy="50" r="40" fill="none" stroke="#f1f5f9" strokeWidth="10" />
+            <circle cx="50" cy="50" r="40" fill="none" stroke="var(--bg-inset)" strokeWidth="10" />
             
             {/* Slices */}
             {segments.map((seg, idx) => (

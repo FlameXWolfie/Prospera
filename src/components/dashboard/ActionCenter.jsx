@@ -14,7 +14,7 @@ function buildInsights(resumes, applications) {
         priority: 0,
         title: `Follow-up overdue: ${a.company || 'application'}`,
         desc: a.nextStep || 'Set the next step for this application.',
-        icon: AlertTriangle, color: '#f59e0b', bgColor: '#fffbeb', tab: 'applications',
+        icon: AlertTriangle, color: 'var(--warning)', bgColor: 'var(--warning-bg)', tab: 'applications',
       });
     }
   });
@@ -25,7 +25,7 @@ function buildInsights(resumes, applications) {
         priority: 1,
         title: `You have an offer from ${a.company || 'a company'}`,
         desc: `${a.role || 'Role'} — review the details and respond.`,
-        icon: CheckCircle2, color: '#10b981', bgColor: '#ecfdf5', tab: 'applications',
+        icon: CheckCircle2, color: 'var(--success)', bgColor: 'var(--success-bg)', tab: 'applications',
       });
     }
   });
@@ -36,7 +36,7 @@ function buildInsights(resumes, applications) {
         priority: 2,
         title: `Interview coming up at ${a.company || 'a company'}`,
         desc: `${a.role || 'Role'}${a.nextStepDate ? ` — ${dueLabel(a.nextStepDate)}` : ''}.`,
-        icon: Calendar, color: '#8b5cf6', bgColor: '#f5f3ff', tab: 'applications',
+        icon: Calendar, color: 'var(--purple-accent)', bgColor: 'var(--purple-bg)', tab: 'applications',
       });
     }
   });
@@ -48,7 +48,7 @@ function buildInsights(resumes, applications) {
         priority: 3,
         title: `ATS score below 80 on ${r.role}`,
         desc: `Currently ${sc}. Enhance it to lift the score past 80.`,
-        icon: TrendingUp, color: '#3b82f6', bgColor: '#eff6ff', tab: 'studio',
+        icon: TrendingUp, color: 'var(--info)', bgColor: 'var(--info-bg)', tab: 'studio',
       });
     }
   });
@@ -59,7 +59,7 @@ function buildInsights(resumes, applications) {
         priority: 3,
         title: `Re-scan ${r.role} — edited since last scan`,
         desc: 'Its ATS score is out of date. Run a quick scan to refresh it.',
-        icon: ScanLine, color: '#d97706', bgColor: '#fffbeb', tab: 'ats',
+        icon: ScanLine, color: 'var(--warning)', bgColor: 'var(--warning-bg)', tab: 'ats',
       });
     }
   });
@@ -71,7 +71,7 @@ function buildInsights(resumes, applications) {
       priority: 4,
       title: `Scan ${activeUnscanned.role} to get its ATS score`,
       desc: 'See how your active resume matches a target role.',
-      icon: ScanLine, color: '#6366f1', bgColor: '#eef2ff', tab: 'ats',
+      icon: ScanLine, color: '#6366f1', bgColor: 'var(--bg-inset)', tab: 'ats',
     });
   }
 

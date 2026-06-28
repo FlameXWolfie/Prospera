@@ -97,10 +97,10 @@ export function AtsVisual() {
 
 export function BoardVisual() {
   const cols = [
-    { label: 'Saved', color: '#64748b', cards: 2 },
-    { label: 'Applied', color: '#3b82f6', cards: 2 },
-    { label: 'Interview', color: '#8b5cf6', cards: 1 },
-    { label: 'Offer', color: '#10b981', cards: 1 },
+    { label: 'Saved', color: 'var(--text-muted)', cards: 2 },
+    { label: 'Applied', color: 'var(--info)', cards: 2 },
+    { label: 'Interview', color: 'var(--purple-accent)', cards: 1 },
+    { label: 'Offer', color: 'var(--success)', cards: 1 },
   ];
   return (
     <div className="fr-card fr-mock-board">

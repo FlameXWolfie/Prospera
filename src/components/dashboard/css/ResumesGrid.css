@@ -9,7 +9,7 @@
 }
 
 .resume-card-item {
-  background-color: #f8fafc;
+  background-color: var(--bg-main);
   border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 14px;
@@ -20,14 +20,14 @@
 }
 
 .resume-card-item:hover {
-  background-color: white;
+  background-color: var(--bg-card);
   border-color: var(--border-dark);
   box-shadow: var(--shadow-sm);
   transform: translateY(-2px);
 }
 
 .resume-preview-box {
-  background-color: white;
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   height: 90px;
@@ -48,14 +48,14 @@
   font-weight: 700;
   padding: 2px 6px;
   border-radius: 4px;
-  background-color: #ecfdf5;
-  color: #059669;
+  background-color: var(--success-bg);
+  color: var(--success-strong);
 }
 
 /* Skeleton preview lines */
 .skeleton-line {
   height: 4px;
-  background-color: #f1f5f9;
+  background-color: var(--bg-inset);
   border-radius: 2px;
   width: 100%;
 }

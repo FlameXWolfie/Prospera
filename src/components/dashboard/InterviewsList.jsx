@@ -36,7 +36,7 @@ export default function InterviewsList({ applications = [], onViewAll }) {
               <div key={item.id} className="interview-item">
                 <div className="interview-company-info">
                   <div className="company-logo-box">
-                    <span style={{ fontWeight: 700, fontSize: '12px', color: '#475569' }}>{initials(item.company)}</span>
+                    <span style={{ fontWeight: 700, fontSize: '12px', color: 'var(--text-muted)' }}>{initials(item.company)}</span>
                   </div>
                   <div className="interview-details">
                     <span className="company-name">{item.company || 'Company'}</span>
@@ -57,7 +57,7 @@ export default function InterviewsList({ applications = [], onViewAll }) {
 
                 <div
                   className={`interview-time-badge ${badgeClassFor(ds)}`}
-                  style={ds === 'overdue' ? { color: '#b91c1c', background: '#fef2f2' } : undefined}
+                  style={ds === 'overdue' ? { color: 'var(--danger-text)', background: 'var(--danger-bg)' } : undefined}
                 >
                   {dueLabel(item.nextStepDate)}
                 </div>

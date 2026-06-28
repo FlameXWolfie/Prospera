@@ -3,7 +3,7 @@
 .landing-header {
   position: sticky;
   top: 0;
-  background-color: rgba(255, 255, 255, 0.85);
+  background-color: var(--glass-bg);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-color);
   z-index: 1000;
@@ -35,7 +35,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--text-inverse);
   font-family: var(--font-heading);
   font-weight: 800;
   font-size: 20px;
@@ -106,7 +106,7 @@
 
 .btn-primary-nav {
   background-color: var(--primary-accent);
-  color: white;
+  color: var(--text-inverse);
   border: none;
   font-size: 14px;
   font-weight: 600;

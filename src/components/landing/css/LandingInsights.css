@@ -43,7 +43,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background-color: #e0e7ff;
+  background-color: var(--primary-light);
   color: var(--primary-accent);
   display: flex;
   align-items: center;

@@ -1,4 +1,5 @@
 import { ChevronDown } from 'lucide-react';
+import ThemeToggle from '../ThemeToggle';
 import './css/LandingHeader.css';
 
 export default function LandingHeader({ onEnterApp, onLogin }) {
@@ -32,6 +33,7 @@ export default function LandingHeader({ onEnterApp, onLogin }) {
         </nav>
 
         <div className="nav-actions">
+          <ThemeToggle />
           <button className="btn-secondary-nav" onClick={handleLogin}>Log In</button>
           <button className="btn-primary-nav" onClick={onEnterApp}>Get Started</button>
         </div>

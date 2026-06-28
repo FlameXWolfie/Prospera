@@ -1,40 +1,103 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* Color Palette */
+  color-scheme: light;
+  /* Brand */
   --primary: #3730a3; /* Rich Indigo */
   --primary-accent: #363ff5; /* Vibrant Cobalt Blue */
+  --primary-accent-hover: #252ed4;
   --primary-light: #e0e7ff;
-  --bg-main: #f8fafc; /* Very light cool grey */
-  --bg-card: #ffffff;
+  /* Surfaces */
+  --bg-main: #f8fafc; /* page background */
+  --bg-card: #ffffff; /* cards / panels */
+  --bg-elevated: #ffffff; /* modals / popovers / menus */
+  --bg-inset: #f1f5f9; /* inputs, wells, subtle fills */
+  /* Borders */
   --border-color: #f1f5f9;
   --border-dark: #e2e8f0;
+  --border-strong: #cbd5e1;
+  /* Text */
   --text-main: #0f172a; /* Slate 900 */
   --text-muted: #64748b; /* Slate 500 */
   --text-light: #94a3b8; /* Slate 400 */
-  
-  /* Accent States */
+  --text-inverse: #ffffff; /* text/icons ON a colored/accent fill — stays light in dark mode */
+
+  /* Accent States (token `*-strong` = the darker on-light text shade) */
   --success: #10b981;
+  --success-strong: #047857;
   --success-bg: #ecfdf5;
   --warning: #f59e0b;
+  --warning-strong: #92400e;
   --warning-bg: #fffbeb;
   --info: #3b82f6;
   --info-bg: #eff6ff;
   --danger: #ef4444;
+  --danger-text: #b91c1c;
+  --danger-border: #fecaca;
   --danger-bg: #fef2f2;
   --purple-accent: #8b5cf6;
   --purple-bg: #f5f3ff;
 
+  /* Misc surfaces */
+  --overlay: rgba(15, 23, 42, 0.5); /* modal backdrops */
+  --chip-bg: #f1f5f9; /* neutral chips/pills */
+  --hover-bg: #f1f5f9; /* row/button hover */
+  --glass-bg: rgba(255, 255, 255, 0.85); /* frosted sticky header */
+
   /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-heading: 'Outfit', var(--font-sans);
-  
+
   /* Shadows & Layout constants */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-card: 0 4px 20px -2px rgb(0 0 0 / 0.04), 0 2px 6px -1px rgb(0 0 0 / 0.02);
   --shadow-lg: 0 10px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.08);
   --sidebar-width: 270px;
   --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Dark theme. Applied via data-theme on <html> (set pre-paint by the inline
+   script in index.html, then owned by ThemeContext). Only overrides the tokens —
+   every surface that uses var(--…) flips automatically. The resume DOCUMENT stays
+   light: its templates + ResumePaper hardcode #fff/#111827, never these tokens. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --primary: #818cf8;
+  --primary-accent: #6d78ff;
+  --primary-accent-hover: #8b94ff;
+  --primary-light: #20284a;
+  --bg-main: #0b1120;
+  --bg-card: #141b2d;
+  --bg-elevated: #1b2335;
+  --bg-inset: #0f1626;
+  --border-color: #222c42;
+  --border-dark: #2c3650;
+  --border-strong: #3a4763;
+  --text-main: #e8edf7;
+  --text-muted: #9aa8c2;
+  --text-light: #6f7e9a;
+  --text-inverse: #ffffff;
+  --success: #34d399;
+  --success-strong: #6ee7b7;
+  --success-bg: rgba(16, 185, 129, 0.15);
+  --warning: #fbbf24;
+  --warning-strong: #fcd34d;
+  --warning-bg: rgba(245, 158, 11, 0.15);
+  --info: #60a5fa;
+  --info-bg: rgba(59, 130, 246, 0.16);
+  --danger: #f87171;
+  --danger-text: #fca5a5;
+  --danger-border: rgba(248, 113, 113, 0.4);
+  --danger-bg: rgba(239, 68, 68, 0.15);
+  --purple-accent: #a78bfa;
+  --purple-bg: rgba(139, 92, 246, 0.17);
+  --overlay: rgba(2, 6, 18, 0.66);
+  --chip-bg: #1e2740;
+  --hover-bg: rgba(255, 255, 255, 0.06);
+  --glass-bg: rgba(15, 22, 38, 0.85);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --shadow-card: 0 4px 20px -2px rgb(0 0 0 / 0.45), 0 2px 6px -1px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 25px -5px rgb(0 0 0 / 0.55), 0 8px 10px -6px rgb(0 0 0 / 0.5);
 }
 
 * {
@@ -50,6 +113,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 /* Scrollbars */
@@ -66,6 +130,36 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-light);
+}
+
+/* Theme toggle (sidebar + landing header) */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--border-dark);
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.theme-toggle:hover {
+  color: var(--primary-accent);
+  border-color: var(--primary-light);
+  background: var(--hover-bg);
+}
+.theme-toggle.with-label {
+  width: auto;
+  height: 38px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-heading);
 }
 
 /* App Container Layout */
@@ -100,7 +194,7 @@ body {
   gap: 14px;
   min-height: 60vh;
   text-align: center;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 14px;
 }
 .data-state p { margin: 0; max-width: 420px; }
@@ -115,9 +209,9 @@ body {
   margin-bottom: 16px;
   padding: 11px 14px;
   border-radius: 11px;
-  background: var(--danger-bg, #fef2f2);
-  border: 1px solid #fecaca;
-  color: #b91c1c;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: var(--danger-text);
   font-size: 13px;
 }
 .action-error span { flex: 1; }
@@ -127,7 +221,7 @@ body {
   justify-content: center;
   border: none;
   background: transparent;
-  color: #b91c1c;
+  color: var(--danger-text);
   cursor: pointer;
   padding: 2px;
   border-radius: 6px;
@@ -143,7 +237,7 @@ body {
   gap: 8px;
   padding: 28px 14px;
   text-align: center;
-  color: #64748b;
+  color: var(--text-muted);
 }
 .widget-empty p { margin: 0; font-size: 13.5px; line-height: 1.5; max-width: 280px; }
 
@@ -154,7 +248,7 @@ body {
   height: 150px;
   text-align: center;
 }
-.analytics-empty p { margin: 0; font-size: 13.5px; color: #94a3b8; max-width: 340px; line-height: 1.5; }
+.analytics-empty p { margin: 0; font-size: 13.5px; color: var(--text-light); max-width: 340px; line-height: 1.5; }
 
 /* Collapsible sidebar */
 .sidebar {
@@ -269,7 +363,7 @@ body {
 }
 
 .card-link:hover {
-  color: #252ed4;
+  color: var(--primary-accent-hover);
   text-decoration: underline;
 }
 

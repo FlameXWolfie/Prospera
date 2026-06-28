@@ -5,13 +5,16 @@ import { GoogleOAuthProvider } from '@react-oauth/google'
 import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './lib/auth/AuthContext'
+import { ThemeProvider } from './lib/theme/ThemeContext'
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
 
 const tree = (
-  <AuthProvider>
-    <App />
-  </AuthProvider>
+  <ThemeProvider>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  </ThemeProvider>
 )
 
 createRoot(document.getElementById('root')).render(

@@ -188,7 +188,7 @@ const FLOW = ['saved', 'applied', 'interviewing', 'offer']; // the forward pipel
 function StageStepper({ stage, onPick }) {
   const rejected = stage === 'rejected';
   const idx = FLOW.indexOf(stage);
-  const color = STAGE_BY_ID[stage]?.color || '#363ff5';
+  const color = STAGE_BY_ID[stage]?.color || 'var(--primary-accent)';
   return (
     <div className="at-stepper" role="group" aria-label="Pipeline stage">
       {FLOW.map((sid, i) => {
@@ -373,7 +373,7 @@ function ApplicationDrawer({ application, stage, resumes, onClose, onSave, onDel
             </select>
             {linkedResume && (realScan !== null ? (
               <span className="at-match" title="This resume's actual ATS scan result.">
-                <span className="at-score-dot" style={{ background: realStale ? '#d97706' : scoreColor(realScan) }} />
+                <span className="at-score-dot" style={{ background: realStale ? 'var(--warning)' : scoreColor(realScan) }} />
                 ATS {realScan}%{linkedResume.scanTarget ? ` vs ${linkedResume.scanTarget}` : ''}{realStale ? ' · edited since scan' : ''}
               </span>
             ) : match ? (
@@ -633,8 +633,8 @@ export default function ApplicationsPage({ applications, resumes, onSave, onMove
         <div className="at-toolbar">
           <div className="at-metrics">
             <span className="at-metric"><b>{stats.active}</b> active</span>
-            <span className="at-metric"><span className="at-metric-dot" style={{ background: '#8b5cf6' }} /><b>{stats.interviews}</b> interviewing</span>
-            <span className="at-metric"><span className="at-metric-dot" style={{ background: '#10b981' }} /><b>{stats.offers}</b> offer{stats.offers === 1 ? '' : 's'}</span>
+            <span className="at-metric"><span className="at-metric-dot" style={{ background: 'var(--purple-accent)' }} /><b>{stats.interviews}</b> interviewing</span>
+            <span className="at-metric"><span className="at-metric-dot" style={{ background: 'var(--success)' }} /><b>{stats.offers}</b> offer{stats.offers === 1 ? '' : 's'}</span>
             <span className="at-metric resp" style={{ color: stats.responseRate == null ? undefined : respColor }}>
               <b style={{ color: 'inherit' }}>{stats.responseRate == null ? '—' : `${stats.responseRate}%`}</b> response rate
             </span>

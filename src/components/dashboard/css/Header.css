@@ -65,8 +65,8 @@
   transform: translateY(-50%);
   font-size: 10px;
   font-weight: 600;
-  background-color: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  background-color: var(--bg-inset);
+  border: 1px solid var(--border-dark);
   padding: 2px 6px;
   border-radius: 4px;
   color: var(--text-muted);
@@ -95,8 +95,8 @@
   position: absolute;
   top: -3px;
   right: -3px;
-  background-color: #ef4444;
-  color: white;
+  background-color: var(--danger);
+  color: var(--text-inverse);
   font-size: 9px;
   font-weight: 700;
   width: 16px;
@@ -113,7 +113,7 @@
   align-items: center;
   gap: 8px;
   background-color: var(--primary-accent);
-  color: white;
+  color: var(--text-inverse);
   border: none;
   border-radius: 12px;
   padding: 10px 18px;
@@ -124,7 +124,7 @@
 }
 
 .new-resume-btn:hover {
-  background-color: #252ed4;
+  background-color: var(--primary-accent-hover);
   box-shadow: 0 4px 12px rgba(54, 63, 245, 0.2);
 }
 

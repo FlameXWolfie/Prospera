@@ -1,7 +1,7 @@
 /* 1. Boost Banner */
 .boost-banner-card {
   background: linear-gradient(135deg, #090e29 0%, #171d47 100%);
-  color: white;
+  color: var(--text-inverse);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -44,7 +44,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background-color: white;
+  background-color: var(--bg-card);
   color: var(--text-main);
   border: none;
   border-radius: 10px;
@@ -57,7 +57,7 @@
 }
 
 .boost-btn:hover {
-  background-color: #f1f5f9;
+  background-color: var(--bg-inset);
   transform: translateY(-1px);
 }
 
@@ -73,7 +73,7 @@
 }
 
 .boost-report-link:hover {
-  color: white;
+  color: var(--text-inverse);
   text-decoration: underline;
 }
 
@@ -124,7 +124,7 @@
   font-family: var(--font-heading);
   font-size: 22px;
   font-weight: 800;
-  color: white;
+  color: var(--text-inverse);
   line-height: 1;
 }
 

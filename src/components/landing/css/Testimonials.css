@@ -14,7 +14,7 @@
 }
 
 .testimonial-card-item {
-  background-color: white;
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 32px;
@@ -26,7 +26,7 @@
 }
 
 .testimonial-card-item:hover {
-  border-color: #cbd5e1;
+  border-color: var(--border-strong);
   transform: translateY(-2px);
 }
 
@@ -81,7 +81,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: #cbd5e1;
+  background-color: var(--border-strong);
   cursor: pointer;
   transition: var(--transition-smooth);
 }

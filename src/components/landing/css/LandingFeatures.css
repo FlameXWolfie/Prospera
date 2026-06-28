@@ -40,7 +40,7 @@
 }
 
 .feature-card {
-  background-color: white;
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 32px 24px;
@@ -54,7 +54,7 @@
 .feature-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04);
-  border-color: #cbd5e1;
+  border-color: var(--border-strong);
 }
 
 .feature-icon-box {
@@ -68,23 +68,23 @@
 }
 
 .icon-green {
-  background-color: #ecfdf5;
-  color: #10b981;
+  background-color: var(--success-bg);
+  color: var(--success);
 }
 
 .icon-blue {
-  background-color: #eff6ff;
-  color: #3b82f6;
+  background-color: var(--info-bg);
+  color: var(--info);
 }
 
 .icon-purple {
-  background-color: #f5f3ff;
-  color: #8b5cf6;
+  background-color: var(--purple-bg);
+  color: var(--purple-accent);
 }
 
 .icon-orange {
-  background-color: #fff7ed;
-  color: #f97316;
+  background-color: var(--warning-bg);
+  color: var(--warning);
 }
 
 .feature-title {
