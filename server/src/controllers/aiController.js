@@ -1,5 +1,13 @@
 import { mistralEnabled, mistralJSON, mistralOcr } from '../services/mistral.js';
 
+// Skills are polymorphic (strings OR { category, items[] }) — flatten to a plain
+// list for prompt text and matching.
+function flatSkills(skills) {
+  return (Array.isArray(skills) ? skills : []).flatMap((s) => (
+    typeof s === 'string' ? [s] : (s && Array.isArray(s.items) ? s.items : [])
+  )).filter(Boolean);
+}
+
 // Compact a resume object (or pass through a string) into prompt text.
 function resumeToText(resume) {
   if (typeof resume === 'string') return resume.slice(0, 8000);
@@ -21,7 +29,8 @@ function resumeToText(resume) {
     lines.push('\nEDUCATION');
     for (const ed of r.education.slice(0, 5)) lines.push(`${ed.degree || ''}${ed.school ? `, ${ed.school}` : ''}${ed.period ? ` (${ed.period})` : ''}`);
   }
-  if (Array.isArray(r.skills) && r.skills.length) lines.push(`\nSKILLS\n${r.skills.join(', ')}`);
+  const skillList = flatSkills(r.skills);
+  if (skillList.length) lines.push(`\nSKILLS\n${skillList.join(', ')}`);
   return lines.join('\n').slice(0, 8000);
 }
 
@@ -80,7 +89,7 @@ export const aiController = {
         : '';
 
       const system = 'You extract structured data from a resume. Respond with ONLY valid JSON. Never invent facts — use "" or [] when something is absent. Capture EVERY section of the resume, even unusual ones.';
-      const user = `RESUME TEXT:\n${docText.slice(0, 14000)}${linkHints ? `\n\nHYPERLINKS (anchor text → URL) extracted from the PDF. These are REAL links that are often hidden behind a word or icon, so they may NOT appear in the text above:\n${linkHints}` : ''}\n\nReturn JSON with this exact shape:\n{\n  "name": "", "role": "<current or target job title>", "target": "<seniority/target, optional>",\n  "email": "", "phone": "", "location": "", "link": "<portfolio/linkedin/github>",\n  "summary": "",\n  "experience": [{ "company": "", "role": "", "period": "", "bullets": ["..."] }],\n  "education": [{ "school": "", "degree": "", "period": "" }],\n  "projects": [{ "name": "", "link": "", "bullets": ["..."] }],\n  "skills": ["..."],\n  "sections": [{ "title": "", "entries": [{ "heading": "", "meta": "", "bullets": ["..."] }] }]\n}\n\nRULES:\n- Put EVERY section that is NOT name/contact/summary/experience/education/skills/projects into "sections", keeping its real heading as "title" (e.g. Achievements, Certifications, Awards, Publications, Leadership, Volunteering, Languages, Interests, Coursework).\n- For each section entry: "heading" = the item's bold lead-in (or "" for a plain list), "meta" = date / issuer / tech / sub-line, "bullets" = the detail lines.\n- Do not duplicate content between "sections" and the structured fields.\n- Use the HYPERLINKS list as the source of truth for URLs (LaTeX resumes hide them behind words/icons): put the LinkedIn/GitHub/portfolio link in "link", a project's repo/demo link in that project's "link", and any other link in the matching entry's "meta". Match by the anchor text. Never output a URL that is not in that list or the resume text.`;
+      const user = `RESUME TEXT:\n${docText.slice(0, 14000)}${linkHints ? `\n\nHYPERLINKS (anchor text → URL) extracted from the PDF. These are REAL links that are often hidden behind a word or icon, so they may NOT appear in the text above:\n${linkHints}` : ''}\n\nReturn JSON with this exact shape:\n{\n  "name": "", "role": "<current or target job title>", "target": "<seniority/target, optional>",\n  "email": "", "phone": "", "location": "", "link": "<portfolio/linkedin/github>",\n  "summary": "",\n  "experience": [{ "company": "", "role": "", "period": "", "bullets": ["..."] }],\n  "education": [{ "school": "", "degree": "", "period": "" }],\n  "projects": [{ "name": "", "link": "", "bullets": ["..."] }],\n  "skills": ["a flat skill", { "category": "e.g. Languages", "items": ["..."] }],\n  "sections": [{ "title": "", "entries": [{ "heading": "", "meta": "", "bullets": ["..."] }] }]\n}\n\nRULES:\n- Put EVERY section that is NOT name/contact/summary/experience/skills/projects into "sections", keeping its real heading as "title" (e.g. Achievements, Certifications, Awards, Publications, Leadership, Volunteering, Coursework).\n- For each section entry: "heading" = the item's bold lead-in (or "" for a plain list), "meta" = date / issuer / tech / sub-line, "bullets" = the detail lines.\n- SKILLS: put ALL technical/professional skills in "skills". If the resume groups them under sub-labels (e.g. Languages, Frameworks, Databases, Tools), emit each group as { "category", "items": [...] }; otherwise a flat list of strings is fine. NEVER also create a "Skills"/"Technical Skills" entry in "sections" — that duplicates them.\n- Do not duplicate content between "sections" and the structured fields.\n- Use the HYPERLINKS list as the source of truth for URLs (LaTeX resumes hide them behind words/icons): put the LinkedIn/GitHub/portfolio link in "link", a project's repo/demo link in that project's "link", and any other link in the matching entry's "meta". Match by the anchor text. Never output a URL that is not in that list or the resume text.`;
       const result = await mistralJSON(
         [{ role: 'system', content: system }, { role: 'user', content: user }],
         { temperature: 0.1, maxTokens: 3000 },

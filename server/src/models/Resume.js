@@ -48,7 +48,11 @@ const resumeSchema = new mongoose.Schema({
   // Dynamic, arbitrary sections (so any resume layout is preserved, not just the
   // hardcoded ones).
   sections: { type: [sectionSchema], default: [] },
-  skills: { type: [String], default: [] },
+  // Polymorphic: each item is a plain string (loose skill) OR a group
+  // { category, items: [String] } (e.g. Languages: [C++, Python]). The sanitizer
+  // in utils/featureInput.js is the SOLE structural guard (Mixed disables schema
+  // type enforcement) — it coerces every item, never trusting client objects.
+  skills: { type: [mongoose.Schema.Types.Mixed], default: [] },
   isActive: { type: Boolean, default: false },
   // Presentation: which preview template + accent colour the resume renders with.
   template: { type: String, default: 'modern', maxlength: 40 },
@@ -105,7 +109,10 @@ resumeSchema.methods.toClientJSON = function toClientJSON() {
       title: s.title,
       entries: s.entries.map((e) => ({ heading: e.heading, meta: e.meta, bullets: e.bullets })),
     })),
-    skills: this.skills,
+    // Re-shape to clean primitives (Mixed can hold Mongoose internals).
+    skills: (this.skills || []).map((s) => (typeof s === 'string'
+      ? s
+      : { category: (s && s.category) || '', items: (Array.isArray(s && s.items) ? s.items : []).filter((i) => typeof i === 'string') })),
     isActive: this.isActive,
     template: this.template,
     accent: this.accent,

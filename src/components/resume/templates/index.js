@@ -7,6 +7,7 @@ import ClassicTemplate from './ClassicTemplate';
 import SidebarTemplate from './SidebarTemplate';
 import CompactTemplate from './CompactTemplate';
 import TimelineTemplate from './TimelineTemplate';
+import { normalizeSkillsForRender } from '../../../lib/resume/skills';
 
 export const TEMPLATE_COMPONENTS = {
   modern: ModernTemplate,
@@ -27,6 +28,10 @@ const arr = (v) => (Array.isArray(v) ? v : []);
 // One normalized shape for every template: safe strings + arrays, blank bullets
 // dropped. Identity placeholders are left to the template (e.g. "Your Name").
 export function normalizeResume(r = {}) {
+  // Skills are polymorphic: `skills` is the flat list (flat fallback render +
+  // matched highlight + counts); `skillGroups` is non-null only when a real
+  // category exists, in which case templates render the grouped layout.
+  const sk = normalizeSkillsForRender(r.skills);
   return {
     name: str(r.name),
     role: str(r.role),
@@ -53,7 +58,8 @@ export function normalizeResume(r = {}) {
       link: str(p?.link),
       bullets: arr(p?.bullets).map(str).filter(Boolean),
     })).filter((p) => p.name || p.bullets.length),
-    skills: arr(r.skills).map(str).filter(Boolean),
+    skills: sk.flat,
+    skillGroups: sk.grouped ? sk.groups : null,
     // Dynamic custom sections (Achievements, Certifications, …) rendered generically.
     sections: arr(r.sections).map((s) => ({
       title: str(s?.title),

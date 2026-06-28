@@ -1,5 +1,6 @@
 import { Mail, Phone, MapPin, Globe } from 'lucide-react';
 import CustomSections from './CustomSections';
+import SkillGroups from './SkillsSection';
 import './css/CompactTemplate.css';
 
 // Compact — full-width accent header, then a dense two-column body (skills +
@@ -47,7 +48,12 @@ export default function CompactTemplate({ data, accent, matched }) {
               </section>
             )}
 
-            {data.skills.length > 0 && (
+            {data.skillGroups ? (
+              <section className="tplk-sec">
+                <h2 className="tplk-h">Skills</h2>
+                <SkillGroups groups={data.skillGroups} chipClass="tplk-skill" matched={m} />
+              </section>
+            ) : data.skills.length > 0 && (
               <section className="tplk-sec">
                 <h2 className="tplk-h">Skills</h2>
                 <div className="tplk-skills">

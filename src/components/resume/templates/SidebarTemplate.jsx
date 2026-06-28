@@ -1,5 +1,6 @@
 import { Mail, Phone, MapPin, Globe } from 'lucide-react';
 import CustomSections from './CustomSections';
+import SkillGroups from './SkillsSection';
 import './css/SidebarTemplate.css';
 
 // Sidebar — two-column A4: a solid accent left rail (name, contact, skills,
@@ -43,7 +44,12 @@ export default function SidebarTemplate({ data, accent, matched }) {
           </section>
         )}
 
-        {data.skills.length > 0 && (
+        {data.skillGroups ? (
+          <section className="tpls-rail-sec">
+            <h2 className="tpls-rail-h">Skills</h2>
+            <SkillGroups groups={data.skillGroups} chipClass="tpls-skill" matched={m} />
+          </section>
+        ) : data.skills.length > 0 && (
           <section className="tpls-rail-sec">
             <h2 className="tpls-rail-h">Skills</h2>
             <div className="tpls-skills">

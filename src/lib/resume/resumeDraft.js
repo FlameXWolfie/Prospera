@@ -6,6 +6,7 @@
 // so react-compiler stays happy.
 
 import { scanRole, profileForResume } from './atsKeywords';
+import { flattenSkills, toSkillGroups, fromSkillGroups } from './skills';
 import { DEFAULT_TEMPLATE, DEFAULT_ACCENT } from './resumeTemplates';
 import { SAMPLE_RESUME } from './resumeSample';
 
@@ -139,7 +140,7 @@ export function computeReadiness(draft, scan) {
   const quantified = bullets.filter((b) => /\d/.test(b)).length;
   const expPts = (roles.length ? 10 : 0) + (bullets.length ? (quantified / bullets.length) : 0) * 15; // 25
   const eduPts = (draft.education || []).length ? 10 : 0;                                 // 10
-  const skillsPts = Math.min((draft.skills || []).length / 8, 1) * 15;                    // 15
+  const skillsPts = Math.min(flattenSkills(draft.skills).length / 8, 1) * 15;             // 15
   const keywordPts = ((scan && scan.score) || 0) / 100 * 20;                              // 20
   return Math.round(headingPts + summaryPts + expPts + eduPts + skillsPts + keywordPts);
 }
@@ -153,7 +154,7 @@ export function deriveSectionStatus(draft, scan) {
   const quantified = bullets.filter((b) => /\d/.test(b)).length;
   const eduCount = (draft.education || []).length;
   const projCount = (draft.projects || []).length;
-  const skillCount = (draft.skills || []).length;
+  const skillCount = flattenSkills(draft.skills).length;
   const covered = scan ? scan.matched.length : 0;
   const target = scan ? scan.detected.length : 0;
 
@@ -210,15 +211,10 @@ export function resumeContentFromDraft(draft) {
     .filter((p) => hasText(p.name))
     .map((p) => ({ name: trimmed(p.name), link: trimmed(p.link), bullets: (p.bullets || []).map(trimmed).filter(Boolean) }));
 
-  const seen = new Set();
-  const skills = (draft.skills || [])
-    .map(trimmed)
-    .filter((s) => {
-      const k = s.toLowerCase();
-      if (!s || seen.has(k)) return false;
-      seen.add(k);
-      return true;
-    });
+  // Skills are polymorphic (loose strings + { category, items } groups). Normalise
+  // to canonical groups then back to the wire shape — fromSkillGroups dedupes and
+  // collapses to a flat array when no category exists (so flat resumes stay flat).
+  const skills = fromSkillGroups(toSkillGroups(draft.skills));
 
   const sections = (draft.sections || []).map((s) => ({
     title: trimmed(s.title),

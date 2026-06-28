@@ -1,4 +1,5 @@
 import CustomSections from './CustomSections';
+import SkillGroups from './SkillsSection';
 import './css/ClassicTemplate.css';
 
 // Classic — traditional, formal, ATS-safe. Centered serif header, single column,
@@ -96,7 +97,12 @@ export default function ClassicTemplate({ data, accent, matched }) {
         </section>
       )}
 
-      {data.skills.length > 0 && (
+      {data.skillGroups ? (
+        <section className="tplc-sec">
+          <h2 className="tplc-h">Skills</h2>
+          <SkillGroups groups={data.skillGroups} chipClass="tplc-skill" matched={m} />
+        </section>
+      ) : data.skills.length > 0 && (
         <section className="tplc-sec">
           <h2 className="tplc-h">Skills</h2>
           <p className="tplc-skills">

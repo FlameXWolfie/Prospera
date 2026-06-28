@@ -4,6 +4,7 @@
 // curated skill vocabulary, then those detected terms are checked against the
 // selected resume. The "match" is an honest keyword-overlap heuristic, not a
 // black-box score — the UI labels it as such.
+import { flattenSkills } from './skills';
 
 // Union of every skill used across the seed resumes plus common ATS terms,
 // grouped only for readability. Multi-word and punctuated terms are matched
@@ -47,7 +48,7 @@ function mentions(text, term) {
 // Flatten a resume into one lowercase searchable string.
 function resumeCorpus(resume) {
   if (!resume) return '';
-  const parts = [resume.role, resume.target, resume.summary, ...(resume.skills || [])];
+  const parts = [resume.role, resume.target, resume.summary, ...flattenSkills(resume.skills)];
   for (const exp of resume.experience || []) {
     parts.push(exp.role, exp.company, ...(exp.bullets || []));
   }

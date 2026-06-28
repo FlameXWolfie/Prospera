@@ -32,12 +32,35 @@ const asDateOrNull = (v) => {
 const asStringArray = (v, maxItems, maxLen) =>
   (Array.isArray(v) ? v : [])
     .filter((s) => typeof s === 'string')
-    .map((s) => s.trim())
+    .map((s) => s.trim().slice(0, maxLen)) // cap EACH item, not just the count
     .filter(Boolean)
     .slice(0, maxItems);
 
 const arrayOf = (v, maxItems, mapper) =>
   (Array.isArray(v) ? v : []).slice(0, maxItems).map(mapper);
+
+// Skills are polymorphic: a plain string OR a group { category, items:[String] }.
+// Mongoose `Mixed` disables type enforcement, so THIS is the only structural guard
+// against NoSQL-operator / arbitrary-object injection — every item is coerced to
+// one of those two shapes, never passed through. An uncategorised group collapses
+// to bare strings; empty groups are dropped. Output is capped.
+const asSkills = (v) => {
+  const out = [];
+  for (const item of (Array.isArray(v) ? v : []).slice(0, 200)) {
+    if (out.length >= 200) break;
+    if (typeof item === 'string') {
+      const t = item.trim().slice(0, 80);
+      if (t) out.push(t);
+    } else if (item && typeof item === 'object' && !Array.isArray(item)) {
+      const category = asString(item.category, 64);
+      const items = asStringArray(item.items, 100, 80);
+      if (!items.length) continue;
+      if (category) out.push({ category, items });
+      else for (const it of items) out.push(it);
+    }
+  }
+  return out;
+};
 
 export const APPLICATION_STAGES = ['saved', 'applied', 'interviewing', 'offer', 'rejected'];
 
@@ -87,7 +110,7 @@ const RESUME_SANITISERS = {
       bullets: asStringArray(e?.bullets, 50, 500),
     })),
   })),
-  skills: (v) => asStringArray(v, 100, 80),
+  skills: asSkills,
   isActive: asBool,
   template: (v) => asString(v, 40) || 'modern',
   accent: (v) => (typeof v === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(v.trim()) ? v.trim() : '#4f46e5'),

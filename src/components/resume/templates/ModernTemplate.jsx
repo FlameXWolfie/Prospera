@@ -1,5 +1,6 @@
 import { Mail, Phone, MapPin, Globe } from 'lucide-react';
 import CustomSections from './CustomSections';
+import SkillGroups from './SkillsSection';
 import './css/ModernTemplate.css';
 
 // Modern — left-aligned accent header, clean sans, single column. Authored at
@@ -95,7 +96,12 @@ export default function ModernTemplate({ data, accent, matched }) {
         </section>
       )}
 
-      {data.skills.length > 0 && (
+      {data.skillGroups ? (
+        <section className="tplm-sec">
+          <h2 className="tplm-h">Skills</h2>
+          <SkillGroups groups={data.skillGroups} chipClass="tplm-skill" matched={m} />
+        </section>
+      ) : data.skills.length > 0 && (
         <section className="tplm-sec">
           <h2 className="tplm-h">Skills</h2>
           <div className="tplm-skills">

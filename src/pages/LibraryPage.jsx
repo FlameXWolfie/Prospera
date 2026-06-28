@@ -5,6 +5,7 @@ import {
   Library, Sparkles
 } from 'lucide-react';
 import { scoreColor, scoreBand, scanScore, isScanStale } from '../lib/resume/scoreColor';
+import { flattenSkills } from '../lib/resume/skills';
 import FirstRun, { LibraryVisual } from '../components/dashboard/FirstRun';
 import './css/LibraryPage.css';
 
@@ -67,7 +68,7 @@ function filterAndSort(resumes, { search, status, band, sort }) {
   const q = search.trim().toLowerCase();
   const out = resumes.filter((r) => {
     if (q) {
-      const hay = [r.label, r.role, r.target, ...(r.skills || [])].join(' ').toLowerCase();
+      const hay = [r.label, r.role, r.target, ...flattenSkills(r.skills)].join(' ').toLowerCase();
       if (!hay.includes(q)) return false;
     }
     if (status !== 'All' && normalizeStatus(r.status) !== status) return false;
@@ -255,7 +256,7 @@ function ResumeCard({ resume, selected, onOpen, items }) {
   const cat = getCat(resume.role);
   const meta = CAT_META[cat];
   const Icon = meta.Icon;
-  const skills = resume.skills || [];
+  const skills = flattenSkills(resume.skills);
   const ns = normalizeStatus(resume.status);
   const sc = scanScore(resume);
   return (
@@ -341,7 +342,7 @@ function ResumeRow({ resume, selected, onOpen, items }) {
 
 function ResumeDrawer({ resume, onClose, onOpenBuilder, onClone, onSetActive, onDelete, onScan }) {
   const ref = useFocusTrap(onClose);
-  const skills = resume.skills || [];
+  const skills = flattenSkills(resume.skills);
   const exp = resume.experience || [];
   const sc = scanScore(resume);
   const scanned = sc !== null;

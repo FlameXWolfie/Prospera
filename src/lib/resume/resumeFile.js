@@ -5,6 +5,7 @@
 // pdf.js text extraction on-device + the regex heuristic. Either way the caller
 // gets the same `{ name, role, email, phone, ..., experience[], education[], skills[] }`.
 import { parseResumeText } from './resumeParse';
+import { foldSkillSectionsIntoSkills } from './skills';
 import { aiParseResume } from '../ai';
 
 // Read a File as raw base64 (no `data:` prefix) for the server OCR call.
@@ -155,11 +156,14 @@ export async function importResumeFields(file, { aiEnabled } = {}) {
     try {
       const fileBase64 = await fileToBase64(file);
       const { result } = await aiParseResume({ fileBase64, mimeType: file.type || '', fileName: file.name, links });
-      if (looksParsed(result)) return applyPdfLinks(result, links);
+      // Fold any duplicate "skills" section back into the skills field, then attach
+      // recovered hyperlinks. Both run on the AI AND the heuristic result, so a
+      // grouped TECHNICAL SKILLS block never renders twice no matter the path.
+      if (looksParsed(result)) return applyPdfLinks(foldSkillSectionsIntoSkills(result), links);
     } catch { /* fall back to on-device extraction */ }
   }
   const text = await extractFileText(file);
-  return applyPdfLinks(parseResumeText(text), links);
+  return applyPdfLinks(foldSkillSectionsIntoSkills(parseResumeText(text)), links);
 }
 
 // Pasted text → structured fields (Mistral parse when enabled, else heuristic).
@@ -168,8 +172,8 @@ export async function parseResumeSmart(text, { aiEnabled } = {}) {
   if (aiEnabled && t.trim().length > 40) {
     try {
       const { result } = await aiParseResume({ text: t });
-      if (looksParsed(result)) return result;
+      if (looksParsed(result)) return foldSkillSectionsIntoSkills(result);
     } catch { /* fall back */ }
   }
-  return parseResumeText(t);
+  return foldSkillSectionsIntoSkills(parseResumeText(t));
 }

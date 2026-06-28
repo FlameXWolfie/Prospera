@@ -4,6 +4,7 @@ import {
   CheckCircle2, AlertCircle, ChevronRight, Lightbulb, RefreshCw, Download, Sparkles,
 } from 'lucide-react';
 import { scanResume, scanRoleProfile, ROLE_PROFILES, profileForResume } from '../lib/resume/atsKeywords';
+import { flattenSkills } from '../lib/resume/skills';
 import { resumeFromParsed } from '../lib/resume/resumeUpload';
 import { importResumeFields, readSourceFile } from '../lib/resume/resumeFile';
 import { cachePdfDataUri } from '../lib/resume/pdfCache';
@@ -18,7 +19,7 @@ const ANALYZE_COUNT = 5;
 /* ── helpers ──────────────────────────────────────────────────────────────── */
 
 function subScores(resume, result) {
-  const skills = resume.skills || [];
+  const skills = flattenSkills(resume.skills);
   const exp = resume.experience || [];
   const bullets = exp.flatMap((e) => e.bullets || []);
   const quantified = bullets.filter((b) => /\d/.test(b)).length;
@@ -32,7 +33,7 @@ function subScores(resume, result) {
 
 // The issue list: each check maps to a resume section it highlights.
 function buildChecks(resume, result, subs) {
-  const skills = resume.skills || [];
+  const skills = flattenSkills(resume.skills);
   const exp = resume.experience || [];
   const bullets = exp.flatMap((e) => e.bullets || []);
   const quantified = bullets.filter((b) => /\d/.test(b)).length;
@@ -249,9 +250,10 @@ export default function AtsScanPage({ resumes, onNewResumeClick, onUpload, onEnh
       if (source.fileData) cachePdfDataUri(saved.id, `data:${source.fileType};base64,${source.fileData}`);
       setSelectedId(saved.id);
       setRoleId(profileForResume(saved).id);
+      const savedSkillCount = flattenSkills(saved.skills).length;
       setUploadNote(
-        saved.skills.length
-          ? `Added “${saved.role}” — pulled ${saved.skills.length} skill${saved.skills.length === 1 ? '' : 's'} from your file.`
+        savedSkillCount
+          ? `Added “${saved.role}” — pulled ${savedSkillCount} skill${savedSkillCount === 1 ? '' : 's'} from your file.`
           : `Added “${saved.role}”. Add the details in the builder.`,
       );
       // An uploaded resume is obviously the one to scan — skip re-picking and jump
@@ -484,7 +486,7 @@ export default function AtsScanPage({ resumes, onNewResumeClick, onUpload, onEnh
                   <div className="ats-choice-main">
                     <span className="ats-choice-title">{r.role}{r.isActive ? ' · Active' : ''}</span>
                     <span className="ats-choice-meta">
-                      {(r.skills || []).length} skill{(r.skills || []).length === 1 ? '' : 's'}
+                      {flattenSkills(r.skills).length} skill{flattenSkills(r.skills).length === 1 ? '' : 's'}
                       {(r.experience || []).length ? ` · ${r.experience.length} role${r.experience.length === 1 ? '' : 's'}` : ''}
                       {r.hasFile ? ' · PDF' : ''}
                     </span>

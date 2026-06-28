@@ -1,5 +1,6 @@
 import { Mail, Phone, MapPin, Globe } from 'lucide-react';
 import CustomSections from './CustomSections';
+import SkillGroups from './SkillsSection';
 import './css/TimelineTemplate.css';
 
 // Timeline — single column with a left-aligned accent header and an Experience
@@ -105,7 +106,12 @@ export default function TimelineTemplate({ data, accent, matched }) {
         </section>
       )}
 
-      {data.skills.length > 0 && (
+      {data.skillGroups ? (
+        <section className="tplt-sec">
+          <h2 className="tplt-h">Skills</h2>
+          <SkillGroups groups={data.skillGroups} chipClass="tplt-skill" matched={m} />
+        </section>
+      ) : data.skills.length > 0 && (
         <section className="tplt-sec">
           <h2 className="tplt-h">Skills</h2>
           <div className="tplt-skills">

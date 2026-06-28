@@ -1,4 +1,5 @@
 import CustomSections from './CustomSections';
+import SkillGroups from './SkillsSection';
 import './css/MinimalTemplate.css';
 
 // Minimal — editorial and spare: centered serif name, single column, hairline
@@ -97,7 +98,12 @@ export default function MinimalTemplate({ data, accent, matched }) {
         </section>
       )}
 
-      {data.skills.length > 0 && (
+      {data.skillGroups ? (
+        <section className="tplmin-sec">
+          <h2 className="tplmin-h">Skills</h2>
+          <SkillGroups groups={data.skillGroups} chipClass="tplmin-skill" matched={m} />
+        </section>
+      ) : data.skills.length > 0 && (
         <section className="tplmin-sec">
           <h2 className="tplmin-h">Skills</h2>
           <div className="tplmin-skills">

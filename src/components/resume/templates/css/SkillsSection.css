@@ -1,0 +1,27 @@
+/* Grouped-skills layout shared by every template (see SkillsSection.jsx). The
+   chips inside .rskill-items inherit each template's own .tplX-skill style; these
+   rules only handle the category label + the row/wrap layout, so no per-template
+   CSS is needed. */
+.rskill-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.rskill-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 7px;
+}
+.rskill-cat {
+  font-weight: 700;
+  font-size: 0.9em;
+  opacity: 0.82;
+  white-space: nowrap;
+}
+.rskill-items {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 7px;
+  flex: 1;
+}

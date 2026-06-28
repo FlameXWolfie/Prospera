@@ -6,6 +6,7 @@ import {
   Upload, FilePlus, FileText, LayoutGrid, LayoutList, Download, Loader2,
 } from 'lucide-react';
 import { scanRoleProfile, ROLE_PROFILES } from '../lib/resume/atsKeywords';
+import { toSkillGroups, flattenSkills } from '../lib/resume/skills';
 import {
   computeReadiness, deriveSectionStatus, draftToResume, emptyDraft,
   sampleDraft, blankDraft, draftFromParsed, draftFromResume, newEntryId,
@@ -214,7 +215,7 @@ function SaveDialog({ draft, onCancel, onSave }) {
 
 export default function BuildResumePage({ draft, onChange, onSaveResume, onNavigate, resumes = [] }) {
   const [activeSection, setActiveSection] = useState('personal');
-  const [skillInput, setSkillInput] = useState('');
+  const [skillInputs, setSkillInputs] = useState({}); // per-group "add skill" input
   const [dragIndex, setDragIndex] = useState(null);
   const [dropIndex, setDropIndex] = useState(null);
   const [savedMsg, setSavedMsg] = useState(null);
@@ -245,6 +246,9 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
   const profile = useMemo(() => ROLE_PROFILES.find((p) => p.id === draft.roleId) || ROLE_PROFILES[0], [draft.roleId]);
   const scan = useMemo(() => scanRoleProfile(profile, draft), [profile, draft]);
   const matchedSet = useMemo(() => new Set(scan.matched.map((m) => m.toLowerCase())), [scan]);
+  // Skills are polymorphic — edit them as canonical groups (loose skills live in a
+  // leading category:'' group); tolerant of a flat array or an old persisted draft.
+  const skillGroups = useMemo(() => toSkillGroups(draft.skills), [draft.skills]);
   const readiness = useMemo(() => computeReadiness(draft, scan), [draft, scan]);
   const sectionStatus = useMemo(() => deriveSectionStatus(draft, scan), [draft, scan]);
 
@@ -281,12 +285,47 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
   const setProjBullet = (i, bi, v) => onChange((d) => ({ ...d, projects: d.projects.map((p, idx) => (idx === i ? { ...p, bullets: p.bullets.map((b, j) => (j === bi ? v : b)) } : p)) }));
   const removeProjBullet = (i, bi) => onChange((d) => ({ ...d, projects: d.projects.map((p, idx) => (idx === i ? { ...p, bullets: p.bullets.filter((_, j) => j !== bi) } : p)) }));
 
+  // ── categorized skills (loose skills live in a category:'' group) ──
+  // Every mutation normalises draft.skills → canonical groups first, so it works
+  // whether the draft is still flat (new/legacy) or already grouped.
+  const mutateSkills = (fn) => { onChange((d) => ({ ...d, skills: fn(toSkillGroups(d.skills)) })); setSavedMsg(null); };
+  const skillExists = (groups, s) => flattenSkills(groups).some((x) => x.toLowerCase() === s.toLowerCase());
+  const setSkillInput = (gi, v) => setSkillInputs((m) => ({ ...m, [gi]: v }));
+  const addSkillToGroup = (gi, raw) => {
+    const s = (raw || '').trim();
+    if (!s) return;
+    mutateSkills((groups) => {
+      if (!groups[gi] || skillExists(groups, s)) return groups;
+      return groups.map((g, i) => (i === gi ? { ...g, items: [...g.items, s] } : g));
+    });
+  };
+  // Add to the (first) uncategorized group, creating it if absent — used by the
+  // role suggestions + AI "skills to add".
   const addSkill = (raw) => {
     const s = (raw || '').trim();
     if (!s) return;
-    onChange((d) => ((d.skills || []).some((x) => x.toLowerCase() === s.toLowerCase()) ? d : { ...d, skills: [...(d.skills || []), s] }));
-    setSavedMsg(null);
+    mutateSkills((groups) => {
+      if (skillExists(groups, s)) return groups;
+      const g = [...groups];
+      let li = g.findIndex((x) => !x.category);
+      if (li < 0) { g.unshift({ category: '', items: [] }); li = 0; }
+      g[li] = { ...g[li], items: [...g[li].items, s] };
+      return g;
+    });
   };
+  const removeSkillFromGroup = (gi, skill) => mutateSkills((groups) => groups
+    .map((g, i) => (i === gi ? { ...g, items: g.items.filter((x) => x !== skill) } : g))
+    .filter((g) => g.category || g.items.length)); // drop an emptied uncategorized group
+  const setGroupCategory = (gi, v) => mutateSkills((groups) => groups.map((g, i) => (i === gi ? { ...g, category: v } : g)));
+  const addSkillGroup = (category = '') => mutateSkills((groups) => [...groups, { category, items: [] }]);
+  const removeSkillGroup = (gi) => mutateSkills((groups) => groups.filter((_, i) => i !== gi));
+  const moveSkillGroup = (gi, dir) => mutateSkills((groups) => {
+    const j = gi + dir;
+    if (j < 0 || j >= groups.length) return groups;
+    const g = [...groups];
+    [g[gi], g[j]] = [g[j], g[gi]];
+    return g;
+  });
 
   // ── dynamic custom sections (Achievements, Certifications, …) ──
   const mapSections = (d, fn) => ({ ...d, sections: (d.sections || []).map(fn) });
@@ -306,7 +345,6 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
   const addSectionBullet = (si, ei) => onChange((d) => mapSections(d, (s, i) => (i === si ? { ...s, entries: (s.entries || []).map((e, j) => (j === ei ? { ...e, bullets: [...(e.bullets || []), ''] } : e)) } : s)));
   const setSectionBullet = (si, ei, bi, v) => onChange((d) => mapSections(d, (s, i) => (i === si ? { ...s, entries: (s.entries || []).map((e, j) => (j === ei ? { ...e, bullets: (e.bullets || []).map((b, k) => (k === bi ? v : b)) } : e)) } : s)));
   const removeSectionBullet = (si, ei, bi) => onChange((d) => mapSections(d, (s, i) => (i === si ? { ...s, entries: (s.entries || []).map((e, j) => (j === ei ? { ...e, bullets: (e.bullets || []).filter((_, k) => k !== bi) } : e)) } : s)));
-  const removeSkill = (skill) => onChange((d) => ({ ...d, skills: (d.skills || []).filter((x) => x !== skill) }));
 
   // ── drag-to-reorder roles (native HTML5; grip-only) ──
   const commitReorder = (e) => {
@@ -345,7 +383,7 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
 
   // ── resume picker: edit a saved resume in place, or start a new one ──
   const draftHasContent = (d) => Boolean(d && (
-    (d.name || '').trim() || (d.summary || '').trim() || (d.skills || []).length ||
+    (d.name || '').trim() || (d.summary || '').trim() || flattenSkills(d.skills).length ||
     (d.experience || []).some((e) => (e.company || '').trim() || (e.role || '').trim() || (e.bullets || []).some((b) => (b || '').trim()))
   ));
   // Only a NEW draft with content is at risk on switch (existing resumes autosave).
@@ -434,7 +472,6 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
     }
   };
 
-  const skills = draft.skills || [];
   const summaryLen = (draft.summary || '').trim().length;
   const inGallery = !draft.template || browsing;
 
@@ -649,19 +686,40 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
 
             {activeSection === 'skills' && (
               <>
-                <span className="en-subhead">Your skills ({skills.length}) — tap × to remove</span>
-                <div className="en-chips">
-                  {skills.map((s) => (
-                    <span key={s} className={`en-chip-edit${matchedSet.has(s.toLowerCase()) ? ' hit' : ''}`}>
-                      {s}<button type="button" className="en-chip-x" aria-label={`Remove ${s}`} onClick={() => removeSkill(s)}><X size={12} strokeWidth={3} /></button>
-                    </span>
-                  ))}
-                  {skills.length === 0 && <span className="en-count">No skills yet — add from the suggestions below or type your own.</span>}
-                </div>
-                <AddInline value={skillInput} onChange={setSkillInput} onAdd={(v) => { addSkill(v); setSkillInput(''); }} placeholder="Add a skill (e.g. Terraform)" />
+                <span className="en-subhead">Group skills under a category (Languages, Frameworks…) or leave them uncategorized — either renders cleanly.</span>
+                {skillGroups.length === 0 && (
+                  <span className="en-count">No skills yet — add your own below, or pull from the suggestions.</span>
+                )}
+                {skillGroups.map((g, gi) => (
+                  <div key={gi} style={{ marginTop: gi ? 12 : 8, paddingTop: gi ? 12 : 0, borderTop: gi ? '1px solid var(--border-color)' : 'none' }}>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
+                      <input
+                        className="bld-input wide"
+                        placeholder="Category (optional, e.g. Languages)"
+                        value={g.category}
+                        onChange={(e) => setGroupCategory(gi, e.target.value)}
+                      />
+                      <div className="bld-card-tools">
+                        <button type="button" className="bld-icon-btn" disabled={gi === 0} onClick={() => moveSkillGroup(gi, -1)} aria-label="Move group up"><ChevronUp size={15} /></button>
+                        <button type="button" className="bld-icon-btn" disabled={gi === skillGroups.length - 1} onClick={() => moveSkillGroup(gi, 1)} aria-label="Move group down"><ChevronDown size={15} /></button>
+                        <button type="button" className="bld-icon-btn danger" onClick={() => removeSkillGroup(gi)} aria-label="Remove group"><Trash2 size={15} /></button>
+                      </div>
+                    </div>
+                    <div className="en-chips">
+                      {g.items.map((s) => (
+                        <span key={s} className={`en-chip-edit${matchedSet.has(s.toLowerCase()) ? ' hit' : ''}`}>
+                          {s}<button type="button" className="en-chip-x" aria-label={`Remove ${s}`} onClick={() => removeSkillFromGroup(gi, s)}><X size={12} strokeWidth={3} /></button>
+                        </span>
+                      ))}
+                      {g.items.length === 0 && <span className="en-count">No skills in this group yet.</span>}
+                    </div>
+                    <AddInline value={skillInputs[gi] || ''} onChange={(v) => setSkillInput(gi, v)} onAdd={(v) => { addSkillToGroup(gi, v); setSkillInput(gi, ''); }} placeholder="Add a skill (e.g. Terraform)" />
+                  </div>
+                ))}
+                <button type="button" className="bld-add-entry" style={{ marginTop: 12 }} onClick={() => addSkillGroup('')}><Plus size={15} /> Add category</button>
                 {scan.missing.length > 0 && (
                   <>
-                    <div className="en-row-between">
+                    <div className="en-row-between" style={{ marginTop: 12 }}>
                       <span className="en-subhead">Suggested for {profile.label}</span>
                       <button type="button" className="en-btn-mini" onClick={() => scan.missing.forEach(addSkill)}><Sparkles size={13} /> Add all</button>
                     </div>
@@ -670,7 +728,7 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
                     </div>
                   </>
                 )}
-                <span className="bld-kw-count"><strong>{scan.matched.length}/{scan.detected.length}</strong> {profile.label} keywords covered</span>
+                <span className="bld-kw-count" style={{ marginTop: 10 }}><strong>{scan.matched.length}/{scan.detected.length}</strong> {profile.label} keywords covered</span>
               </>
             )}
 

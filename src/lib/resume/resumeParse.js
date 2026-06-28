@@ -3,6 +3,7 @@
 // the builder. Contact info + skills + summary are reliable; experience/education
 // are best-effort. No NLP — regex + section heuristics. All pure (no Date/random).
 import { extractSkills } from './atsKeywords';
+import { extractSkillGroups, mergeSkills } from './skills';
 
 const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i;
 const PHONE_RE = /(\+?\d[\d\s().-]{7,}\d)/;
@@ -52,17 +53,27 @@ function looksLikeHeading(line) {
   return allCaps || titleCase;
 }
 
+const isAllCapsHeading = (l) => l === l.toUpperCase() && /[A-Z]/.test(l);
+
 // Split into the known sections (keyed) PLUS an ordered list of arbitrary custom
-// sections, so nothing in the resume is silently dropped.
+// sections, so nothing in the resume is silently dropped. Inside the SKILLS
+// section, a Title-Case sub-heading ("Languages", "Frameworks & Backend") is a
+// skill CATEGORY, not a new section — keep it in the skills bucket so the grouping
+// survives; only an ALL-CAPS heading (or another known section) ends the block.
 function splitSections(lines) {
   const known = { header: [] };
   const custom = []; // [{ title, lines: [] }]
   let bucket = known.header;
   let started = false; // becomes true once we hit the first real section heading
+  let inSkills = false;
   for (const line of lines) {
     const sec = detectSection(line);
-    if (sec) { started = true; known[sec] = known[sec] || []; bucket = known[sec]; continue; }
-    if (started && looksLikeHeading(line)) { const c = { title: line.trim(), lines: [] }; custom.push(c); bucket = c.lines; continue; }
+    if (sec) { started = true; inSkills = sec === 'skills'; known[sec] = known[sec] || []; bucket = known[sec]; continue; }
+    if (started && looksLikeHeading(line)) {
+      if (inSkills && !isAllCapsHeading(line)) { bucket.push(line); continue; }
+      inSkills = false;
+      const c = { title: line.trim(), lines: [] }; custom.push(c); bucket = c.lines; continue;
+    }
     bucket.push(line);
   }
   return { known, custom };
@@ -181,7 +192,11 @@ export function parseResumeText(text) {
   }
 
   const { known: sections, custom } = splitSections(lines);
-  const skills = extractSkills(raw);
+  // Grouped skills from the skills section (keeps "Languages: …" categories),
+  // merged with any vocabulary skills mentioned elsewhere in the document. Falls
+  // back to a flat vocab list when there's no skills section.
+  const skillGroups = sections.skills ? extractSkillGroups(sections.skills) : [];
+  const skills = mergeSkills(skillGroups, extractSkills(raw));
 
   // Summary: the summary section, else a sensible lead paragraph.
   let summary = '';
