@@ -57,7 +57,7 @@ export const aiController = {
   // Mistral OCR first (so scanned résumés work); pasted text skips OCR.
   async parseResume(req, res, next) {
     try {
-      const { fileBase64, mimeType, text } = req.body || {};
+      const { fileBase64, mimeType, text, links } = req.body || {};
       let docText = typeof text === 'string' ? text : '';
       let usedOcr = false;
       if (!docText.trim() && typeof fileBase64 === 'string' && fileBase64) {
@@ -68,8 +68,19 @@ export const aiController = {
       }
       if (!docText.trim()) return res.status(422).json({ error: 'Could not read any text from that file.' });
 
+      // Hyperlinks recovered from the PDF's annotation layer (the client reads them
+      // with pdf.js — OCR/text extraction can't see them). Surface them so the model
+      // can attach each to the right field instead of losing the URL.
+      const linkHints = Array.isArray(links)
+        ? links
+            .filter((l) => l && typeof l.url === 'string' && l.url)
+            .slice(0, 40)
+            .map((l) => `- ${l.anchor ? `${String(l.anchor).slice(0, 80)} → ` : ''}${String(l.url).slice(0, 300)}`)
+            .join('\n')
+        : '';
+
       const system = 'You extract structured data from a résumé. Respond with ONLY valid JSON. Never invent facts — use "" or [] when something is absent. Capture EVERY section of the résumé, even unusual ones.';
-      const user = `RÉSUMÉ TEXT:\n${docText.slice(0, 14000)}\n\nReturn JSON with this exact shape:\n{\n  "name": "", "role": "<current or target job title>", "target": "<seniority/target, optional>",\n  "email": "", "phone": "", "location": "", "link": "<portfolio/linkedin/github>",\n  "summary": "",\n  "experience": [{ "company": "", "role": "", "period": "", "bullets": ["..."] }],\n  "education": [{ "school": "", "degree": "", "period": "" }],\n  "projects": [{ "name": "", "link": "", "bullets": ["..."] }],\n  "skills": ["..."],\n  "sections": [{ "title": "", "entries": [{ "heading": "", "meta": "", "bullets": ["..."] }] }]\n}\n\nRULES:\n- Put EVERY section that is NOT name/contact/summary/experience/education/skills/projects into "sections", keeping its real heading as "title" (e.g. Achievements, Certifications, Awards, Publications, Leadership, Volunteering, Languages, Interests, Coursework).\n- For each section entry: "heading" = the item's bold lead-in (or "" for a plain list), "meta" = date / issuer / tech / sub-line, "bullets" = the detail lines.\n- Do not duplicate content between "sections" and the structured fields.`;
+      const user = `RÉSUMÉ TEXT:\n${docText.slice(0, 14000)}${linkHints ? `\n\nHYPERLINKS (anchor text → URL) extracted from the PDF. These are REAL links that are often hidden behind a word or icon, so they may NOT appear in the text above:\n${linkHints}` : ''}\n\nReturn JSON with this exact shape:\n{\n  "name": "", "role": "<current or target job title>", "target": "<seniority/target, optional>",\n  "email": "", "phone": "", "location": "", "link": "<portfolio/linkedin/github>",\n  "summary": "",\n  "experience": [{ "company": "", "role": "", "period": "", "bullets": ["..."] }],\n  "education": [{ "school": "", "degree": "", "period": "" }],\n  "projects": [{ "name": "", "link": "", "bullets": ["..."] }],\n  "skills": ["..."],\n  "sections": [{ "title": "", "entries": [{ "heading": "", "meta": "", "bullets": ["..."] }] }]\n}\n\nRULES:\n- Put EVERY section that is NOT name/contact/summary/experience/education/skills/projects into "sections", keeping its real heading as "title" (e.g. Achievements, Certifications, Awards, Publications, Leadership, Volunteering, Languages, Interests, Coursework).\n- For each section entry: "heading" = the item's bold lead-in (or "" for a plain list), "meta" = date / issuer / tech / sub-line, "bullets" = the detail lines.\n- Do not duplicate content between "sections" and the structured fields.\n- Use the HYPERLINKS list as the source of truth for URLs (LaTeX résumés hide them behind words/icons): put the LinkedIn/GitHub/portfolio link in "link", a project's repo/demo link in that project's "link", and any other link in the matching entry's "meta". Match by the anchor text. Never output a URL that is not in that list or the résumé text.`;
       const result = await mistralJSON(
         [{ role: 'system', content: system }, { role: 'user', content: user }],
         { temperature: 0.1, maxTokens: 3000 },

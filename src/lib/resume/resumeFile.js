@@ -55,19 +55,111 @@ export async function extractFileText(file) {
   return file.text();
 }
 
+// ── Hyperlink recovery ───────────────────────────────────────────────────────
+// A PDF hyperlink is an ANNOTATION layered on the page, not text. OCR sees only
+// the rendered glyphs ("GitHub" / an icon) and pdf.js getTextContent() returns
+// only text runs — so a LaTeX `\href{url}{GitHub}` loses its URL in both paths.
+// We read the annotation layer (page.getAnnotations()) to recover those links and
+// the visible text they sit on, so they can be attached to the right field.
+
+// The visible text a link sits on — found by overlapping the link's rect with the
+// page's text items (same PDF user-space coords). '' for icon-only links.
+function anchorForRect(rect, items) {
+  if (!Array.isArray(rect) || rect.length < 4) return '';
+  const [x1, y1, x2, y2] = rect;
+  const parts = [];
+  for (const it of items) {
+    if (!it.str || !it.str.trim()) continue;
+    const ix1 = it.transform[4];
+    const ix2 = ix1 + (it.width || 0);
+    const iy = it.transform[5];
+    if (ix1 <= x2 + 2 && ix2 >= x1 - 2 && iy >= y1 - 2 && iy <= y2 + 4) parts.push(it.str);
+  }
+  return parts.join(' ').replace(/\s+/g, ' ').trim();
+}
+
+// Categorise a URL so we can pick the best contact link.
+export function classifyLink(url) {
+  const u = String(url || '').toLowerCase();
+  if (u.includes('linkedin.com')) return 'linkedin';
+  if (u.includes('github.com')) return 'github';
+  if (/(twitter|x\.com|medium|dev\.to|behance|dribbble|gitlab|stackoverflow|leetcode|codeforces|hackerrank|kaggle|hashnode)/.test(u)) return 'social';
+  return 'site';
+}
+
+// Read every link annotation from a PDF → [{ url, anchor }] (deduped by url).
+// Returns [] for non-PDFs or on any failure (purely additive — never blocks parse).
+export async function extractPdfLinks(file) {
+  if (!isPdfFile(file)) return [];
+  try {
+    const pdfjs = await import('pdfjs-dist');
+    const worker = await import('pdfjs-dist/build/pdf.worker.min.mjs?url');
+    pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
+    const data = await file.arrayBuffer();
+    const doc = await pdfjs.getDocument({ data }).promise;
+    const seen = new Set();
+    const out = [];
+    for (let i = 1; i <= doc.numPages; i += 1) {
+      const page = await doc.getPage(i);
+      const [annots, content] = await Promise.all([page.getAnnotations(), page.getTextContent()]);
+      for (const a of annots) {
+        if (a.subtype !== 'Link') continue;
+        const url = String(a.url || a.unsafeUrl || '').trim();
+        if (!url || /^(mailto:|tel:|javascript:|#)/i.test(url)) continue;
+        const key = url.toLowerCase();
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.push({ url, anchor: anchorForRect(a.rect, content.items) });
+      }
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}
+
+const stripProto = (s) => String(s || '').replace(/^https?:\/\//i, '').replace(/\/$/, '');
+
+// Fill blank links on a parsed résumé from the recovered annotation links. Safety
+// net for both paths: contact link (linkedin > github > portfolio) when missing,
+// and a project's link when an annotation's anchor text matches the project name.
+// Conservative — never overwrites an existing link, never guesses by position.
+export function applyPdfLinks(parsed, links) {
+  if (!parsed || !Array.isArray(links) || !links.length) return parsed;
+  if (!parsed.link) {
+    const pick = links.find((l) => classifyLink(l.url) === 'linkedin')
+      || links.find((l) => classifyLink(l.url) === 'github')
+      || links.find((l) => classifyLink(l.url) === 'site');
+    if (pick) parsed.link = stripProto(pick.url);
+  }
+  const used = new Set();
+  for (const p of (parsed.projects || [])) {
+    if (p.link || !p.name) continue;
+    const name = p.name.toLowerCase();
+    const hit = links.find((l) => !used.has(l.url) && l.anchor
+      && (l.anchor.toLowerCase().includes(name) || name.includes(l.anchor.toLowerCase())));
+    if (hit) { p.link = stripProto(hit.url); used.add(hit.url); }
+  }
+  return parsed;
+}
+
 const looksParsed = (r) => Boolean(r && (r.name || r.summary || (r.skills || []).length || (r.experience || []).length));
 
 // File → structured résumé fields (Mistral OCR+parse when enabled, else pdf.js+heuristic).
+// Hyperlinks live in the PDF annotation layer (invisible to OCR + getTextContent),
+// so we extract them separately and (a) hand them to the AI to attach in context,
+// then (b) backfill any blanks client-side — works whether AI is on or off.
 export async function importResumeFields(file, { aiEnabled } = {}) {
+  const links = await extractPdfLinks(file);
   if (aiEnabled) {
     try {
       const fileBase64 = await fileToBase64(file);
-      const { result } = await aiParseResume({ fileBase64, mimeType: file.type || '', fileName: file.name });
-      if (looksParsed(result)) return result;
+      const { result } = await aiParseResume({ fileBase64, mimeType: file.type || '', fileName: file.name, links });
+      if (looksParsed(result)) return applyPdfLinks(result, links);
     } catch { /* fall back to on-device extraction */ }
   }
   const text = await extractFileText(file);
-  return parseResumeText(text);
+  return applyPdfLinks(parseResumeText(text), links);
 }
 
 // Pasted text → structured fields (Mistral parse when enabled, else heuristic).
