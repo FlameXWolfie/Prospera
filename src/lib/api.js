@@ -43,3 +43,23 @@ export async function apiFetch(path, { method = 'GET', body, auth = true } = {})
   }
   return data;
 }
+
+// Like apiFetch but returns a binary Blob (e.g. a compiled PDF). On error the body
+// is JSON ({ error }), so we surface that message.
+export async function apiBlob(path, { method = 'POST', body } = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  const token = tokenStore.get();
+  if (token) headers.Authorization = `Bearer ${token}`;
+  let res;
+  try {
+    res = await fetch(`${BASE}${path}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+  } catch {
+    throw new ApiError('Cannot reach the server. Make sure the API is running.', 0);
+  }
+  if (!res.ok) {
+    let msg = `Request failed (${res.status}).`;
+    try { const d = await res.json(); if (d.error) msg = d.error; } catch { /* non-JSON */ }
+    throw new ApiError(msg, res.status);
+  }
+  return res.blob();
+}

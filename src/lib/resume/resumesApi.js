@@ -1,6 +1,10 @@
 // Resume CRUD against the API. All routes require a session (apiFetch attaches
 // the Bearer token); the server scopes every query to the signed-in user.
-import { apiFetch } from '../api';
+import { apiFetch, apiBlob } from '../api';
+
+// Compile the resume content to a print-perfect PDF (server-side LaTeX/Tectonic).
+// Returns a PDF Blob.
+export const renderResumePdf = (content) => apiBlob('/resumes/render', { method: 'POST', body: content });
 
 export const listResumes = () => apiFetch('/resumes');
 // The original uploaded file (base64) — fetched lazily, only when a preview needs it.

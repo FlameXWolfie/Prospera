@@ -10,7 +10,9 @@ import { toSkillGroups, flattenSkills } from '../lib/resume/skills';
 import {
   computeReadiness, deriveSectionStatus, draftToResume, emptyDraft,
   sampleDraft, blankDraft, draftFromParsed, draftFromResume, newEntryId,
+  resumeContentFromDraft,
 } from '../lib/resume/resumeDraft';
+import { renderResumePdf } from '../lib/resume/resumesApi';
 import { TEMPLATES, ACCENTS, templateById } from '../lib/resume/resumeTemplates';
 import { SAMPLE_RESUME } from '../lib/resume/resumeSample';
 import { importResumeFields, parseResumeSmart } from '../lib/resume/resumeFile';
@@ -230,6 +232,7 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
   const [aiResult, setAiResult] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState('');
+  const [downloading, setDownloading] = useState(false);
   const fileRef = useRef(null);
   const editing = Boolean(draft.sourceId); // editing a saved resume (autosaves) vs a new draft
   // The saved resume behind this edit (carries the real ATS scan + stale flag).
@@ -431,8 +434,27 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
     setActiveSection('personal');
   };
   const startBlank = () => { onChange(blankDraft('modern')); setActiveSection('personal'); };
-  // Download = print the isolated preview to a real A4 PDF (browser "Save as PDF").
-  const handleDownload = () => { if (typeof window !== 'undefined') window.print(); };
+  // Download = compile the résumé to a print-perfect PDF via server-side LaTeX
+  // (Tectonic). Falls back to the browser print dialog if the engine is unavailable.
+  const handleDownload = async () => {
+    if (downloading) return;
+    setDownloading(true);
+    try {
+      const blob = await renderResumePdf(resumeContentFromDraft(draft));
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${(draft.name || 'resume').trim().replace(/\s+/g, '_') || 'resume'}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      if (typeof window !== 'undefined') window.print(); // graceful fallback
+    } finally {
+      setDownloading(false);
+    }
+  };
   const hasContent = (p) => p && (p.name || p.summary || (p.skills || []).length || (p.experience || []).length);
   const applyParsedFields = (parsed) => {
     // Keep sourceId/roleId so importing INTO a saved resume updates it in place
@@ -850,7 +872,9 @@ export default function BuildResumePage({ draft, onChange, onSaveResume, onNavig
                   />
                 ))}
               </div>
-              <button type="button" className="bld-download-btn" onClick={handleDownload} title="Download as PDF"><Download size={14} /> Download</button>
+              <button type="button" className="bld-download-btn" onClick={handleDownload} disabled={downloading} title="Download as PDF">
+                {downloading ? <><Loader2 size={14} className="en-ai-spin" /> Preparing…</> : <><Download size={14} /> Download</>}
+              </button>
             </div>
           </div>
           <div className="bld-canvas">
