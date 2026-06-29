@@ -63,7 +63,9 @@ A new full screen goes in `src/pages/` and gets a route in `src/App.jsx` (or `Da
 ## Assets (using the wrong location breaks the image)
 
 - `src/assets/*` — imported in JS (`import hero from '../../assets/hero.png'`). Vite hashes and bundles these.
-- `public/assets/*` — referenced by absolute path (`src="/assets/alex_avatar.png"`). Served as-is.
+- `public/assets/*` — referenced by absolute path (`src="/assets/testimonial_art.webp"`). Served as-is.
+
+Raster images are shipped as **WebP** (converted from PNG, downscaled to ~2× display size) to keep page weight low — the landing hero/screenshots + dashboard art total ~0.4 MB, not ~7 MB. Add new photographic/illustration assets as WebP too (small UI glyphs can stay SVG).
 
 ## Style
 

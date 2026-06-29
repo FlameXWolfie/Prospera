@@ -15,7 +15,7 @@ export default function Testimonial() {
 
       <div className="testimonial-art-wrapper">
         <img 
-          src="/assets/testimonial_art.png" 
+          src="/assets/testimonial_art.webp"
           alt="Woman working illustration" 
           className="testimonial-art-img" 
         />

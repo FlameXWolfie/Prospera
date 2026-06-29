@@ -2,7 +2,7 @@ import { Check, ArrowRight } from 'lucide-react';
 import './css/LandingInsights.css';
 
 // Import image asset
-import applicationAnalytics from '../../assets/application_analytics.png';
+import applicationAnalytics from '../../assets/application_analytics.webp';
 
 export default function LandingInsights({ onEnterApp }) {
   return (

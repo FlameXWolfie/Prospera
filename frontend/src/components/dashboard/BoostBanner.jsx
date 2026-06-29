@@ -27,7 +27,7 @@ export default function BoostBanner({ resume, onImprove, onCreate, onScan }) {
           </div>
           <div className="boost-right">
             <div className="boost-art-container">
-              <img src="/assets/resume_boost_art.png" alt="" className="boost-art-img" />
+              <img src="/assets/resume_boost_art.webp" alt="" className="boost-art-img" />
             </div>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default function BoostBanner({ resume, onImprove, onCreate, onScan }) {
 
           {/* Floating graphic */}
           <div className="boost-art-container">
-            <img src="/assets/resume_boost_art.png" alt="" className="boost-art-img" />
+            <img src="/assets/resume_boost_art.webp" alt="" className="boost-art-img" />
           </div>
         </div>
       </div>

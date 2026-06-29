@@ -2,10 +2,10 @@ import { Star, Play } from 'lucide-react';
 import './css/LandingHero.css';
 
 // Import image assets
-import heroPerson from '../../assets/hero-person.png';
-import atsScan from '../../assets/ats_scan.png';
-import upcomingInterview from '../../assets/upcoming-interview.png';
-import portfolioPreview from '../../assets/portfolio-preview_hero.png';
+import heroPerson from '../../assets/hero-person.webp';
+import atsScan from '../../assets/ats_scan.webp';
+import upcomingInterview from '../../assets/upcoming-interview.webp';
+import portfolioPreview from '../../assets/portfolio-preview_hero.webp';
 
 export default function LandingHero({ onEnterApp }) {
   return (
