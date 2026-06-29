@@ -9,7 +9,6 @@ import ApplicationsPage from './ApplicationsPage';
 import DashboardHome from './DashboardHome';
 import ComingSoon from './ComingSoon';
 import PortfolioBuilderPage from './PortfolioBuilderPage';
-import ProfilePage from './ProfilePage';
 import SettingsPage from './SettingsPage';
 import { useAuth } from '../lib/auth/AuthContext';
 import { emptyDraft, resumeContentFromDraft, draftFromResume } from '../lib/resume/resumeDraft';
@@ -290,7 +289,8 @@ export default function DashboardLayout() {
         <Route path="applications" element={<ApplicationsPage applications={applications} resumes={resumes} onSave={handleSaveApplication} onMove={handleMoveApplication} onDelete={handleDeleteApplication} />} />
         <Route path="interview" element={<ComingSoon name="Interview Prep" onHome={() => go('dashboard')} />} />
         <Route path="portfolio" element={<PortfolioBuilderPage draft={pfDraft} onChange={setPfDraft} resumes={resumes} saved={portfolio} onPrefill={handlePrefillPortfolio} onNavigate={go} />} />
-        <Route path="profile" element={<ProfilePage />} />
+        {/* Profile merged into the unified Settings hub (rail's first section). */}
+        <Route path="profile" element={<Navigate to="/app/settings" replace />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="resources" element={<ComingSoon name="Resources" onHome={() => go('dashboard')} />} />
         <Route path="*" element={<Navigate to="dashboard" replace />} />

@@ -8,7 +8,6 @@ import {
   Briefcase,
   GraduationCap,
   UserSquare2,
-  User,
   Settings,
   BookOpen,
   Crown,
@@ -39,7 +38,6 @@ export default function Sidebar({ collapsed, onToggleCollapse, onLogout }) {
   ];
 
   const account = [
-    { id: 'profile', name: 'Profile', icon: User },
     { id: 'settings', name: 'Settings', icon: Settings },
     { id: 'resources', name: 'Resources', icon: BookOpen },
   ];
