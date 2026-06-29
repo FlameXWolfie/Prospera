@@ -1,35 +1,19 @@
 {
-  "name": "parsewave",
+  "name": "prospera",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "description": "Prospera — React career platform. Monorepo: frontend (Vite) + server (Express/MongoDB).",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "server": "node server/src/index.js",
-    "dev:all": "concurrently -n web,api -c blue,green \"npm:dev\" \"npm:server\""
-  },
-  "dependencies": {
-    "@react-oauth/google": "^0.12.1",
-    "lucide-react": "^1.20.0",
-    "pdfjs-dist": "^4.10.38",
-    "puppeteer-core": "^25.2.1",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
-    "react-router-dom": "^7.18.0"
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "lint": "npm --prefix frontend run lint",
+    "preview": "npm --prefix frontend run preview",
+    "server": "npm --prefix server start",
+    "server:dev": "npm --prefix server run dev",
+    "dev:all": "concurrently -n web,api -c blue,green \"npm --prefix frontend run dev\" \"npm --prefix server run dev\"",
+    "install:all": "npm install && cd frontend && npm install && cd ../server && npm install"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
-    "concurrently": "^9.1.2",
-    "eslint": "^10.3.0",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
-    "globals": "^17.6.0",
-    "vite": "^8.0.12"
+    "concurrently": "^9.1.2"
   }
 }

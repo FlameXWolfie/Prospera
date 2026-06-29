@@ -6,19 +6,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Prospera — a React career platform (ATS resume scanner, resume builder, application tracker, interview prep). Marketing landing page + an in-app dashboard, behind a real **auth backend** (`server/`, Express + MongoDB). Feature data (resumes, applications) is **persisted per-user via the API** — `DashboardLayout` loads/mutates it through `src/lib/resume/resumesApi.js` and `src/lib/applications/applicationsApi.js`. A brand-new user starts with an **empty workspace** (no seed data). **Mistral AI** (optional, server-side) powers AI ATS scoring + resume enhancement; when no key is set it falls back to a deterministic keyword heuristic.
 
-Note: `package.json` `name` is still `parsewave` (an older name) — the product is Prospera. Don't "fix" it unless asked.
+Note: the frontend `package.json` `name` is still `parsewave` (an older name) — the product is Prospera. Don't "fix" it unless asked.
+
+## Repo layout (monorepo)
+
+The repo is split into two self-contained packages under the root:
+
+- **`frontend/`** — the Vite + React app (`src/`, `public/`, `index.html`, `vite.config.js`, `eslint.config.js`, its own `package.json`/`node_modules`).
+- **`server/`** — the Express + MongoDB API (its own `package.json`/`node_modules`).
+
+The **root `package.json` is a thin orchestrator** (only dep: `concurrently`) whose scripts delegate into the two packages via `npm --prefix <pkg>`. **All frontend paths in this document are relative to `frontend/`** — e.g. `src/lib/api.js` means `frontend/src/lib/api.js`; server paths are written in full (`server/src/...`).
 
 ## Commands
 
-Frontend uses standard Vite scripts (`dev`, `build`, `lint`, `preview`). There is **no test suite**, so after frontend changes verify with:
+Run these **from the repo root** (they delegate into the right package):
 
 ```
 npm run lint && npm run build
 ```
 
-This is the only self-check available and catches broken imports (e.g. a mis-pathed file move) and lint errors. The `/verify` skill runs it. Note `npm run lint` ignores `server/` (it's a separate Node package — see `eslint.config.js`).
+Frontend uses standard Vite scripts, exposed at the root as `dev`, `build`, `lint`, `preview` (each = `npm --prefix frontend run <script>`). There is **no test suite**, so after frontend changes verify with `npm run lint && npm run build` — the only self-check available; it catches broken imports (e.g. a mis-pathed file move) and lint errors. The `/verify` skill runs it. (`server/` has no JS lint; it's a separate package and is not under the frontend's eslint root.)
 
-Backend: `npm run server` (needs MongoDB running + `server/.env`, copied from `server/.env.example`). `npm run dev:all` runs Vite + the server together via `concurrently`. The frontend reaches the API through Vite's `/api` proxy → `http://localhost:4000`. Optional env: `GOOGLE_CLIENT_ID` (Google sign-in) and `MISTRAL_API_KEY` (AI features) — both disable gracefully when unset.
+Backend: `npm run server` (= `npm --prefix server start`; needs MongoDB running + `server/.env`, copied from `server/.env.example`), or `npm run server:dev` for `--watch`. `npm run dev:all` runs the frontend + server together via `concurrently`. `npm run install:all` installs root + frontend + server deps. The frontend reaches the API through Vite's `/api` proxy → `http://localhost:4000`. Optional env: `GOOGLE_CLIENT_ID` (Google sign-in) and `MISTRAL_API_KEY` (AI features) — both disable gracefully when unset.
+
+You can also work inside a single package directly, e.g. `cd frontend && npm run dev`.
 
 ## Architecture
 
@@ -37,6 +48,8 @@ Backend: `npm run server` (needs MongoDB running + `server/.env`, copied from `s
 - **PDF export = headless-Chrome render of the SAME template (WYSIWYG).** One render engine drives both the editor and the Download, so the PDF is **pixel-identical to the on-screen preview** (a deliberate choice over a separate LaTeX export, which couldn't match the HTML templates). `src/components/resume/printDoc.js` `buildResumePrintHtml(content)` serializes the chosen template (`renderToStaticMarkup`) into a self-contained HTML doc: the template's own CSS (imported `?inline`), the Inter web font (so it matches the app), and a print stylesheet — `@page A4`, `break-inside:avoid` on `[class$="-entry"]`/`[class$="-edu"]`, `break-after:avoid` on headings for clean pagination, plus a **fixed-rail trick** for the two-column Sidebar (`.tpls-rail` is `position:fixed` so the accent column repeats on every page instead of vanishing on page 2+). `BuildResumePage.handleDownload` lazy-imports it → `renderResumePdf(html)` (`resumesApi.js`) → `apiBlob` (`lib/api.js`) → `POST /api/resumes/render` (`resumeController.render`, requireAuth) → `htmlToPdf(html)` (`server/src/services/htmlPdf.js`). The server runs **puppeteer-core → system Chrome** (`CHROME_PATH`/`PUPPETEER_EXECUTABLE_PATH` env, else common paths auto-detected; missing → 503), reuses a singleton browser, and `page.pdf({format:'A4', printBackground, preferCSSPageSize})` → must wrap the result in `Buffer.from()` (page.pdf returns a Uint8Array; bare → Express JSON-serializes it). **Security:** the posted HTML renders with **JS disabled** + **request interception** allowing ONLY `data:` URIs and Google Fonts (every other network/file request aborted), so untrusted résumé content can't run scripts, do SSRF, or read local files. Client **falls back to `window.print()`** if the engine is unavailable, so Download always works. **Clickable links:** contact URLs render via the shared `templates/Linked.jsx` (`<a href>` when a URL is present, else plain text, styled to look like text) and **project links via `templates/ProjectLink.jsx`** — a compact accent-coloured clickable label ("Live"/"GitHub"/…) with an icon, derived from the URL by `linkLabel()` in `src/lib/resume/resumeLinks.js` (`absUrl`/`mailto`/`tel`/`linkLabel`; code hosts → their name, deployed apps/custom domains → "Live"). Links work in BOTH the preview and the PDF (`.rp-projlink` styled in `ResumePaper.css` + `printDoc.js`). **Multi-page preview (paged mode):** `ResumePaper` takes a `paged` prop (Studio sets it on the live preview) — it measures the content in a hidden full-size copy and renders real A4 **sheets with gaps** (like the PDF viewer) so you see the page count BEFORE downloading. Breaks are snapped to element boundaries mirroring the PDF (`break-inside:avoid` on entries + `break-after:avoid` keeps a heading with its first block); `onPageCount` surfaces the count to the Studio bar (`.bld-pagecount`). Default (non-paged) usages — Library/ATS/Enhance/gallery — keep the single scaled page. **Layout controls (Studio "Advanced" popover).** Two resume settings — `fontScale` + `pageMargin` (on the draft + persisted: `Resume` model, `featureInput` sanitizer, `toClientJSON`; carried by `resumeDraft.js`) — let the user fit the résumé to one/two pages. **fontScale** renders the template at width `794/scale` (CSS var `--rt-w`) + scales to fit (preview) / CSS `zoom: scale` (PDF, which re-paginates in `page.pdf`) — smaller = more per page. **pageMargin** sets a per-EVERY-page vertical margin (`@page` margin in the PDF, per-sheet padding in the preview — this is what fixes continuation-page top padding) + a side-padding multiplier (`--rt-mgx`); the template's own vertical padding is dropped in paged/PDF contexts so margins come from the page, not once. Full-bleed templates (sidebar) get no vertical margin. Controls live in `BuildResumePage`'s `.bld-adv` popover (font stepper + Narrow/Normal/Wide). The host needs Google Chrome/Chromium (see `server/.env.example`).
 
 ## Folder structure (follow this when adding files)
+
+The frontend lives under `frontend/`; the paths below are relative to it (so `src/pages/` = `frontend/src/pages/`). The backend is `server/` at the repo root.
 
 - `src/pages/` — full screens / routed views (`LandingPage`, `LoginPage`, `SignupPage`, `DashboardLayout` (the `/app` shell), `DashboardHome`, `LibraryPage`, `AtsScanPage`, `BuildResumePage` (the **Resume Studio** at `/app/studio` — Build + Enhance merged; still imports `css/EnhanceResumePage.css` for the shared `.en-*` classes), `ApplicationsPage`, `PortfolioBuilderPage` (the portfolio builder at `/app/portfolio`), `ProfilePage` + `SettingsPage` (account management at `/app/profile` + `/app/settings`), `ComingSoon`).
 - `src/components/portfolio/` — the portfolio builder's render layer: `PortfolioDocument` + `templates/` (Aurora/Horizon/Folio + `useReveal` + `css/`). Self-contained premium personal-site templates, themed by `--pf-accent`, always light.

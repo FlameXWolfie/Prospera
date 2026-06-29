@@ -1,16 +1,38 @@
-# React + Vite
+# Prospera
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React career platform (ATS resume scanner, resume builder, application tracker,
+interview prep) with a real auth + data backend.
 
-Currently, two official plugins are available:
+## Layout
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```
+.
+├─ frontend/   Vite + React app (the UI)
+└─ server/     Express + MongoDB API (auth, resumes, applications, AI)
+```
 
-## React Compiler
+Each package has its own `package.json` and `node_modules`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Getting started
 
-## Expanding the ESLint configuration
+```bash
+npm run install:all          # install root + frontend + server deps
+cp server/.env.example server/.env   # configure MongoDB / secrets
+npm run dev:all              # run frontend (5173) + server (4000) together
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The frontend reaches the API through Vite's `/api` proxy → `http://localhost:4000`.
+
+## Scripts (from the repo root)
+
+| Command               | What it does                                  |
+| --------------------- | --------------------------------------------- |
+| `npm run dev`         | Frontend dev server only                      |
+| `npm run server`      | API server only                               |
+| `npm run server:dev`  | API server with `--watch`                     |
+| `npm run dev:all`     | Frontend + server together (`concurrently`)   |
+| `npm run build`       | Production build of the frontend              |
+| `npm run lint`        | Lint the frontend                             |
+| `npm run install:all` | Install deps for root, frontend and server    |
+
+You can also work inside a single package directly, e.g. `cd frontend && npm run dev`.
