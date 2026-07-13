@@ -1,5 +1,6 @@
 import { ArrowUpRight, ArrowRight } from 'lucide-react';
 import { useReveal } from './useReveal';
+import { onSectionNavClick } from './sectionNav';
 import { ItemControls, AddButton, ContactEditor, EditableText } from '../inlineEdit';
 import { emptyExperience, emptyProject, emptyEducation } from '../../../lib/portfolio/portfolioModel';
 import './css/FolioTemplate.css';
@@ -34,7 +35,7 @@ export default function FolioTemplate({ data, accent, animate, T, edit }) {
   ].filter((l) => l.url);
 
   return (
-    <div ref={ref} className={`pf-folio${animate ? ' pf-animate' : ''}`} style={{ '--pf-accent': accent }}>
+    <div ref={ref} className={`pf-folio${animate ? ' pf-animate' : ''}`} style={{ '--pf-accent': accent }} onClick={onSectionNavClick}>
       {/* Hero */}
       <header className="pff-hero">
         <svg className="pff-hero-grid" aria-hidden="true" width="100%" height="100%">

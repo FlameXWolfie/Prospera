@@ -1,5 +1,6 @@
 import { ArrowUpRight } from 'lucide-react';
 import { useReveal } from './useReveal';
+import { onSectionNavClick } from './sectionNav';
 import { ItemControls, AddButton, ContactEditor, EditableText } from '../inlineEdit';
 import { emptyExperience, emptyProject, emptyEducation } from '../../../lib/portfolio/portfolioModel';
 import './css/AuroraTemplate.css';
@@ -23,7 +24,7 @@ export default function AuroraTemplate({ data, accent, animate, T, edit }) {
   const skills = data.skills || [];
   const education = data.education || [];
   return (
-    <div ref={ref} className={`pf-aurora${animate ? ' pf-animate' : ''}`} style={{ '--pf-accent': accent }}>
+    <div ref={ref} className={`pf-aurora${animate ? ' pf-animate' : ''}`} style={{ '--pf-accent': accent }} onClick={onSectionNavClick}>
       <header className="pfa-topbar">
         <span className="pfa-brand">{T('name', 'Your Name')}</span>
         <nav className="pfa-nav">

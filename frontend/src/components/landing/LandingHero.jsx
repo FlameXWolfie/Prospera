@@ -7,7 +7,7 @@ import atsScan from '../../assets/ats_scan.webp';
 import upcomingInterview from '../../assets/upcoming-interview.webp';
 import portfolioPreview from '../../assets/portfolio-preview_hero.webp';
 
-export default function LandingHero({ onEnterApp }) {
+export default function LandingHero({ onEnterApp, isAuthed = false }) {
   return (
     <section className="hero-section">
       <div className="hero-left">
@@ -26,8 +26,8 @@ export default function LandingHero({ onEnterApp }) {
         </p>
 
         <div className="hero-ctas">
-          <button className="btn-hero-primary" onClick={onEnterApp}>
-            Get Started Free
+          <button type="button" className="btn-hero-primary" onClick={onEnterApp}>
+            {isAuthed ? 'Open dashboard' : 'Get Started Free'}
           </button>
           <button className="btn-hero-secondary" onClick={() => alert('Launching Demo Video Player Mock!')}>
             <Play size={16} fill="currentColor" />

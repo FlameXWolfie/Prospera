@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../lib/auth/AuthContext';
 import { ApiError } from '../lib/api';
@@ -21,7 +21,7 @@ export default function LoginPage({ onSwitch, onBack }) {
     setErrors({});
     setBusy(true);
     try {
-      await login(form); // success flips AuthProvider → App renders the dashboard
+      await login(form);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Something went wrong.');
       if (err instanceof ApiError && err.fields) setErrors(err.fields);
@@ -42,16 +42,25 @@ export default function LoginPage({ onSwitch, onBack }) {
 
   return (
     <AuthShell onBack={onBack} busy={busy}>
-      <h2 className="auth-title">Welcome back</h2>
-      <p className="auth-sub">Sign in to continue to Prospera.</p>
+      <h1 className="auth-title">Welcome back</h1>
+      <p className="auth-sub">
+        New to Prospera?{' '}
+        <button type="button" onClick={onSwitch} disabled={busy}>Create an account</button>
+      </p>
       {error && <div className="auth-alert" role="alert">{error}</div>}
 
       <form className="auth-form" onSubmit={submit} noValidate>
         <label className={`auth-field${errors.email ? ' invalid' : ''}`}>
           <span className="auth-label">Email</span>
           <span className="auth-input-wrap">
-            <Mail size={16} className="auth-input-ic" />
-            <input className="auth-input" type="email" autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="you@email.com" />
+            <input
+              className="auth-input"
+              type="email"
+              autoComplete="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              placeholder="Email"
+            />
           </span>
           {errors.email && <span className="auth-err">{errors.email}</span>}
         </label>
@@ -59,28 +68,44 @@ export default function LoginPage({ onSwitch, onBack }) {
         <label className={`auth-field${errors.password ? ' invalid' : ''}`}>
           <span className="auth-label">Password</span>
           <span className="auth-input-wrap">
-            <Lock size={16} className="auth-input-ic" />
-            <input className="auth-input" type={show ? 'text' : 'password'} autoComplete="current-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="••••••••" />
-            <button type="button" className="auth-eye" onClick={() => setShow((s) => !s)} aria-label={show ? 'Hide password' : 'Show password'}>{show ? <EyeOff size={16} /> : <Eye size={16} />}</button>
+            <input
+              className="auth-input has-eye"
+              type={show ? 'text' : 'password'}
+              autoComplete="current-password"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              placeholder="Enter your password"
+            />
+            <button type="button" className="auth-eye" onClick={() => setShow((s) => !s)} aria-label={show ? 'Hide password' : 'Show password'}>
+              {show ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
           </span>
           {errors.password && <span className="auth-err">{errors.password}</span>}
         </label>
 
         <button className="auth-submit" type="submit" disabled={busy}>
-          {busy ? <Loader2 size={18} className="auth-spin" /> : 'Sign in'}
+          {busy ? <Loader2 size={17} className="auth-spin" /> : 'Sign in'}
         </button>
       </form>
 
       {googleEnabled && (
         <>
-          <div className="auth-divider"><span>or</span></div>
-          <div className="auth-google">
-            <GoogleLogin onSuccess={onGoogle} onError={() => setError('Google sign-in failed.')} text="signin_with" width="360" />
+          <div className="auth-divider"><span>Or continue with</span></div>
+          <div className="auth-social">
+            <div className="auth-google">
+              <GoogleLogin
+                onSuccess={onGoogle}
+                onError={() => setError('Google sign-in failed.')}
+                text="continue_with"
+                theme="filled_black"
+                shape="rectangular"
+                size="large"
+                width="352"
+              />
+            </div>
           </div>
         </>
       )}
-
-      <p className="auth-switch">New to Prospera? <button type="button" onClick={onSwitch} disabled={busy}>Create an account</button></p>
     </AuthShell>
   );
 }

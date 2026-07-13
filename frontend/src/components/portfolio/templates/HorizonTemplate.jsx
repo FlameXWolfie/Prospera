@@ -1,5 +1,6 @@
 import { ArrowUpRight } from 'lucide-react';
 import { useReveal } from './useReveal';
+import { onSectionNavClick } from './sectionNav';
 import { ItemControls, AddButton, ContactEditor, EditableText } from '../inlineEdit';
 import { emptyExperience, emptyProject, emptyEducation } from '../../../lib/portfolio/portfolioModel';
 import './css/HorizonTemplate.css';
@@ -40,7 +41,7 @@ export default function HorizonTemplate({ data, accent, animate, T, edit }) {
   ].filter(Boolean);
 
   return (
-    <div ref={ref} className={`pf-horizon${animate ? ' pf-animate' : ''}`} style={{ '--pf-accent': accent }}>
+    <div ref={ref} className={`pf-horizon${animate ? ' pf-animate' : ''}`} style={{ '--pf-accent': accent }} onClick={onSectionNavClick}>
       <div className="pfh-shell">
         <aside className="pfh-rail">
           <span className="pfh-accent-line" aria-hidden="true" />

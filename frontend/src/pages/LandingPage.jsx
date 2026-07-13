@@ -9,11 +9,11 @@ import Testimonials from '../components/landing/Testimonials';
 import Newsletter from '../components/landing/Newsletter';
 import LandingFooter from '../components/landing/LandingFooter';
 
-export default function LandingPage({ onEnterApp, onLogin }) {
+export default function LandingPage({ onEnterApp, onLogin, isAuthed = false }) {
   return (
     <div className="landing-container">
-      <LandingHeader onEnterApp={onEnterApp} onLogin={onLogin} />
-      <LandingHero onEnterApp={onEnterApp} />
+      <LandingHeader onEnterApp={onEnterApp} onLogin={onLogin} isAuthed={isAuthed} />
+      <LandingHero onEnterApp={onEnterApp} isAuthed={isAuthed} />
       <Partners />
       <LandingFeatures />
       <LandingInsights onEnterApp={onEnterApp} />

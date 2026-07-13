@@ -26,7 +26,16 @@ function GuestOnly({ children }) {
 // while sourcing navigation from the router.
 function LandingRoute() {
   const navigate = useNavigate();
-  return <LandingPage onEnterApp={() => navigate('/signup')} onLogin={() => navigate('/login')} />;
+  const { status } = useAuth();
+  const isAuthed = status === 'authed';
+  // Signed-in visitors should enter the app, not the guest signup/login funnels.
+  return (
+    <LandingPage
+      isAuthed={isAuthed}
+      onEnterApp={() => navigate(isAuthed ? '/app' : '/signup')}
+      onLogin={() => navigate(isAuthed ? '/app' : '/login')}
+    />
+  );
 }
 function LoginRoute() {
   const navigate = useNavigate();

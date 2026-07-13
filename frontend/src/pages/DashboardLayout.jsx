@@ -11,7 +11,8 @@ import ComingSoon from './ComingSoon';
 import PortfolioBuilderPage from './PortfolioBuilderPage';
 import SettingsPage from './SettingsPage';
 import { useAuth } from '../lib/auth/AuthContext';
-import { emptyDraft, resumeContentFromDraft, draftFromResume } from '../lib/resume/resumeDraft';
+import { resumeContentFromDraft, draftFromResume } from '../lib/resume/resumeDraft';
+import { loadBuildDraft, saveBuildDraft } from '../lib/resume/buildDraftStorage';
 import { ApiError } from '../lib/api';
 import { listResumes, createResume, updateResume, activateResume, deleteResume, recordResumeScan } from '../lib/resume/resumesApi';
 import { listApplications, createApplication, updateApplication, deleteApplication } from '../lib/applications/applicationsApi';
@@ -28,17 +29,6 @@ const stripServerFields = (obj) => {
   return clone;
 };
 
-// The in-progress builder draft survives reloads (localStorage), so reopening
-// /app/build after a refresh keeps your work — not just the route.
-const BUILD_DRAFT_KEY = 'prospera_build_draft';
-const loadBuildDraft = () => {
-  try {
-    const s = localStorage.getItem(BUILD_DRAFT_KEY);
-    if (s) return JSON.parse(s);
-  } catch { /* ignore corrupt/blocked storage */ }
-  return emptyDraft();
-};
-
 // The resume a fresh portfolio prefills from: the active one, else the most recent.
 const activeResumeOf = (list) => (list || []).find((r) => r.isActive) || (list || [])[0] || null;
 
@@ -46,7 +36,8 @@ const activeResumeOf = (list) => (list || []).find((r) => r.isActive) || (list |
 // state + data loading, renders the sidebar, and routes each section.
 export default function DashboardLayout() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+  const userId = user?.id;
   const go = (tab) => navigate(`/app/${tab}`);
   // Open a specific saved resume in the Studio (load it into the draft, THEN
   // navigate) — so "Enhance my resume" / "Open in builder" carry the selection
@@ -66,12 +57,17 @@ export default function DashboardLayout() {
   const [dataStatus, setDataStatus] = useState('loading'); // 'loading' | 'ready' | 'error'
   const [loadError, setLoadError] = useState('');
   const [actionError, setActionError] = useState('');
-  const [buildDraft, setBuildDraft] = useState(loadBuildDraft);
+  // Draft is scoped to the signed-in user (see buildDraftStorage). Reload keeps
+  // work for *this* account only — never a previous account in the same browser.
+  const [buildDraft, setBuildDraft] = useState(() => loadBuildDraft(userId));
+  const draftUserIdRef = useRef(userId);
   // Portfolio: the saved doc (or null) + the editing draft. The draft is prefilled
   // from the active resume on first visit and autosaves once the user edits.
   const [portfolio, setPortfolio] = useState(null);
   const [pfDraft, setPfDraftState] = useState(null);
   const portfolioTouched = useRef(false);
+  // Latest resumes for the autosave ownership check without re-firing on every list update.
+  const resumesRef = useRef(resumes);
 
   // Mark "touched" so the autosave only fires after a real edit (never auto-creates
   // a portfolio just from the resume prefill).
@@ -81,9 +77,20 @@ export default function DashboardLayout() {
     if (r) setPfDraft(portfolioDraft(portfolioFromResume(r)));
   };
 
+  useEffect(() => { resumesRef.current = resumes; }, [resumes]);
+
+  // If the signed-in user changes without unmounting (rare), swap the draft.
   useEffect(() => {
-    try { localStorage.setItem(BUILD_DRAFT_KEY, JSON.stringify(buildDraft)); } catch { /* ignore */ }
-  }, [buildDraft]);
+    if (userId === draftUserIdRef.current) return;
+    draftUserIdRef.current = userId;
+    setBuildDraft(loadBuildDraft(userId));
+  }, [userId]);
+
+  // Persist draft under this user only.
+  useEffect(() => {
+    if (!userId) return;
+    saveBuildDraft(userId, buildDraft);
+  }, [buildDraft, userId]);
 
   // Debounced portfolio autosave — only after the user has edited (touched) and the
   // draft has real content. setState happens only in the async resolve.
@@ -97,21 +104,39 @@ export default function DashboardLayout() {
     return () => clearTimeout(t);
   }, [pfDraft]);
 
+  // Drop a stale sourceId (e.g. leftover from another account / deleted resume)
+  // once the workspace list is known, so Studio doesn't think we're editing.
+  useEffect(() => {
+    if (dataStatus !== 'ready') return;
+    setBuildDraft((d) => {
+      if (!d?.sourceId) return d;
+      if (resumesRef.current.some((r) => r.id === d.sourceId)) return d;
+      const next = { ...d };
+      delete next.sourceId;
+      return next;
+    });
+  }, [dataStatus, resumes]);
+
   // Auto-save edits made to an EXISTING resume opened in the Studio (the draft
   // carries `sourceId`). Debounced via the cleanup; state updates happen only in
   // the async resolve, never synchronously in the effect body (keeps the
   // react-compiler "no setState in effect" rule happy). The editor mutates the
   // draft with functional updates, so rapid edits ("Add all") can't clobber.
+  // Guard: only PATCH when the workspace has loaded AND the id belongs to this
+  // user (present in the loaded list) — blocks cross-account / orphan autosaves.
   useEffect(() => {
     const id = buildDraft && buildDraft.sourceId;
-    if (!id) return undefined;
+    if (!id || dataStatus !== 'ready') return undefined;
+    if (!resumesRef.current.some((r) => r.id === id)) return undefined;
     const t = setTimeout(() => {
+      // Re-check ownership at fire time (list may have changed during the debounce).
+      if (!resumesRef.current.some((r) => r.id === id)) return;
       updateResume(id, stripServerFields(resumeContentFromDraft(buildDraft)))
         .then((res) => { if (res) setResumes((prev) => prev.map((r) => (r.id === id ? res.resume : r))); })
         .catch((err) => setActionError(err instanceof ApiError ? err.message : 'Could not save your changes. Please try again.'));
     }, 500);
     return () => clearTimeout(t);
-  }, [buildDraft]);
+  }, [buildDraft, dataStatus]);
 
   const loadData = async () => {
     setDataStatus('loading');
