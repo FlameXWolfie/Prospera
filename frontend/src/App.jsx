@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './lib/auth/AuthContext';
 import AuthSplash from './components/AuthSplash';
 import LandingPage from './pages/LandingPage';
@@ -18,8 +18,16 @@ function RequireAuth({ children }) {
 function GuestOnly({ children }) {
   const { status } = useAuth();
   if (status === 'loading') return <AuthSplash />;
-  if (status === 'authed') return <Navigate to="/app" replace />;
+  if (status === 'authed') return <Navigate to="/dashboard" replace />;
   return children;
+}
+
+// Keep old bookmarks working while exposing clean workspace URLs.
+function LegacyAppRedirect() {
+  const { pathname, search, hash } = useLocation();
+  const section = pathname.replace(/^\/app\/?/, '');
+  const destination = section ? `/${section}` : '/dashboard';
+  return <Navigate to={`${destination}${search}${hash}`} replace />;
 }
 
 // Thin route wrappers keep the existing page prop contracts (onBack/onSwitch/etc.)
@@ -32,8 +40,8 @@ function LandingRoute() {
   return (
     <LandingPage
       isAuthed={isAuthed}
-      onEnterApp={() => navigate(isAuthed ? '/app' : '/signup')}
-      onLogin={() => navigate(isAuthed ? '/app' : '/login')}
+      onEnterApp={() => navigate(isAuthed ? '/dashboard' : '/signup')}
+      onLogin={() => navigate(isAuthed ? '/dashboard' : '/login')}
     />
   );
 }
@@ -52,8 +60,8 @@ export default function App() {
       <Route path="/" element={<LandingRoute />} />
       <Route path="/login" element={<GuestOnly><LoginRoute /></GuestOnly>} />
       <Route path="/signup" element={<GuestOnly><SignupRoute /></GuestOnly>} />
-      <Route path="/app/*" element={<RequireAuth><DashboardLayout /></RequireAuth>} />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="/app/*" element={<LegacyAppRedirect />} />
+      <Route path="/*" element={<RequireAuth><DashboardLayout /></RequireAuth>} />
     </Routes>
   );
 }

@@ -38,7 +38,7 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
   const userId = user?.id;
-  const go = (tab) => navigate(`/app/${tab}`);
+  const go = (tab) => navigate(`/${tab}`);
   // Open a specific saved resume in the Studio (load it into the draft, THEN
   // navigate) — so "Enhance my resume" / "Open in builder" carry the selection
   // across instead of dropping you on a blank/other resume.
@@ -47,7 +47,7 @@ export default function DashboardLayout() {
     if (r) setBuildDraft(draftFromResume(r));
     go('studio');
   };
-  // Navigate away from /app FIRST, then clear the session — otherwise the
+  // Navigate away from the workspace first, then clear the session — otherwise the
   // RequireAuth guard redirects to /login before our navigate('/') lands.
   const handleLogout = () => { navigate('/'); logout(); };
 
@@ -250,16 +250,26 @@ export default function DashboardLayout() {
 
   // ── Application handlers ───────────────────────────────────────────────────
   const handleSaveApplication = async (app) => {
-    const exists = app.id && applications.some((a) => a.id === app.id);
+    const normalized = { ...app };
+    if (normalized.stage === 'applied') {
+      normalized.appliedAt = normalized.appliedAt || new Date().toISOString();
+      if (!normalized.nextStepDate) {
+        const followUp = new Date();
+        followUp.setDate(followUp.getDate() + 7);
+        normalized.nextStep = normalized.nextStep || 'Follow up';
+        normalized.nextStepDate = followUp.toISOString();
+      }
+    }
+    const exists = normalized.id && applications.some((a) => a.id === normalized.id);
     if (exists) {
       const snap = applications;
-      const res = await runMutation(() => updateApplication(app.id, stripServerFields(app)), {
-        optimistic: () => setApplications((prev) => prev.map((a) => (a.id === app.id ? { ...a, ...app } : a))),
+      const res = await runMutation(() => updateApplication(normalized.id, stripServerFields(normalized)), {
+        optimistic: () => setApplications((prev) => prev.map((a) => (a.id === normalized.id ? { ...a, ...normalized } : a))),
         rollback: () => setApplications(snap),
       });
-      if (res) setApplications((prev) => prev.map((a) => (a.id === app.id ? res.application : a)));
+      if (res) setApplications((prev) => prev.map((a) => (a.id === normalized.id ? res.application : a)));
     } else {
-      const res = await runMutation(() => createApplication(stripServerFields(app)));
+      const res = await runMutation(() => createApplication(stripServerFields(normalized)));
       if (res) setApplications((prev) => [res.application, ...prev]);
     }
   };
@@ -267,9 +277,19 @@ export default function DashboardLayout() {
   const handleMoveApplication = async (id, stage) => {
     const current = applications.find((a) => a.id === id);
     if (!current || current.stage === stage) return;
+    const patch = { stage };
+    if (stage === 'applied') {
+      patch.appliedAt = current.appliedAt || new Date().toISOString();
+      if (!current.nextStepDate) {
+        const followUp = new Date();
+        followUp.setDate(followUp.getDate() + 7);
+        patch.nextStep = current.nextStep || 'Follow up';
+        patch.nextStepDate = followUp.toISOString();
+      }
+    }
     const snap = applications;
-    const res = await runMutation(() => updateApplication(id, { stage }), {
-      optimistic: () => setApplications((prev) => prev.map((a) => (a.id === id ? { ...a, stage } : a))),
+    const res = await runMutation(() => updateApplication(id, patch), {
+      optimistic: () => setApplications((prev) => prev.map((a) => (a.id === id ? { ...a, ...patch } : a))),
       rollback: () => setApplications(snap),
     });
     if (res) setApplications((prev) => prev.map((a) => (a.id === id ? res.application : a)));
@@ -303,22 +323,22 @@ export default function DashboardLayout() {
     }
     return (
       <Routes>
-        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<DashboardHome resumes={resumes} applications={applications} onNavigate={go} />} />
         <Route path="ats" element={<AtsScanPage resumes={resumes} onNewResumeClick={() => go('studio')} onUpload={handleUploadResume} onEnhance={goStudioWith} onScanned={handleRecordScan} />} />
         <Route path="studio" element={<BuildResumePage draft={buildDraft} onChange={setBuildDraft} onSaveResume={handleSaveBuiltResume} onNavigate={go} resumes={resumes} />} />
         {/* Build + Enhance merged into the Studio — keep the old paths working. */}
-        <Route path="build" element={<Navigate to="/app/studio" replace />} />
-        <Route path="enhance" element={<Navigate to="/app/studio" replace />} />
+        <Route path="build" element={<Navigate to="/studio" replace />} />
+        <Route path="enhance" element={<Navigate to="/studio" replace />} />
         <Route path="library" element={<LibraryPage resumes={resumes} onNewResumeClick={() => go('studio')} onClone={handleCloneResume} onDelete={handleDeleteResume} onSetActive={handleSetActive} onScan={() => go('ats')} onEditInStudio={goStudioWith} />} />
         <Route path="applications" element={<ApplicationsPage applications={applications} resumes={resumes} onSave={handleSaveApplication} onMove={handleMoveApplication} onDelete={handleDeleteApplication} />} />
         <Route path="interview" element={<ComingSoon name="Interview Prep" onHome={() => go('dashboard')} />} />
         <Route path="portfolio" element={<PortfolioBuilderPage draft={pfDraft} onChange={setPfDraft} resumes={resumes} saved={portfolio} onPrefill={handlePrefillPortfolio} onNavigate={go} />} />
         {/* Profile merged into the unified Settings hub (rail's first section). */}
-        <Route path="profile" element={<Navigate to="/app/settings" replace />} />
+        <Route path="profile" element={<Navigate to="/settings" replace />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="resources" element={<ComingSoon name="Resources" onHome={() => go('dashboard')} />} />
-        <Route path="*" element={<Navigate to="dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     );
   };

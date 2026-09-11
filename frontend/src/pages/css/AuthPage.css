@@ -101,6 +101,12 @@
   font: inherit;
 }
 .auth-logo:disabled { opacity: 0.5; cursor: not-allowed; }
+.auth-logo .brand-logo { color: #fff; }
+.auth-logo .brand-logo-word {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
 .auth-logo-mark {
   width: 32px;
   height: 32px;

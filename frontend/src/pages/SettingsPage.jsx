@@ -263,7 +263,7 @@ export default function SettingsPage() {
                 <span className="acc-head-icon"><Palette size={18} /></span>
                 <div className="acc-head-text">
                   <h2>Appearance</h2>
-                  <p>Choose how Prospera looks. This preference is saved to this device.</p>
+                  <p>Choose how DraftMe looks. This preference is saved to this device.</p>
                 </div>
               </div>
               <div className="acc-theme" role="group" aria-label="Theme">
@@ -293,7 +293,7 @@ export default function SettingsPage() {
                 <span className="acc-head-icon"><Bell size={18} /></span>
                 <div className="acc-head-text">
                   <h2>Notifications</h2>
-                  <p>Choose what Prospera can email you about. Saved on this device.</p>
+                  <p>Choose what DraftMe can email you about. Saved on this device.</p>
                 </div>
               </div>
               <div className="acc-toggle-list">
@@ -393,7 +393,7 @@ export default function SettingsPage() {
                 <span className="acc-head-icon"><Link2 size={18} /></span>
                 <div className="acc-head-text">
                   <h2>Connected accounts</h2>
-                  <p>The sign-in methods linked to your Prospera account.</p>
+                  <p>The sign-in methods linked to your DraftMe account.</p>
                 </div>
               </div>
               <div className="acc-conn-list">

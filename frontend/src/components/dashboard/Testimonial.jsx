@@ -6,7 +6,7 @@ export default function Testimonial() {
       <div className="testimonial-quote-icon">“</div>
       
       <div className="testimonial-text">
-        "Prospera helped me increase my interview rate by 3x. The ATS scan and suggestions are game changers!"
+        "DraftMe helped me increase my interview rate by 3x. The ATS scan and suggestions are game changers!"
       </div>
       
       <div className="testimonial-author">

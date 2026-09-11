@@ -44,7 +44,7 @@ export default function LoginPage({ onSwitch, onBack }) {
     <AuthShell onBack={onBack} busy={busy}>
       <h1 className="auth-title">Welcome back</h1>
       <p className="auth-sub">
-        New to Prospera?{' '}
+        New to DraftMe?{' '}
         <button type="button" onClick={onSwitch} disabled={busy}>Create an account</button>
       </p>
       {error && <div className="auth-alert" role="alert">{error}</div>}

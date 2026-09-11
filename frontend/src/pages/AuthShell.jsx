@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
+import BrandLogo from '../components/BrandLogo';
 import './css/AuthPage.css';
 
 const SLIDES = [
@@ -35,9 +36,8 @@ export default function AuthShell({ onBack, busy, children }) {
         {/* Left visual panel */}
         <aside className="auth-visual" aria-hidden={false}>
           <div className="auth-visual-top">
-            <button type="button" className="auth-logo" onClick={onBack} disabled={busy} aria-label="Prospera home">
-              <span className="auth-logo-mark">P</span>
-              <span className="auth-logo-word">Prospera</span>
+            <button type="button" className="auth-logo" onClick={onBack} disabled={busy} aria-label="DraftMe home">
+              <BrandLogo size={36} />
             </button>
             <button type="button" className="auth-back" onClick={onBack} disabled={busy}>
               Back to website <ArrowRight size={14} />

@@ -1,4 +1,4 @@
-// Tiny fetch wrapper for the Prospera API. In dev, requests go to `/api` and are
+// Tiny fetch wrapper for the DraftMe API. In dev, requests go to `/api` and are
 // proxied to the Express server (see vite.config.js). Override with VITE_API_URL.
 
 const BASE = import.meta.env.VITE_API_URL || '/api';

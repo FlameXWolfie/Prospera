@@ -74,7 +74,7 @@ export function AuthProvider({ children }) {
     [],
   );
   // Only hits the API (throws on a bad password). The caller navigates away from
-  // /app FIRST, then calls logout() to clear the session — same order as the
+  // the workspace first, then calls logout() to clear the session — same order as the
   // logout button, so RequireAuth can't redirect to /login mid-flight.
   const deleteAccount = useCallback(
     (payload) => apiFetch('/auth/me', { method: 'DELETE', body: payload }),

@@ -13,7 +13,7 @@ const updatedLabel = (iso) => {
   return `Updated ${Math.floor((Date.now() - new Date(iso)) / 86400000)}d ago`;
 };
 
-// The dashboard home screen (the `/app/dashboard` route). Owns its own search;
+// The dashboard home screen (the `/dashboard` route). Owns its own search;
 // `onNavigate(tab)` routes to other sections.
 export default function DashboardHome({ resumes, applications, onNavigate }) {
   const [searchTerm, setSearchTerm] = useState('');

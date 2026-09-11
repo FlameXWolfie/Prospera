@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../lib/auth/AuthContext';
 import ThemeToggle from '../ThemeToggle';
+import BrandLogo from '../BrandLogo';
 
 export default function Sidebar({ collapsed, onToggleCollapse, onLogout }) {
   const { user, logout } = useAuth();
@@ -48,7 +49,7 @@ export default function Sidebar({ collapsed, onToggleCollapse, onLogout }) {
       return (
         <NavLink
           key={item.id}
-          to={`/app/${item.id}`}
+          to={`/${item.id}`}
           className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
         >
           <Icon className="icon" />
@@ -61,8 +62,7 @@ export default function Sidebar({ collapsed, onToggleCollapse, onLogout }) {
   return (
     <aside className={`sidebar${collapsed ? ' collapsed' : ''}`}>
       <div className="logo-section">
-        <div className="logo-icon">P</div>
-        <span className="logo-text">Prospera</span>
+        <BrandLogo size={30} className="sidebar-brand" />
         <button
           type="button"
           className="sidebar-collapse-btn"

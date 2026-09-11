@@ -123,9 +123,27 @@
   box-shadow: 0 6px 18px rgba(54, 63, 245, 0.25);
 }
 
+.nav-cta-label-short { display: none; }
+
 /* Responsiveness adjustments */
 @media (max-width: 768px) {
+  .navbar { padding: 14px 18px; }
+
   .nav-links {
     display: none;
   }
+
+  .nav-actions { gap: 10px; }
+}
+
+@media (max-width: 640px) {
+  .btn-secondary-nav { display: none; }
+  .btn-primary-nav { padding: 10px 14px; font-size: 12px; }
+  .nav-cta-label-full { display: none; }
+  .nav-cta-label-short { display: inline; }
+}
+
+@media (max-width: 380px) {
+  .navbar { padding-inline: 14px; }
+  .nav-actions .theme-toggle { display: none; }
 }

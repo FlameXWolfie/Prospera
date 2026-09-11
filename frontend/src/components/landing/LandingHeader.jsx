@@ -1,23 +1,20 @@
-import { ChevronDown } from 'lucide-react';
 import ThemeToggle from '../ThemeToggle';
+import BrandLogo from '../BrandLogo';
 import './css/LandingHeader.css';
 
 export default function LandingHeader({ onEnterApp, onLogin, isAuthed = false }) {
   const handleLogin = onLogin || onEnterApp;
-  // Logo stays on the marketing page when signed in; primary CTA goes to the app.
   const goHome = () => { window.scrollTo({ top: 0, behavior: 'smooth' }); };
   return (
     <header className="landing-header">
       <div className="navbar">
-        <div className="logo-group" onClick={isAuthed ? goHome : onEnterApp} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') (isAuthed ? goHome : onEnterApp)(); }}>
-          <div className="logo-circle">P</div>
-          <span className="logo-text-bold">Prospera</span>
+        <div className="logo-group" onClick={goHome} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') goHome(); }}>
+          <BrandLogo />
         </div>
 
         <nav className="nav-links">
           <a href="#features" className="nav-link">
             <span>Features</span>
-            <ChevronDown size={14} />
           </a>
           <a href="#resume" className="nav-link" onClick={(e) => { e.preventDefault(); onEnterApp(); }}>
             <span>Resume</span>
@@ -25,12 +22,8 @@ export default function LandingHeader({ onEnterApp, onLogin, isAuthed = false })
           <a href="#portfolio" className="nav-link" onClick={(e) => { e.preventDefault(); onEnterApp(); }}>
             <span>Portfolio</span>
           </a>
-          <a href="#resources" className="nav-link">
-            <span>Resources</span>
-            <ChevronDown size={14} />
-          </a>
-          <a href="#pricing" className="nav-link">
-            <span>Pricing</span>
+          <a href="#workflow" className="nav-link">
+            <span>Workflow</span>
           </a>
         </nav>
 
@@ -41,7 +34,10 @@ export default function LandingHeader({ onEnterApp, onLogin, isAuthed = false })
           ) : (
             <>
               <button type="button" className="btn-secondary-nav" onClick={handleLogin}>Log In</button>
-              <button type="button" className="btn-primary-nav" onClick={onEnterApp}>Get Started</button>
+              <button type="button" className="btn-primary-nav" onClick={onEnterApp}>
+                <span className="nav-cta-label-full">Get Started Free</span>
+                <span className="nav-cta-label-short">Start Free</span>
+              </button>
             </>
           )}
         </div>

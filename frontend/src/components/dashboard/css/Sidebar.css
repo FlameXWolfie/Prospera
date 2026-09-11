@@ -21,6 +21,11 @@
   margin-bottom: 30px;
 }
 
+.sidebar-brand .brand-logo-word {
+  font-size: 18px;
+  letter-spacing: -0.04em;
+}
+
 .logo-icon {
   width: 28px;
   height: 28px;

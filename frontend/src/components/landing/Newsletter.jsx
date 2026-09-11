@@ -1,23 +1,16 @@
+import { ArrowRight } from 'lucide-react';
 import './css/Newsletter.css';
 
-export default function Newsletter() {
+export default function Newsletter({ onEnterApp, isAuthed = false }) {
   return (
-    <section className="newsletter-section">
-      <div className="newsletter-banner">
-        <div className="newsletter-text">
-          <h2 className="newsletter-title">Stay updated with career tips & job opportunities</h2>
-          <p className="newsletter-desc">Join our newsletter and get the latest insights every week.</p>
-        </div>
-
-        <form className="newsletter-form" onSubmit={(e) => { e.preventDefault(); alert('Subscribed to newsletter!'); e.target.reset(); }}>
-          <input
-            type="email"
-            placeholder="Enter your email"
-            className="newsletter-input"
-            required
-          />
-          <button type="submit" className="btn-subscribe">Subscribe</button>
-        </form>
+    <section className="final-cta-section" id="start">
+      <div className="final-cta-panel">
+        <h2>Found a role worth applying to?</h2>
+        <p>Bring the job description. DraftMe will help you tailor the resume.</p>
+        <button type="button" className="final-cta-button" onClick={onEnterApp}>
+          <span>{isAuthed ? 'Go to workspace' : 'Create your resume'}</span>
+          <ArrowRight size={18} />
+        </button>
       </div>
     </section>
   );

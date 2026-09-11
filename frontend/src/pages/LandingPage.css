@@ -1,12 +1,14 @@
 /* LandingPage.css */
 
 .landing-container {
+  --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-family: var(--font-sans);
   background-color: var(--bg-card);
   color: var(--text-main);
   min-height: 100vh;
   width: 100%;
-  overflow-x: hidden;
+  /* `hidden` creates a scroll container and breaks sticky feature artwork. */
+  overflow-x: clip;
 }
 
 /* Typography Helpers */

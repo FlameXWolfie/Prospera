@@ -1,28 +1,23 @@
+import { Link2, Route, ShieldCheck } from 'lucide-react';
 import './css/Partners.css';
+
+const principles = [
+  { icon: Link2, title: 'Context stays attached', detail: 'Role, draft, notes, and follow-up' },
+  { icon: Route, title: 'The next step stays visible', detail: 'From saved role to final conversation' },
+  { icon: ShieldCheck, title: 'You stay in control', detail: 'AI supports the edit, not your voice' },
+];
 
 export default function Partners() {
   return (
-    <section className="trusted-section">
-      <h3 className="trusted-title">Trusted by professionals at top companies</h3>
-      <div className="trusted-marquee-container">
-        <div className="trusted-marquee-track">
-          <span className="company-logo-text">Google</span>
-          <span className="company-logo-text">Microsoft</span>
-          <span className="company-logo-text">amazon</span>
-          <span className="company-logo-text">airbnb</span>
-          <span className="company-logo-text">stripe</span>
-          <span className="company-logo-text">Meta</span>
-          <span className="company-logo-text">Adobe</span>
-        </div>
-        <div className="trusted-marquee-track" aria-hidden="true">
-          <span className="company-logo-text">Google</span>
-          <span className="company-logo-text">Microsoft</span>
-          <span className="company-logo-text">amazon</span>
-          <span className="company-logo-text">airbnb</span>
-          <span className="company-logo-text">stripe</span>
-          <span className="company-logo-text">Meta</span>
-          <span className="company-logo-text">Adobe</span>
-        </div>
+    <section className="principles-section" aria-label="DraftMe product principles">
+      <p className="principles-statement">One workspace, not another pile of tabs.</p>
+      <div className="principles-list">
+        {principles.map(({ icon: Icon, title, detail }) => (
+          <div className="principle-item" key={title}>
+            <Icon size={17} strokeWidth={1.7} />
+            <span><strong>{title}</strong><small>{detail}</small></span>
+          </div>
+        ))}
       </div>
     </section>
   );

@@ -22,7 +22,7 @@ export function comp(app) {
 const kFmt = (n) => `${Math.round(n / 1000)}`;
 
 export function formatSalary(min, max) {
-  if (min != null && max != null) return `$${kFmt(min)}–${kFmt(max)}k`;
+  if (min != null && max != null) return `$${kFmt(min)}-${kFmt(max)}k`;
   if (min != null) return `$${kFmt(min)}k+`;
   if (max != null) return `$${kFmt(max)}k`;
   return '';
@@ -145,7 +145,10 @@ export function filterSort(apps, { search, stageFilter, needsAction, sort }) {
     if (stageFilter && a.stage !== stageFilter) return false;
     if (needsAction) {
       const d = dueState(a.nextStepDate);
-      if (d !== 'overdue' && d !== 'soon') return false;
+      const due = d === 'overdue' || d === 'soon';
+      const missingNextStep = (a.stage === 'applied' || a.stage === 'interviewing') && !a.nextStepDate;
+      const missingResume = a.stage !== 'saved' && a.stage !== 'offer' && a.stage !== 'rejected' && !a.resumeId;
+      if (!due && !missingNextStep && !missingResume) return false;
     }
     return true;
   });
