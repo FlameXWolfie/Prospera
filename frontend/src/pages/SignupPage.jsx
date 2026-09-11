@@ -1,5 +1,15 @@
-import { useState, useMemo } from 'react';
-import { Eye, EyeOff, Loader2, Mail, Lock, User, ArrowRight, AlertCircle } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import {
+  AlertCircle,
+  ArrowRight,
+  Check,
+  Eye,
+  EyeOff,
+  Loader2,
+  LockKeyhole,
+  Mail,
+  UserRound,
+} from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../lib/auth/AuthContext';
 import { ApiError } from '../lib/api';
@@ -7,201 +17,196 @@ import AuthShell from './AuthShell';
 
 const googleEnabled = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-// Mirrors the server rule (8+ chars, letters and numbers) and rewards length.
-function scorePassword(value) {
+function getPasswordScore(value) {
   if (!value) return 0;
+
   let score = 0;
   if (value.length >= 8) score += 1;
   if (/[a-zA-Z]/.test(value) && /\d/.test(value)) score += 1;
-  if (value.length >= 12 || /[^a-zA-Z0-9]/.test(value)) score += 1;
+  if (value.length >= 12) score += 1;
+  if (/[^a-zA-Z0-9]/.test(value)) score += 1;
   return score;
 }
 
-const STRENGTH = [
-  { label: '', className: '' },
-  { label: 'Weak', className: 'on-weak' },
-  { label: 'Fair', className: 'on-fair' },
-  { label: 'Strong', className: 'on-strong' },
-];
+const STRENGTH_LABELS = ['Start typing', 'Needs work', 'Good', 'Strong', 'Excellent'];
 
 export default function SignupPage({ onSwitch, onBack }) {
   const { signup, loginWithGoogle } = useAuth();
   const [form, setForm] = useState({ name: '', email: '', password: '' });
-  const [show, setShow] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const score = useMemo(() => scorePassword(form.password), [form.password]);
-  const strength = STRENGTH[score];
+  const passwordScore = useMemo(() => getPasswordScore(form.password), [form.password]);
+  const passwordIsValid = form.password.length >= 8 && /[a-zA-Z]/.test(form.password) && /\d/.test(form.password);
 
-  const submit = async (e) => {
-    e.preventDefault();
+  const submit = async (event) => {
+    event.preventDefault();
     setError('');
     setErrors({});
     setBusy(true);
+
     try {
       await signup(form);
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Something went wrong.');
-      if (err instanceof ApiError && err.fields) setErrors(err.fields);
+    } catch (requestError) {
+      setError(requestError instanceof ApiError ? requestError.message : 'Something went wrong.');
+      if (requestError instanceof ApiError && requestError.fields) setErrors(requestError.fields);
       setBusy(false);
     }
   };
 
-  const onGoogle = async (cred) => {
+  const onGoogle = async (credentialResponse) => {
     setError('');
     setBusy(true);
+
     try {
-      await loginWithGoogle(cred.credential);
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Google sign-in failed.');
+      await loginWithGoogle(credentialResponse.credential);
+    } catch (requestError) {
+      setError(requestError instanceof ApiError ? requestError.message : 'Google sign-up failed.');
       setBusy(false);
     }
   };
 
   return (
-    <AuthShell onBack={onBack} busy={busy}>
-      <h1 className="auth-title">Create an account</h1>
-      <p className="auth-sub">
-        Already have an account?{' '}
-        <button type="button" onClick={onSwitch} disabled={busy}>Log in</button>
-      </p>
+    <AuthShell mode="signup" onBack={onBack} onSwitch={onSwitch} busy={busy}>
       {error && (
         <div className="auth-alert" role="alert">
-          <AlertCircle size={15} strokeWidth={1.9} />
+          <AlertCircle size={16} strokeWidth={1.9} />
           <span>{error}</span>
         </div>
       )}
 
-      <form className="auth-form" onSubmit={submit} noValidate>
-        <div className={`auth-field${errors.name ? ' invalid' : ''}`}>
-          <label className="auth-label" htmlFor="signup-name">Full name</label>
-          <span className="auth-input-wrap">
-            <span className="auth-input-ic"><User size={16} strokeWidth={1.75} /></span>
+      {googleEnabled && (
+        <>
+          <div className="auth-google">
+            <GoogleLogin
+              onSuccess={onGoogle}
+              onError={() => setError('Google sign-up failed.')}
+              text="signup_with"
+              theme="outline"
+              shape="rectangular"
+              size="large"
+              width="400"
+            />
+          </div>
+          <div className="auth-divider"><span>or use email</span></div>
+        </>
+      )}
+
+      <form className="auth-form auth-form-signup" onSubmit={submit} noValidate>
+        <div className={`auth-field${errors.name ? ' has-error' : ''}`}>
+          <label htmlFor="signup-name">Full name</label>
+          <div className="auth-control">
+            <UserRound className="auth-control-icon" size={18} strokeWidth={1.7} />
             <input
               id="signup-name"
-              className="auth-input"
               type="text"
               autoComplete="name"
               value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="Ananya Raghunathan"
+              onChange={(event) => setForm({ ...form, name: event.target.value })}
+              placeholder="Your full name"
               aria-invalid={!!errors.name}
-              aria-describedby={errors.name ? 'signup-name-err' : undefined}
+              aria-describedby={errors.name ? 'signup-name-error' : undefined}
             />
-          </span>
+          </div>
           {errors.name && (
-            <span className="auth-err" id="signup-name-err">
-              <AlertCircle size={12} strokeWidth={2} />{errors.name}
+            <span className="auth-field-error" id="signup-name-error">
+              <AlertCircle size={12} /> {errors.name}
             </span>
           )}
         </div>
 
-        <div className={`auth-field${errors.email ? ' invalid' : ''}`}>
-          <label className="auth-label" htmlFor="signup-email">Email</label>
-          <span className="auth-input-wrap">
-            <span className="auth-input-ic"><Mail size={16} strokeWidth={1.75} /></span>
+        <div className={`auth-field${errors.email ? ' has-error' : ''}`}>
+          <label htmlFor="signup-email">Email address</label>
+          <div className="auth-control">
+            <Mail className="auth-control-icon" size={18} strokeWidth={1.7} />
             <input
               id="signup-email"
-              className="auth-input"
               type="email"
               autoComplete="email"
+              inputMode="email"
               value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              onChange={(event) => setForm({ ...form, email: event.target.value })}
               placeholder="you@company.com"
               aria-invalid={!!errors.email}
-              aria-describedby={errors.email ? 'signup-email-err' : undefined}
+              aria-describedby={errors.email ? 'signup-email-error' : undefined}
             />
-          </span>
+          </div>
           {errors.email && (
-            <span className="auth-err" id="signup-email-err">
-              <AlertCircle size={12} strokeWidth={2} />{errors.email}
+            <span className="auth-field-error" id="signup-email-error">
+              <AlertCircle size={12} /> {errors.email}
             </span>
           )}
         </div>
 
-        <div className={`auth-field${errors.password ? ' invalid' : ''}`}>
-          <label className="auth-label" htmlFor="signup-password">Password</label>
-          <span className="auth-input-wrap">
-            <span className="auth-input-ic"><Lock size={16} strokeWidth={1.75} /></span>
+        <div className={`auth-field${errors.password ? ' has-error' : ''}`}>
+          <div className="auth-label-row">
+            <label htmlFor="signup-password">Password</label>
+            {form.password && (
+              <span className={`auth-strength-label strength-${passwordScore}`} aria-live="polite">
+                {STRENGTH_LABELS[passwordScore]}
+              </span>
+            )}
+          </div>
+          <div className="auth-control">
+            <LockKeyhole className="auth-control-icon" size={18} strokeWidth={1.7} />
             <input
               id="signup-password"
-              className="auth-input has-eye"
-              type={show ? 'text' : 'password'}
+              type={showPassword ? 'text' : 'password'}
               autoComplete="new-password"
               value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              placeholder="At least 8 characters"
+              onChange={(event) => setForm({ ...form, password: event.target.value })}
+              placeholder="Create a secure password"
               aria-invalid={!!errors.password}
-              aria-describedby="signup-password-help"
+              aria-describedby={errors.password ? 'signup-password-error' : 'signup-password-help'}
             />
             <button
               type="button"
-              className="auth-eye"
-              onClick={() => setShow((s) => !s)}
-              aria-label={show ? 'Hide password' : 'Show password'}
+              className="auth-password-toggle"
+              onClick={() => setShowPassword((visible) => !visible)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
-              {show ? <EyeOff size={16} /> : <Eye size={16} />}
+              {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
             </button>
-          </span>
+          </div>
 
           {form.password && !errors.password && (
-            <div className="auth-strength">
-              <div className="auth-strength-bars" aria-hidden="true">
-                {[1, 2, 3].map((step) => (
-                  <span
-                    key={step}
-                    className={`auth-strength-bar${score >= step ? ` ${strength.className}` : ''}`}
-                  />
+            <div className={`auth-strength strength-${passwordScore}`} id="signup-password-help">
+              <div className="auth-strength-track" aria-hidden="true">
+                {[1, 2, 3, 4].map((step) => (
+                  <span key={step} className={passwordScore >= step ? 'is-filled' : ''} />
                 ))}
               </div>
-              <span className="auth-strength-text" id="signup-password-help" aria-live="polite">
-                Password strength: <b>{strength.label}</b>
+              <span className={passwordIsValid ? 'is-valid' : ''}>
+                {passwordIsValid && <Check size={12} strokeWidth={2.4} />}
+                8+ characters with letters and numbers
               </span>
             </div>
           )}
 
-          {errors.password ? (
-            <span className="auth-err" id="signup-password-err">
-              <AlertCircle size={12} strokeWidth={2} />{errors.password}
+          {!form.password && !errors.password && (
+            <span className="auth-field-hint" id="signup-password-help">
+              Use 8+ characters with letters and numbers.
             </span>
-          ) : (
-            !form.password && (
-              <span className="auth-hint" id="signup-password-help">
-                Use 8+ characters with a mix of letters and numbers.
-              </span>
-            )
+          )}
+
+          {errors.password && (
+            <span className="auth-field-error" id="signup-password-error">
+              <AlertCircle size={12} /> {errors.password}
+            </span>
           )}
         </div>
 
-        <button className="auth-submit" type="submit" disabled={busy}>
+        <button className="auth-primary-action" type="submit" disabled={busy}>
+          <span>{busy ? 'Creating workspace' : 'Create my workspace'}</span>
           {busy ? (
-            <Loader2 size={17} className="auth-spin" />
+            <Loader2 size={18} className="auth-spinner" />
           ) : (
-            <>Create account <ArrowRight size={16} className="auth-submit-arrow" strokeWidth={2} /></>
+            <ArrowRight size={18} className="auth-action-arrow" />
           )}
         </button>
       </form>
-
-      {googleEnabled && (
-        <>
-          <div className="auth-divider"><span>Or register with</span></div>
-          <div className="auth-social">
-            <div className="auth-google">
-              <GoogleLogin
-                onSuccess={onGoogle}
-                onError={() => setError('Google sign-in failed.')}
-                text="signup_with"
-                theme="filled_black"
-                shape="rectangular"
-                size="large"
-                width="352"
-              />
-            </div>
-          </div>
-        </>
-      )}
     </AuthShell>
   );
 }

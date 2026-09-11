@@ -1,5 +1,13 @@
 import { useState } from 'react';
-import { Eye, EyeOff, Loader2, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Loader2,
+  LockKeyhole,
+  Mail,
+} from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../lib/auth/AuthContext';
 import { ApiError } from '../lib/api';
@@ -10,132 +18,127 @@ const googleEnabled = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
 export default function LoginPage({ onSwitch, onBack }) {
   const { login, loginWithGoogle } = useAuth();
   const [form, setForm] = useState({ email: '', password: '' });
-  const [show, setShow] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const submit = async (e) => {
-    e.preventDefault();
+  const submit = async (event) => {
+    event.preventDefault();
     setError('');
     setErrors({});
     setBusy(true);
+
     try {
       await login(form);
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Something went wrong.');
-      if (err instanceof ApiError && err.fields) setErrors(err.fields);
+    } catch (requestError) {
+      setError(requestError instanceof ApiError ? requestError.message : 'Something went wrong.');
+      if (requestError instanceof ApiError && requestError.fields) setErrors(requestError.fields);
       setBusy(false);
     }
   };
 
-  const onGoogle = async (cred) => {
+  const onGoogle = async (credentialResponse) => {
     setError('');
     setBusy(true);
+
     try {
-      await loginWithGoogle(cred.credential);
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Google sign-in failed.');
+      await loginWithGoogle(credentialResponse.credential);
+    } catch (requestError) {
+      setError(requestError instanceof ApiError ? requestError.message : 'Google sign-in failed.');
       setBusy(false);
     }
   };
 
   return (
-    <AuthShell onBack={onBack} busy={busy}>
-      <h1 className="auth-title">Welcome back</h1>
-      <p className="auth-sub">
-        New to DraftMe?{' '}
-        <button type="button" onClick={onSwitch} disabled={busy}>Create an account</button>
-      </p>
+    <AuthShell mode="login" onBack={onBack} onSwitch={onSwitch} busy={busy}>
       {error && (
         <div className="auth-alert" role="alert">
-          <AlertCircle size={15} strokeWidth={1.9} />
+          <AlertCircle size={16} strokeWidth={1.9} />
           <span>{error}</span>
         </div>
       )}
 
+      {googleEnabled && (
+        <>
+          <div className="auth-google">
+            <GoogleLogin
+              onSuccess={onGoogle}
+              onError={() => setError('Google sign-in failed.')}
+              text="continue_with"
+              theme="outline"
+              shape="rectangular"
+              size="large"
+              width="400"
+            />
+          </div>
+          <div className="auth-divider"><span>or use email</span></div>
+        </>
+      )}
+
       <form className="auth-form" onSubmit={submit} noValidate>
-        <div className={`auth-field${errors.email ? ' invalid' : ''}`}>
-          <label className="auth-label" htmlFor="login-email">Email</label>
-          <span className="auth-input-wrap">
-            <span className="auth-input-ic"><Mail size={16} strokeWidth={1.75} /></span>
+        <div className={`auth-field${errors.email ? ' has-error' : ''}`}>
+          <label htmlFor="login-email">Email address</label>
+          <div className="auth-control">
+            <Mail className="auth-control-icon" size={18} strokeWidth={1.7} />
             <input
               id="login-email"
-              className="auth-input"
               type="email"
               autoComplete="email"
+              inputMode="email"
               value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              onChange={(event) => setForm({ ...form, email: event.target.value })}
               placeholder="you@company.com"
               aria-invalid={!!errors.email}
-              aria-describedby={errors.email ? 'login-email-err' : undefined}
+              aria-describedby={errors.email ? 'login-email-error' : undefined}
             />
-          </span>
+          </div>
           {errors.email && (
-            <span className="auth-err" id="login-email-err">
-              <AlertCircle size={12} strokeWidth={2} />{errors.email}
+            <span className="auth-field-error" id="login-email-error">
+              <AlertCircle size={12} /> {errors.email}
             </span>
           )}
         </div>
 
-        <div className={`auth-field${errors.password ? ' invalid' : ''}`}>
-          <label className="auth-label" htmlFor="login-password">Password</label>
-          <span className="auth-input-wrap">
-            <span className="auth-input-ic"><Lock size={16} strokeWidth={1.75} /></span>
+        <div className={`auth-field${errors.password ? ' has-error' : ''}`}>
+          <label htmlFor="login-password">Password</label>
+          <div className="auth-control">
+            <LockKeyhole className="auth-control-icon" size={18} strokeWidth={1.7} />
             <input
               id="login-password"
-              className="auth-input has-eye"
-              type={show ? 'text' : 'password'}
+              type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
               value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              onChange={(event) => setForm({ ...form, password: event.target.value })}
               placeholder="Enter your password"
               aria-invalid={!!errors.password}
-              aria-describedby={errors.password ? 'login-password-err' : undefined}
+              aria-describedby={errors.password ? 'login-password-error' : undefined}
             />
             <button
               type="button"
-              className="auth-eye"
-              onClick={() => setShow((s) => !s)}
-              aria-label={show ? 'Hide password' : 'Show password'}
+              className="auth-password-toggle"
+              onClick={() => setShowPassword((visible) => !visible)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
-              {show ? <EyeOff size={16} /> : <Eye size={16} />}
+              {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
             </button>
-          </span>
+          </div>
           {errors.password && (
-            <span className="auth-err" id="login-password-err">
-              <AlertCircle size={12} strokeWidth={2} />{errors.password}
+            <span className="auth-field-error" id="login-password-error">
+              <AlertCircle size={12} /> {errors.password}
             </span>
           )}
         </div>
 
-        <button className="auth-submit" type="submit" disabled={busy}>
+        <button className="auth-primary-action" type="submit" disabled={busy}>
+          <span>{busy ? 'Signing in' : 'Enter workspace'}</span>
           {busy ? (
-            <Loader2 size={17} className="auth-spin" />
+            <Loader2 size={18} className="auth-spinner" />
           ) : (
-            <>Sign in <ArrowRight size={16} className="auth-submit-arrow" strokeWidth={2} /></>
+            <ArrowRight size={18} className="auth-action-arrow" />
           )}
         </button>
       </form>
-
-      {googleEnabled && (
-        <>
-          <div className="auth-divider"><span>Or continue with</span></div>
-          <div className="auth-social">
-            <div className="auth-google">
-              <GoogleLogin
-                onSuccess={onGoogle}
-                onError={() => setError('Google sign-in failed.')}
-                text="continue_with"
-                theme="filled_black"
-                shape="rectangular"
-                size="large"
-                width="352"
-              />
-            </div>
-          </div>
-        </>
-      )}
     </AuthShell>
   );
 }
