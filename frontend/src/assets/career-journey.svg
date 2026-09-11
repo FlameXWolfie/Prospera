@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 600" role="img" aria-labelledby="title desc">
+  <title id="title">Career journey</title>
+  <desc id="desc">A mountain route progressing from building career tools to preparing with confidence and growing a career.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f5f6f2"/>
+      <stop offset="1" stop-color="#dfe5df"/>
+    </linearGradient>
+    <linearGradient id="back" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d5ddd8"/>
+      <stop offset="1" stop-color="#aebcb5"/>
+    </linearGradient>
+    <linearGradient id="middle" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8fa39a"/>
+      <stop offset="1" stop-color="#506b61"/>
+    </linearGradient>
+    <linearGradient id="front" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#466158"/>
+      <stop offset="1" stop-color="#173a31"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1800" height="600" fill="url(#sky)"/>
+  <circle cx="1370" cy="105" r="190" fill="#ffffff" opacity=".32"/>
+  <path d="M0 410 190 270 340 355 510 208 675 350 850 176 1010 320 1210 105 1400 302 1545 225 1800 405V600H0Z" fill="url(#back)" opacity=".62"/>
+  <path d="M0 490 205 365 355 424 560 282 720 435 930 238 1090 395 1265 144 1450 390 1610 312 1800 450V600H0Z" fill="url(#middle)" opacity=".82"/>
+  <path d="M0 555 250 448 430 506 650 388 820 526 1030 350 1160 470 1270 190 1425 408 1560 488 1800 545V600H0Z" fill="url(#front)"/>
+  <path d="M0 575 260 506 470 552 680 458 900 565 1080 454 1270 250 1435 488 1610 540 1800 570V600H0Z" fill="#113129" opacity=".7"/>
+
+  <g fill="#102f27" opacity=".9">
+    <path d="m1480 480 12-44 12 44h-8l12 38h-32l12-38Z"/>
+    <path d="m1532 501 10-38 10 38h-7l10 31h-27l10-31Z"/>
+    <path d="m1580 516 9-34 9 34h-6l9 28h-24l9-28Z"/>
+    <path d="m1640 529 8-29 8 29h-5l8 24h-22l8-24Z"/>
+  </g>
+
+  <path d="M170 528C285 510 390 493 490 451S635 367 710 352 865 402 978 341 1058 255 1110 230 1192 250 1244 185 1270 132" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M170 528C285 510 390 493 490 451S635 367 710 352 865 402 978 341 1058 255 1110 230 1192 250 1244 185 1270 132" fill="none" stroke="#173a31" stroke-opacity=".16" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <g fill="#173a31" stroke="#ffffff" stroke-width="6">
+    <circle cx="490" cy="451" r="12"/>
+    <circle cx="710" cy="352" r="12"/>
+    <circle cx="978" cy="341" r="12"/>
+    <circle cx="1110" cy="230" r="12"/>
+    <circle cx="1244" cy="185" r="12"/>
+    <circle cx="1270" cy="132" r="12"/>
+  </g>
+
+  <path d="M1270 132V73" stroke="#173a31" stroke-width="4"/>
+  <path d="M1272 74 1324 89 1272 105Z" fill="#315e51"/>
+
+  <g fill="#142b25">
+    <text x="380" y="370" font-family="Georgia, serif" font-size="31">Build</text>
+    <text x="380" y="395" font-family="Arial, sans-serif" font-size="13" letter-spacing="5">YOUR TOOLS</text>
+    <text x="820" y="253" font-family="Georgia, serif" font-size="31">Prepare</text>
+    <text x="820" y="278" font-family="Arial, sans-serif" font-size="13" letter-spacing="5">WITH CONFIDENCE</text>
+    <text x="1328" y="108" font-family="Georgia, serif" font-size="31">Grow</text>
+    <text x="1328" y="133" font-family="Arial, sans-serif" font-size="13" letter-spacing="5">YOUR CAREER</text>
+  </g>
+
+  <g fill="none" stroke="#35574e" stroke-width="2" stroke-linecap="round" opacity=".7">
+    <path d="M1480 185q9-10 18 0q9-10 18 0"/>
+    <path d="M1525 205q8-9 16 0q8-9 16 0"/>
+  </g>
+</svg>
