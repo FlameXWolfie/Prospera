@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../lib/auth/AuthContext';
 import { ApiError } from '../lib/api';
@@ -47,44 +47,74 @@ export default function LoginPage({ onSwitch, onBack }) {
         New to DraftMe?{' '}
         <button type="button" onClick={onSwitch} disabled={busy}>Create an account</button>
       </p>
-      {error && <div className="auth-alert" role="alert">{error}</div>}
+      {error && (
+        <div className="auth-alert" role="alert">
+          <AlertCircle size={15} strokeWidth={1.9} />
+          <span>{error}</span>
+        </div>
+      )}
 
       <form className="auth-form" onSubmit={submit} noValidate>
-        <label className={`auth-field${errors.email ? ' invalid' : ''}`}>
-          <span className="auth-label">Email</span>
+        <div className={`auth-field${errors.email ? ' invalid' : ''}`}>
+          <label className="auth-label" htmlFor="login-email">Email</label>
           <span className="auth-input-wrap">
+            <span className="auth-input-ic"><Mail size={16} strokeWidth={1.75} /></span>
             <input
+              id="login-email"
               className="auth-input"
               type="email"
               autoComplete="email"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
-              placeholder="Email"
+              placeholder="you@company.com"
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? 'login-email-err' : undefined}
             />
           </span>
-          {errors.email && <span className="auth-err">{errors.email}</span>}
-        </label>
+          {errors.email && (
+            <span className="auth-err" id="login-email-err">
+              <AlertCircle size={12} strokeWidth={2} />{errors.email}
+            </span>
+          )}
+        </div>
 
-        <label className={`auth-field${errors.password ? ' invalid' : ''}`}>
-          <span className="auth-label">Password</span>
+        <div className={`auth-field${errors.password ? ' invalid' : ''}`}>
+          <label className="auth-label" htmlFor="login-password">Password</label>
           <span className="auth-input-wrap">
+            <span className="auth-input-ic"><Lock size={16} strokeWidth={1.75} /></span>
             <input
+              id="login-password"
               className="auth-input has-eye"
               type={show ? 'text' : 'password'}
               autoComplete="current-password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               placeholder="Enter your password"
+              aria-invalid={!!errors.password}
+              aria-describedby={errors.password ? 'login-password-err' : undefined}
             />
-            <button type="button" className="auth-eye" onClick={() => setShow((s) => !s)} aria-label={show ? 'Hide password' : 'Show password'}>
+            <button
+              type="button"
+              className="auth-eye"
+              onClick={() => setShow((s) => !s)}
+              aria-label={show ? 'Hide password' : 'Show password'}
+            >
               {show ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </span>
-          {errors.password && <span className="auth-err">{errors.password}</span>}
-        </label>
+          {errors.password && (
+            <span className="auth-err" id="login-password-err">
+              <AlertCircle size={12} strokeWidth={2} />{errors.password}
+            </span>
+          )}
+        </div>
 
         <button className="auth-submit" type="submit" disabled={busy}>
-          {busy ? <Loader2 size={17} className="auth-spin" /> : 'Sign in'}
+          {busy ? (
+            <Loader2 size={17} className="auth-spin" />
+          ) : (
+            <>Sign in <ArrowRight size={16} className="auth-submit-arrow" strokeWidth={2} /></>
+          )}
         </button>
       </form>
 
