@@ -1,75 +1,51 @@
+import { useState } from 'react';
 import './css/DashboardHome.css';
 import careerJourney from '../assets/career-journey.svg';
 import { useAuth } from '../lib/auth/AuthContext';
-import { useTheme } from '../lib/theme/ThemeContext';
 import {
   computeStats,
   dueLabel,
   dueState,
   monthlyTrend,
+  relativeDate,
 } from '../lib/applications/applications';
 import { isScanStale, scanScore, scoreColor } from '../lib/resume/scoreColor';
 
-const TOP_NAV = [
-  { id: 'dashboard', label: 'Home' },
-  { id: 'applications', label: 'Applications' },
-  { id: 'ats', label: 'Résumé & ATS' },
-  { id: 'portfolio', label: 'Portfolio' },
-  { id: 'interview', label: 'Interview Prep' },
-  { id: 'library', label: 'Library' },
-  { id: 'resources', label: 'Resources' },
-];
-
-const RAIL_NAV = [
-  { id: 'dashboard', label: 'Dashboard', mark: 'home' },
-  { id: 'studio', label: 'Résumé Studio', mark: 'resume' },
-  { id: 'ats', label: 'ATS Scan', mark: 'scan' },
-  { id: 'applications', label: 'Applications', mark: 'case' },
-  { id: 'portfolio', label: 'Portfolio', mark: 'portfolio' },
-  { id: 'interview', label: 'Interview Prep', mark: 'interview' },
-  { id: 'library', label: 'Résumé Library', mark: 'library' },
-  { id: 'resources', label: 'Resources', mark: 'book' },
-];
-
 const BOARD_STAGES = [
-  { id: 'applied', label: 'Applied', color: '#369af5' },
-  { id: 'interviewing', label: 'Interview', color: '#6957ee' },
-  { id: 'offer', label: 'Offer', color: '#27b77d' },
-  { id: 'rejected', label: 'Rejected', color: '#e53448' },
+  { id: 'applied', label: 'Applied', color: '#3b82f6' },
+  { id: 'interviewing', label: 'Interview', color: '#7c3aed' },
+  { id: 'offer', label: 'Offer', color: '#059669' },
+  { id: 'rejected', label: 'Closed', color: '#dc5263' },
 ];
 
-const COMPANY_PALETTE = [
-  ['#e1ecff', '#2259a8'],
-  ['#e3f4e9', '#176144'],
-  ['#f2e8ff', '#7440a6'],
-  ['#fff0d9', '#a15a13'],
-  ['#ffe4e8', '#a62f42'],
-  ['#dff2f2', '#17636a'],
+const MONOGRAM_PALETTE = [
+  ['#dce7ff', '#234ea5'],
+  ['#e2f5ed', '#176847'],
+  ['#f4e6ff', '#7041a3'],
+  ['#fff0db', '#915b18'],
+  ['#ffe5e8', '#9b3342'],
+  ['#dff2f4', '#22666f'],
 ];
 
-const TOOL_LINKS = [
-  { id: 'ats', title: 'Résumé & ATS', copy: 'Strengthen every application', mark: 'scan' },
-  { id: 'applications', title: 'Application Tracker', copy: 'Keep every opportunity together', mark: 'case' },
-  { id: 'portfolio', title: 'Portfolio Builder', copy: 'Showcase your strongest work', mark: 'portfolio' },
-  { id: 'interview', title: 'Interview Prep', copy: 'Practice with confidence', mark: 'interview' },
-  { id: 'library', title: 'Résumé Library', copy: 'Organize tailored versions', mark: 'library' },
-  { id: 'resources', title: 'Resources', copy: 'Guides for your next move', mark: 'book' },
-];
+const NOW = new Date();
+const DATE_LABEL = NOW.toLocaleDateString('en-US', {
+  weekday: 'long',
+  month: 'long',
+  day: 'numeric',
+});
+const GREETING = NOW.getHours() < 12 ? 'Good morning' : NOW.getHours() < 17 ? 'Good afternoon' : 'Good evening';
 
 const firstNameOf = (user) => (user?.name || 'there').trim().split(/\s+/)[0] || 'there';
 
-const initialsOf = (name = '') => name
-  .split(/\s+/)
-  .filter(Boolean)
-  .slice(0, 2)
-  .map((part) => part.charAt(0).toUpperCase())
-  .join('') || 'A';
+const monogramStyle = (name = '') => {
+  const seed = [...name].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  const [background, color] = MONOGRAM_PALETTE[seed % MONOGRAM_PALETTE.length];
+  return { background, color };
+};
 
 const shortDate = (iso) => {
-  if (!iso) return 'Recently';
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return 'Recently';
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  if (!iso) return 'Recently updated';
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
 const monthDay = (iso) => {
@@ -80,293 +56,148 @@ const monthDay = (iso) => {
   };
 };
 
-const companyStyle = (name = '') => {
-  const seed = [...name].reduce((sum, char) => sum + char.charCodeAt(0), 0);
-  const [background, color] = COMPANY_PALETTE[seed % COMPANY_PALETTE.length];
-  return { background, color };
-};
-
-function NavMark({ type }) {
-  let drawing;
-  switch (type) {
-    case 'home':
-      drawing = <><rect x="3" y="3" width="6" height="6" rx="1" /><rect x="13" y="3" width="6" height="6" rx="1" /><rect x="3" y="13" width="6" height="6" rx="1" /><rect x="13" y="13" width="6" height="6" rx="1" /></>;
-      break;
-    case 'resume':
-      drawing = <><path d="M6 2.8h7l4 4V19H6z" /><path d="M13 2.8V7h4M8.5 11h6M8.5 14h6" /></>;
-      break;
-    case 'scan':
-      drawing = <><path d="M4 8V4h4M14 4h4v4M18 14v4h-4M8 18H4v-4" /><path d="M7 11h8M9 8.5h4M9 13.5h4" /></>;
-      break;
-    case 'case':
-      drawing = <><rect x="3" y="7" width="16" height="11" rx="2" /><path d="M8 7V4.5h6V7M3 11.5c4.5 2.2 11.5 2.2 16 0M10 12h2" /></>;
-      break;
-    case 'portfolio':
-      drawing = <><rect x="3" y="4" width="16" height="14" rx="2" /><path d="M3 9h16M9 9v9M6 6.5h.01M12 12h4M12 15h3" /></>;
-      break;
-    case 'interview':
-      drawing = <><path d="M4 12V9a7 7 0 0 1 14 0v3" /><rect x="3" y="11" width="4" height="7" rx="2" /><rect x="15" y="11" width="4" height="7" rx="2" /><path d="M15 18c-.7 1-1.8 1.5-3.2 1.5" /></>;
-      break;
-    case 'library':
-      drawing = <><path d="M5 3h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z" /><path d="M8 3v13M5 16h13" /></>;
-      break;
-    case 'book':
-      drawing = <><path d="M3 4.5c3-.8 5.5 0 8 2.2v12c-2.5-2.2-5-3-8-2.2zM19 4.5c-3-.8-5.5 0-8 2.2v12c2.5-2.2 5-3 8-2.2z" /></>;
-      break;
-    case 'settings':
-      drawing = <><circle cx="11" cy="11" r="3" /><path d="M11 2.5v2M11 17.5v2M2.5 11h2M17.5 11h2M5 5l1.4 1.4M15.6 15.6 17 17M17 5l-1.4 1.4M6.4 15.6 5 17" /></>;
-      break;
-    default:
-      drawing = <path d="M4 11h14M11 4v14" />;
-  }
-
+function SetupRow({ index, title, description, complete, onClick }) {
   return (
-    <svg className="dh-nav-mark" viewBox="0 0 22 22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.55" strokeLinecap="round" strokeLinejoin="round">
-      {drawing}
-    </svg>
-  );
-}
-
-function ProductMark({ compact = false }) {
-  return (
-    <span className={`dh-product-mark${compact ? ' is-compact' : ''}`}>
-      <span className="dh-product-triangle" />
-      {!compact && <strong>DRAFTME</strong>}
-    </span>
-  );
-}
-
-function ThemeControl({ compact = false }) {
-  const { isDark, toggle } = useTheme();
-  return (
-    <button
-      type="button"
-      className={`dh-theme-control${compact ? ' is-compact' : ''}`}
-      onClick={toggle}
-      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-      title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-    >
-      <span className="dh-theme-orbit"><i /></span>
-      {!compact && <span>{isDark ? 'Light' : 'Theme'}</span>}
+    <button type="button" className={`dh-setup-row${complete ? ' is-complete' : ''}`} onClick={onClick}>
+      <span className="dh-setup-index">{String(index + 1).padStart(2, '0')}</span>
+      <span className="dh-setup-copy">
+        <strong>{title}</strong>
+        <span>{description}</span>
+      </span>
+      <span className="dh-setup-state">{complete ? 'Done' : 'Start →'}</span>
     </button>
   );
 }
 
-function UserAvatar({ user }) {
-  return user?.avatar ? (
-    <img className="dh-user-avatar" src={user.avatar} alt="" referrerPolicy="no-referrer" />
-  ) : (
-    <span className="dh-user-avatar dh-user-avatar-mono">{initialsOf(user?.name)}</span>
-  );
-}
-
-function PremiumTopbar({ user, onNavigate }) {
+function ReadinessRing({ value, label = 'ready' }) {
   return (
-    <header className="dh-topbar">
-      <button type="button" className="dh-brand-button" onClick={() => onNavigate('dashboard')} aria-label="Dashboard home">
-        <ProductMark />
-      </button>
-      <nav className="dh-topnav" aria-label="Workspace navigation">
-        {TOP_NAV.map((item) => (
-          <button
-            type="button"
-            key={item.id}
-            className={item.id === 'dashboard' ? 'is-active' : ''}
-            onClick={() => onNavigate(item.id)}
-          >
-            {item.label}
-          </button>
-        ))}
-      </nav>
-      <div className="dh-topbar-actions">
-        <ThemeControl />
-        <button type="button" className="dh-profile-button" onClick={() => onNavigate('settings')} aria-label="Open account settings">
-          <UserAvatar user={user} />
-        </button>
+    <div className="dh-readiness-ring" style={{ '--dh-progress': `${value * 3.6}deg` }}>
+      <div className="dh-readiness-ring-inner">
+        <strong>{value}%</strong>
+        <span>{label}</span>
       </div>
-    </header>
-  );
-}
-
-function DashboardRail({ user, onNavigate }) {
-  return (
-    <aside className="dh-rail">
-      <button type="button" className="dh-rail-brand" onClick={() => onNavigate('dashboard')} aria-label="Dashboard home">
-        <ProductMark compact />
-      </button>
-      <nav className="dh-rail-nav" aria-label="Workspace navigation">
-        {RAIL_NAV.map((item, index) => (
-          <button
-            type="button"
-            key={item.id}
-            className={index === 0 ? 'is-active' : ''}
-            onClick={() => onNavigate(item.id)}
-            aria-label={item.label}
-            data-label={item.label}
-          >
-            <NavMark type={item.mark} />
-          </button>
-        ))}
-      </nav>
-      <div className="dh-rail-spacer" />
-      <ThemeControl compact />
-      <button type="button" className="dh-rail-settings" onClick={() => onNavigate('settings')} aria-label="Settings" data-label="Settings">
-        <NavMark type="settings" />
-      </button>
-      <button type="button" className="dh-rail-profile" onClick={() => onNavigate('settings')} aria-label="Open account settings">
-        <UserAvatar user={user} />
-        <span className="dh-presence-dot" />
-      </button>
-    </aside>
-  );
-}
-
-function ProgressRing({ value, label = 'complete', className = '' }) {
-  return (
-    <div className={`dh-progress-ring${className ? ` ${className}` : ''}`} style={{ '--dh-angle': `${value * 3.6}deg` }}>
-      <div><strong>{value}%</strong><span>{label}</span></div>
     </div>
   );
 }
 
-function SetupRow({ step, index, onNavigate }) {
+function NewUserDashboard({ firstName, setupSteps, readiness, onNavigate }) {
   return (
-    <button type="button" className={`dh-setup-row${step.complete ? ' is-complete' : ''}`} onClick={() => onNavigate(step.destination)}>
-      <span className="dh-setup-check">{step.complete ? '✓' : ''}</span>
-      <span className={`dh-step-tile tone-${(index % 4) + 1}`}><NavMark type={step.mark} /></span>
-      <span className="dh-setup-copy"><strong>{step.title}</strong><small>{step.description}</small></span>
-      <span className="dh-row-arrow">→</span>
-    </button>
-  );
-}
+    <div className="dh-root dh-new-user">
+      <header className="dh-new-header">
+        <div>
+          <span className="dh-kicker">Welcome, {firstName}</span>
+          <h1>Let’s set up your career workspace.</h1>
+          <p>Three focused steps. Everything else can wait.</p>
+        </div>
+        <button type="button" className="dh-primary-button" onClick={() => onNavigate('studio')}>
+          Create your résumé
+        </button>
+      </header>
 
-function QuoteCard() {
-  return (
-    <aside className="dh-quote-card">
-      <img src={careerJourney} alt="" aria-hidden="true" />
-      <span className="dh-quote-wash" />
-      <blockquote>“Progress happens when you show up consistently.”</blockquote>
-      <span className="dh-quote-rule" />
-      <small>Tools today.<br />Opportunities tomorrow.</small>
-    </aside>
-  );
-}
+      <figure className="dh-journey-art">
+        <img
+          src={careerJourney}
+          alt="An illustrated mountain path from building career tools to preparing with confidence and growing a career"
+        />
+      </figure>
 
-function SetupProgress({ setupSteps, readiness }) {
-  return (
-    <div className="dh-progress-stack">
-      <section className="dh-reference-card dh-setup-progress-card">
-        <h2>Your Setup Progress</h2>
-        <div className="dh-setup-progress-layout">
-          <ProgressRing value={readiness} label="" />
-          <div className="dh-progress-legend">
+      <div className="dh-onboarding-grid">
+        <section className="dh-panel dh-setup-panel">
+          <div className="dh-section-heading">
+            <div>
+              <span className="dh-section-label">Get started</span>
+              <h2>Build your foundation</h2>
+            </div>
+            <span className="dh-section-count">{setupSteps.filter((step) => step.complete).length} / {setupSteps.length}</span>
+          </div>
+
+          <div className="dh-setup-list">
             {setupSteps.map((step, index) => (
-              <div key={step.title}><span className={step.complete ? 'is-complete' : ''} style={{ '--legend-tone': index }} /><small>{step.shortTitle}</small></div>
+              <SetupRow
+                key={step.title}
+                index={index}
+                title={step.title}
+                description={step.description}
+                complete={step.complete}
+                onClick={() => onNavigate(step.destination)}
+              />
             ))}
           </div>
-        </div>
-      </section>
-      <section className="dh-reference-card dh-why-card">
-        <h2>Why this matters?</h2>
-        <p>A focused workspace helps you track opportunities, tailor stronger résumés, and prepare for every next step.</p>
-        <span />
-        <small>You’ve got this.</small>
-      </section>
-    </div>
-  );
-}
-
-function QuickToolCard({ tool, onNavigate }) {
-  return (
-    <button type="button" className="dh-quick-tool" onClick={() => onNavigate(tool.id)}>
-      <NavMark type={tool.mark} />
-      <strong>{tool.title}</strong>
-      <span>{tool.copy}</span>
-      <small>→</small>
-    </button>
-  );
-}
-
-function NewUserDashboard({ user, setupSteps, readiness, onNavigate }) {
-  const completed = setupSteps.filter((step) => step.complete).length;
-  return (
-    <div className="dh-shell dh-onboarding-shell">
-      <PremiumTopbar user={user} onNavigate={onNavigate} />
-      <main className="dh-onboarding-main">
-        <section className="dh-reference-hero">
-          <div className="dh-reference-hero-copy">
-            <span>Welcome, {firstNameOf(user)}</span>
-            <h1>Let’s set up<br />your career workspace.</h1>
-            <p>A few steps to personalize your experience and get the most out of the platform.</p>
-          </div>
-          <div className="dh-reference-hero-art">
-            <img src={careerJourney} alt="Mountain journey from building career tools to preparing with confidence and growing a career" />
-          </div>
         </section>
 
-        <section className="dh-onboarding-grid">
-          <div className="dh-reference-card dh-get-started-card">
-            <div className="dh-card-heading">
-              <div><h2>Get Started</h2><p>Complete these steps to build a focused career workspace.</p></div>
-              <span>{completed} / {setupSteps.length} completed</span>
-            </div>
-            <div className="dh-setup-list">
-              {setupSteps.map((step, index) => <SetupRow key={step.title} step={step} index={index} onNavigate={onNavigate} />)}
-            </div>
+        <aside className="dh-panel dh-progress-panel">
+          <span className="dh-section-label">Workspace readiness</span>
+          <ReadinessRing value={readiness} label="complete" />
+          <div className="dh-progress-legend">
+            {setupSteps.map((step) => (
+              <div key={step.title}>
+                <span className={step.complete ? 'is-complete' : ''} />
+                {step.shortTitle}
+              </div>
+            ))}
           </div>
-          <QuoteCard />
-          <SetupProgress setupSteps={setupSteps} readiness={readiness} />
-        </section>
-
-        <section className="dh-quick-tools" aria-label="Workspace tools">
-          {TOOL_LINKS.map((tool) => <QuickToolCard key={tool.id} tool={tool} onNavigate={onNavigate} />)}
-        </section>
-
-        <footer className="dh-reference-footer">
-          <span>Build&nbsp;&nbsp;\&nbsp;&nbsp;Apply&nbsp;&nbsp;\&nbsp;&nbsp;Improve&nbsp;&nbsp;\&nbsp;&nbsp;Grow</span>
-          <span><i />A better you, a brighter tomorrow.</span>
-        </footer>
-      </main>
-    </div>
-  );
-}
-
-function CompanyMark({ company }) {
-  return <span className="dh-company-mark" style={companyStyle(company)}>{initialsOf(company).slice(0, 1)}</span>;
-}
-
-function PipelineCard({ application, onNavigate }) {
-  return (
-    <button type="button" className="dh-pipeline-card" onClick={() => onNavigate('applications')}>
-      <CompanyMark company={application.company || 'Company'} />
-      <span className="dh-pipeline-copy">
-        <strong>{application.company || 'Company'}</strong>
-        <small>{application.role || 'Role not set'}</small>
-        <em>{shortDate(application.appliedAt || application.createdAt)}</em>
-      </span>
-      <span className="dh-more-mark">···</span>
-    </button>
-  );
-}
-
-function PipelinePanel({ applications, onNavigate }) {
-  return (
-    <section className="dh-active-card dh-pipeline-panel">
-      <div className="dh-active-heading">
-        <div><h2>Application Pipeline</h2><p>Track your applications and move forward.</p></div>
-        <div><button type="button" className="dh-inline-link" onClick={() => onNavigate('applications')}>View all&nbsp;&nbsp;→</button><button type="button" className="dh-solid-action" onClick={() => onNavigate('applications')}><span>＋</span>Add Application</button></div>
+          <p>Complete only what helps you make the next move. You can return here anytime.</p>
+        </aside>
       </div>
+    </div>
+  );
+}
+
+function ApplicationCard({ application, onOpen }) {
+  const company = application.company || 'Company';
+  const initial = company.charAt(0).toUpperCase();
+
+  return (
+    <button type="button" className="dh-application-card" onClick={onOpen}>
+      <span className="dh-company-mark" style={monogramStyle(company)}>{initial}</span>
+      <span className="dh-application-copy">
+        <strong>{company}</strong>
+        <span>{application.role || 'Role not set'}</span>
+        <small>{relativeDate(application.appliedAt || application.createdAt)}</small>
+      </span>
+      <span className="dh-card-arrow">→</span>
+    </button>
+  );
+}
+
+function PipelinePanel({ applications, savedCount, onNavigate }) {
+  return (
+    <section className="dh-panel dh-pipeline-panel">
+      <div className="dh-section-heading">
+        <div>
+          <span className="dh-section-label">Application pipeline</span>
+          <h2>Move opportunities forward</h2>
+        </div>
+        <div className="dh-heading-actions">
+          {savedCount > 0 && <span>{savedCount} saved</span>}
+          <button type="button" className="dh-text-button" onClick={() => onNavigate('applications')}>View tracker →</button>
+        </div>
+      </div>
+
       <div className="dh-pipeline-board">
         {BOARD_STAGES.map((stage) => {
-          const rows = applications.filter((application) => application.stage === stage.id);
+          const stageApplications = applications.filter((application) => application.stage === stage.id);
           return (
-            <div className="dh-pipeline-column" key={stage.id}>
-              <div className="dh-column-heading"><span style={{ background: stage.color }} /><strong>{stage.label}</strong><small>{rows.length}</small></div>
-              <div className="dh-column-body">
-                {rows.slice(0, 3).map((application) => <PipelineCard key={application.id} application={application} onNavigate={onNavigate} />)}
-                {rows.length === 0 && <button type="button" className="dh-column-empty" onClick={() => onNavigate('applications')}>No {stage.label.toLowerCase()} applications yet.<br /><strong>Add one →</strong></button>}
+            <div className="dh-stage-column" key={stage.id}>
+              <div className="dh-stage-heading">
+                <span className="dh-stage-dot" style={{ background: stage.color }} />
+                <strong>{stage.label}</strong>
+                <span>{stageApplications.length}</span>
               </div>
-              <button type="button" className="dh-column-add" onClick={() => onNavigate('applications')}>＋&nbsp;&nbsp;Add</button>
+              <div className="dh-stage-list">
+                {stageApplications.slice(0, 3).map((application) => (
+                  <ApplicationCard
+                    key={application.id}
+                    application={application}
+                    onOpen={() => onNavigate('applications')}
+                  />
+                ))}
+                {stageApplications.length === 0 && (
+                  <button type="button" className="dh-stage-empty" onClick={() => onNavigate('applications')}>
+                    No {stage.label.toLowerCase()} applications
+                  </button>
+                )}
+              </div>
             </div>
           );
         })}
@@ -375,74 +206,164 @@ function PipelinePanel({ applications, onNavigate }) {
   );
 }
 
-function StatsPanel({ applications, readiness, onNavigate }) {
-  const stats = computeStats(applications);
-  const trend = monthlyTrend(applications, 4);
-  const maxTrend = Math.max(1, ...trend.map((point) => point.applications));
-  const submitted = BOARD_STAGES.reduce((sum, stage) => sum + (stats.byStage[stage.id] || 0), 0);
+function ApplicationRing({ stats }) {
+  const segments = [
+    { count: stats.byStage.applied, color: '#3b82f6' },
+    { count: stats.byStage.interviewing, color: '#7c3aed' },
+    { count: stats.byStage.offer, color: '#059669' },
+    { count: stats.byStage.rejected, color: '#dc5263' },
+  ];
+  const submitted = segments.reduce((sum, segment) => sum + segment.count, 0);
   let cursor = 0;
-  const gradients = [];
-  BOARD_STAGES.forEach((stage) => {
-    const count = stats.byStage[stage.id] || 0;
+  const gradientParts = [];
+
+  segments.forEach((segment) => {
     const start = cursor;
-    const end = submitted ? cursor + (count / submitted) * 100 : cursor;
-    if (count) gradients.push(`${stage.color} ${start}% ${end}%`);
+    const end = submitted ? cursor + (segment.count / submitted) * 100 : cursor;
+    if (segment.count) gradientParts.push(`${segment.color} ${start}% ${end}%`);
     cursor = end;
   });
 
+  const background = submitted
+    ? `conic-gradient(${gradientParts.join(', ')})`
+    : 'conic-gradient(var(--border-dark) 0 100%)';
+
   return (
-    <section className="dh-active-card dh-stats-panel">
-      <div className="dh-active-heading dh-stats-heading"><h2>Application Stats</h2><span>All time⌄</span></div>
-      <div className="dh-stats-top">
-        <div className="dh-stats-ring" style={{ background: submitted ? `conic-gradient(${gradients.join(',')})` : 'conic-gradient(#dbe2e5 0 100%)' }}><div><strong>{submitted}</strong><small>Total</small></div></div>
-        <div className="dh-stats-legend">
-          {BOARD_STAGES.map((stage) => <div key={stage.id}><span style={{ background: stage.color }} /><small>{stage.label}</small><strong>{stats.byStage[stage.id] || 0}</strong></div>)}
+    <div className="dh-application-ring" style={{ background }}>
+      <div>
+        <strong>{submitted}</strong>
+        <span>submitted</span>
+      </div>
+    </div>
+  );
+}
+
+function StatsPanel({ applications, readiness }) {
+  const stats = computeStats(applications);
+  const trend = monthlyTrend(applications, 4);
+  const maxTrend = Math.max(1, ...trend.map((point) => point.applications));
+
+  return (
+    <section className="dh-panel dh-stats-panel">
+      <div className="dh-section-heading">
+        <div>
+          <span className="dh-section-label">Application stats</span>
+          <h2>Current cycle</h2>
         </div>
       </div>
-      <div className="dh-stats-bottom">
-        <div className="dh-mini-chart">
-          <div className="dh-mini-bars">
-            {trend.map((point) => <div key={point.label}><span style={{ height: `${Math.max(8, (point.applications / maxTrend) * 100)}%` }} /><i style={{ height: `${Math.max(5, ((point.applications * 0.58) / maxTrend) * 100)}%` }} /><small>{point.label}</small></div>)}
-          </div>
+
+      <div className="dh-stats-overview">
+        <ApplicationRing stats={stats} />
+        <div className="dh-stats-legend">
+          {BOARD_STAGES.map((stage) => (
+            <div key={stage.id}>
+              <span style={{ background: stage.color }} />
+              <small>{stage.label}</small>
+              <strong>{stats.byStage[stage.id]}</strong>
+            </div>
+          ))}
         </div>
-        <div className="dh-completion-stat"><strong>{readiness}%</strong><span>Workspace<br />Completion</span><div><i style={{ width: `${readiness}%` }} /></div><button type="button" onClick={() => onNavigate('studio')}>Complete&nbsp;&nbsp;→</button></div>
+      </div>
+
+      <div className="dh-trend">
+        <div className="dh-trend-heading">
+          <span>Applications</span>
+          <strong>{stats.responseRate == null ? 'No response rate yet' : `${stats.responseRate}% response rate`}</strong>
+        </div>
+        <div className="dh-trend-bars">
+          {trend.map((point) => (
+            <div key={point.label}>
+              <span style={{ height: `${Math.max(4, (point.applications / maxTrend) * 100)}%` }} />
+              <small>{point.label}</small>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="dh-readiness-line">
+        <div>
+          <span>Workspace readiness</span>
+          <strong>{readiness}%</strong>
+        </div>
+        <div><span style={{ width: `${readiness}%` }} /></div>
       </div>
     </section>
   );
 }
 
-function ResumePanel({ resume, linkedApplications, onNavigate }) {
-  const score = resume ? scanScore(resume) : null;
-  const stale = resume ? isScanStale(resume) : false;
-  const scoreValue = score || 0;
-  const checks = [
-    { label: resume ? 'Résumé saved to your workspace' : 'Create your first résumé', state: resume ? 'good' : '' },
-    { label: score == null ? 'Run an ATS scan for role fit' : 'ATS scan completed', state: score == null ? '' : 'good' },
-    { label: stale ? 'Refresh after your latest edits' : score == null ? 'Match keywords to a target role' : 'Scan matches the latest version', state: stale ? 'warn' : score == null ? '' : 'good' },
-    { label: linkedApplications ? `Used in ${linkedApplications} application${linkedApplications === 1 ? '' : 's'}` : 'Link it to an application', state: linkedApplications ? 'good' : '' },
-  ];
+function ResumePanel({ resume, linkedApplications, firstName, onNavigate }) {
+  if (!resume) {
+    return (
+      <section className="dh-panel dh-resume-panel dh-resume-empty">
+        <div>
+          <span className="dh-section-label">Résumé & ATS</span>
+          <h2>Your strongest application starts here.</h2>
+          <p>Create one focused résumé, then scan it against the role you want.</p>
+        </div>
+        <button type="button" className="dh-primary-button" onClick={() => onNavigate('studio')}>Create résumé</button>
+      </section>
+    );
+  }
+
+  const score = scanScore(resume);
+  const stale = isScanStale(resume);
+  const scoreValue = score ?? 0;
+  const scoreStyle = {
+    '--dh-score-progress': `${scoreValue * 3.6}deg`,
+    '--dh-score-color': score == null ? 'var(--border-strong)' : scoreColor(score),
+  };
 
   return (
-    <section className="dh-active-card dh-resume-panel">
-      <div className="dh-active-heading"><div><h2>Résumé & ATS</h2><p>Make your résumé stronger. Land more interviews.</p></div></div>
-      <div className="dh-resume-body">
-        <div className="dh-resume-preview">
-          <span>RÉSUMÉ</span>
-          <strong>{resume?.role || 'Your next role'}</strong>
-          <small>{resume ? 'Professional résumé' : 'Start with a focused profile'}</small>
-          <i className="is-long" /><i /><i className="is-medium" />
-          <em>EXPERIENCE</em>
-          <i className="is-long" /><i className="is-medium" /><i />
+    <section className="dh-panel dh-resume-panel">
+      <div className="dh-section-heading">
+        <div>
+          <span className="dh-section-label">Résumé & ATS</span>
+          <h2>{resume.role || 'Your active résumé'}</h2>
         </div>
-        <div className="dh-score-block">
-          <div className="dh-score-ring" style={{ '--score-angle': `${scoreValue * 3.6}deg`, '--score-color': score == null ? '#cad3d0' : scoreColor(score) }}><div><strong>{score == null ? '—' : score}</strong><small>/ 100</small></div></div>
-          <strong>{score == null ? 'Not scanned yet' : stale ? 'Refresh recommended' : score >= 80 ? 'Strong Match' : score >= 60 ? 'Good foundation' : 'Needs attention'}</strong>
-          <span>{score == null ? 'Scan against a target role.' : stale ? 'Your résumé changed after this scan.' : 'Your score comes from your latest ATS scan.'}</span>
+        <button type="button" className="dh-text-button" onClick={() => onNavigate('library')}>View library →</button>
+      </div>
+
+      <div className="dh-resume-layout">
+        <div className="dh-resume-sheet" aria-hidden="true">
+          <span className="dh-resume-sheet-kicker">Résumé</span>
+          <strong>{firstName}</strong>
+          <small>{resume.role || 'Professional profile'}</small>
+          <span className="dh-sheet-rule is-wide" />
+          <span className="dh-sheet-rule" />
+          <span className="dh-sheet-rule is-medium" />
+          <span className="dh-sheet-label">Experience</span>
+          <span className="dh-sheet-rule is-wide" />
+          <span className="dh-sheet-rule is-medium" />
         </div>
-        <div className="dh-resume-checks">
-          {checks.map((check) => <div key={check.label} className={check.state ? `is-${check.state}` : ''}><span>{check.state === 'good' ? '✓' : check.state === 'warn' ? '!' : '·'}</span><small>{check.label}</small></div>)}
-          <div className="dh-resume-buttons"><button type="button" className="dh-solid-action" onClick={() => onNavigate('ats')}>{score == null || stale ? 'Scan Résumé' : 'View Scan'}</button><button type="button" className="dh-outline-action" onClick={() => onNavigate('studio')}>Edit Résumé</button></div>
+
+        <div className="dh-resume-score" style={scoreStyle}>
+          <div>
+            <strong>{score == null ? '—' : score}</strong>
+            <span>{score == null ? 'Not scanned' : stale ? 'Needs refresh' : 'ATS score'}</span>
+          </div>
         </div>
+
+        <div className="dh-resume-facts">
+          <div className={resume.isActive ? 'is-positive' : ''}>
+            <span />
+            <p><strong>{resume.isActive ? 'Primary résumé' : 'Most recent résumé'}</strong><small>Updated {shortDate(resume.lastAppended || resume.updatedAt)}</small></p>
+          </div>
+          <div className={score != null && !stale ? 'is-positive' : stale ? 'is-warning' : ''}>
+            <span />
+            <p><strong>{score == null ? 'ATS scan not run' : stale ? 'Edited since last scan' : 'ATS scan is current'}</strong><small>{score == null ? 'Scan against a target role' : stale ? 'Refresh the result before applying' : 'Score is based on a real scan'}</small></p>
+          </div>
+          <div className={linkedApplications > 0 ? 'is-positive' : ''}>
+            <span />
+            <p><strong>{linkedApplications} linked application{linkedApplications === 1 ? '' : 's'}</strong><small>Using this résumé in your tracker</small></p>
+          </div>
+        </div>
+      </div>
+
+      <div className="dh-resume-actions">
+        <button type="button" className="dh-primary-button" onClick={() => onNavigate(score == null || stale ? 'ats' : 'studio')}>
+          {score == null ? 'Scan résumé' : stale ? 'Re-scan résumé' : 'Open in Studio'}
+        </button>
+        <button type="button" className="dh-secondary-button" onClick={() => onNavigate('studio')}>Edit résumé</button>
       </div>
     </section>
   );
@@ -455,82 +376,134 @@ function UpcomingPanel({ applications, onNavigate }) {
     .slice(0, 4);
 
   return (
-    <section className="dh-active-card dh-upcoming-panel">
-      <div className="dh-active-heading"><h2>Upcoming</h2><button type="button" className="dh-inline-link" onClick={() => onNavigate('applications')}>View all&nbsp;&nbsp;→</button></div>
-      {upcoming.length ? <div className="dh-upcoming-list">
-        {upcoming.map((application) => {
-          const date = monthDay(application.nextStepDate);
-          const state = dueState(application.nextStepDate);
-          return <button type="button" key={application.id} className="dh-upcoming-row" onClick={() => onNavigate('applications')}><span className="dh-upcoming-date"><strong>{date.month} {date.day}</strong><small>{dueLabel(application.nextStepDate)}</small></span><span className={`dh-timeline-node${state ? ` is-${state}` : ''}`} /><span className="dh-upcoming-copy"><strong>{application.nextStep || (application.stage === 'interviewing' ? 'Interview' : 'Follow up')}</strong><small>{application.company || 'Company'} · {application.role || 'Role'}</small></span><CompanyMark company={application.company || 'Company'} /></button>;
-        })}
-      </div> : <div className="dh-upcoming-empty"><strong>Your schedule is clear.</strong><p>Add a next step to an application and it will appear here.</p><button type="button" className="dh-inline-link" onClick={() => onNavigate('applications')}>Open tracker&nbsp;&nbsp;→</button></div>}
-    </section>
-  );
-}
-
-function PortfolioPanel({ portfolioReady, onNavigate }) {
-  const templates = ['Minimal', 'Modern', 'Editorial', 'Classic'];
-  return (
-    <section className="dh-active-card dh-portfolio-panel">
-      <div className="dh-active-heading"><div><h2>Portfolio Builder</h2><p>Choose a direction and present your work with confidence.</p></div><button type="button" className="dh-inline-link" onClick={() => onNavigate('portfolio')}>Browse all&nbsp;&nbsp;→</button></div>
-      <div className="dh-template-grid">
-        {templates.map((template, index) => <button type="button" key={template} className={`dh-template-card template-${index + 1}${portfolioReady && index === 0 ? ' is-selected' : ''}`} onClick={() => onNavigate('portfolio')}><span><i /><i /><i /></span><strong>{template}</strong>{portfolioReady && index === 0 && <em>✓</em>}</button>)}
-        <button type="button" className="dh-template-card dh-template-new" onClick={() => onNavigate('portfolio')}><span>＋</span><strong>Start from Scratch</strong></button>
-      </div>
-    </section>
-  );
-}
-
-function WorkspacePanel({ readiness, onNavigate }) {
-  const actions = [
-    { label: 'Scan my résumé', id: 'ats', mark: 'scan' },
-    { label: 'Add an application', id: 'applications', mark: 'case' },
-    { label: 'Build my portfolio', id: 'portfolio', mark: 'portfolio' },
-    { label: 'Open my library', id: 'library', mark: 'library' },
-  ];
-  return (
-    <section className="dh-active-card dh-workspace-panel">
-      <div className="dh-workspace-title"><span>{readiness}%</span><div><h2>Career Workspace</h2><p>Keep the essentials moving.</p></div></div>
-      <div className="dh-workspace-actions">{actions.map((action) => <button type="button" key={action.id} onClick={() => onNavigate(action.id)}><NavMark type={action.mark} /><span>{action.label}</span><small>→</small></button>)}</div>
-      <blockquote>“One focused action today makes the next opportunity easier.”</blockquote>
-    </section>
-  );
-}
-
-function ActiveUserDashboard({ user, applications, activeResume, readiness, portfolioReady, onNavigate }) {
-  const linkedApplications = activeResume ? applications.filter((application) => application.resumeId === activeResume.id).length : 0;
-  return (
-    <div className="dh-shell dh-active-shell">
-      <DashboardRail user={user} onNavigate={onNavigate} />
-      <main className="dh-active-main">
-        <div className="dh-active-grid">
-          <PipelinePanel applications={applications} onNavigate={onNavigate} />
-          <StatsPanel applications={applications} readiness={readiness} onNavigate={onNavigate} />
-          <ResumePanel resume={activeResume} linkedApplications={linkedApplications} onNavigate={onNavigate} />
-          <UpcomingPanel applications={applications} onNavigate={onNavigate} />
-          <PortfolioPanel portfolioReady={portfolioReady} onNavigate={onNavigate} />
-          <WorkspacePanel readiness={readiness} onNavigate={onNavigate} />
+    <section className="dh-panel dh-upcoming-panel">
+      <div className="dh-section-heading">
+        <div>
+          <span className="dh-section-label">Upcoming</span>
+          <h2>Next steps</h2>
         </div>
-      </main>
-    </div>
+        <button type="button" className="dh-text-button" onClick={() => onNavigate('applications')}>View all →</button>
+      </div>
+
+      {upcoming.length ? (
+        <div className="dh-timeline">
+          {upcoming.map((application) => {
+            const date = monthDay(application.nextStepDate);
+            const state = dueState(application.nextStepDate);
+            return (
+              <button type="button" className="dh-timeline-row" key={application.id} onClick={() => onNavigate('applications')}>
+                <span className="dh-timeline-date"><small>{date.month}</small><strong>{date.day}</strong></span>
+                <span className="dh-timeline-line"><i className={state ? `is-${state}` : ''} /></span>
+                <span className="dh-timeline-copy">
+                  <strong>{application.nextStep || (application.stage === 'interviewing' ? 'Interview' : 'Follow up')}</strong>
+                  <span>{application.company || 'Company'} · {application.role || 'Role'}</span>
+                  <small>{dueLabel(application.nextStepDate)}</small>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="dh-compact-empty">
+          <strong>Your schedule is clear.</strong>
+          <p>Add a next step to an application and it will appear here.</p>
+          <button type="button" className="dh-text-button" onClick={() => onNavigate('applications')}>Open applications →</button>
+        </div>
+      )}
+    </section>
   );
 }
 
-export default function DashboardHome({ resumes = [], applications = [], portfolioReady = false, onNavigate }) {
+export default function DashboardHome({ resumes = [], applications = [], onNavigate }) {
   const { user } = useAuth();
+  const [searchTerm, setSearchTerm] = useState('');
+  const firstName = firstNameOf(user);
   const activeResume = resumes.find((resume) => resume.isActive) || resumes[0] || null;
   const hasScannedResume = resumes.some((resume) => scanScore(resume) !== null);
-  const hasNextStep = applications.some((application) => application.nextStepDate);
   const setupSteps = [
-    { shortTitle: 'Résumé', title: 'Create or Upload Your Résumé', description: 'Build a strong base résumé for the roles you want.', complete: resumes.length > 0, destination: 'studio', mark: 'resume' },
-    { shortTitle: 'Applications', title: 'Add Your First Application', description: 'Start tracking every opportunity in one place.', complete: applications.length > 0, destination: 'applications', mark: 'case' },
-    { shortTitle: 'Portfolio', title: 'Build Your Portfolio', description: 'Showcase your work with a focused presentation.', complete: portfolioReady, destination: 'portfolio', mark: 'portfolio' },
-    { shortTitle: 'ATS scan', title: 'Run an ATS Scan', description: 'Check your résumé against a real target role.', complete: hasScannedResume, destination: 'ats', mark: 'scan' },
-    { shortTitle: 'Next step', title: 'Schedule Your Next Step', description: 'Stay ahead of interviews and follow-ups.', complete: hasNextStep, destination: 'applications', mark: 'interview' },
+    {
+      shortTitle: 'Résumé',
+      title: 'Create or upload your résumé',
+      description: 'Build a focused base résumé in the Studio.',
+      complete: resumes.length > 0,
+      destination: 'studio',
+    },
+    {
+      shortTitle: 'ATS scan',
+      title: 'Run your first ATS scan',
+      description: 'Check the résumé against a real target role.',
+      complete: hasScannedResume,
+      destination: 'ats',
+    },
+    {
+      shortTitle: 'Applications',
+      title: 'Track your first application',
+      description: 'Keep the opportunity and next step in one place.',
+      complete: applications.length > 0,
+      destination: 'applications',
+    },
   ];
   const readiness = Math.round((setupSteps.filter((step) => step.complete).length / setupSteps.length) * 100);
-  const isNewUser = resumes.length === 0 && applications.length === 0 && !portfolioReady;
+  const isNewUser = resumes.length === 0 && applications.length === 0;
 
-  if (isNewUser) return <NewUserDashboard user={user} setupSteps={setupSteps} readiness={readiness} onNavigate={onNavigate} />;
-  return <ActiveUserDashboard user={user} applications={applications} activeResume={activeResume} readiness={readiness} portfolioReady={portfolioReady} onNavigate={onNavigate} />;
+  if (isNewUser) {
+    return (
+      <NewUserDashboard
+        firstName={firstName}
+        setupSteps={setupSteps}
+        readiness={readiness}
+        onNavigate={onNavigate}
+      />
+    );
+  }
+
+  const query = searchTerm.trim().toLowerCase();
+  const visibleApplications = query
+    ? applications.filter((application) => [application.company, application.role, application.stage]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+      .includes(query))
+    : applications;
+  const savedCount = applications.filter((application) => application.stage === 'saved').length;
+  const linkedApplications = activeResume
+    ? applications.filter((application) => application.resumeId === activeResume.id).length
+    : 0;
+
+  return (
+    <div className="dh-root dh-active-user">
+      <header className="dh-active-header">
+        <div>
+          <span className="dh-kicker">{DATE_LABEL}</span>
+          <h1>{GREETING}, {firstName}.</h1>
+          <p>Here’s what is moving and what needs your attention.</p>
+        </div>
+        <div className="dh-active-actions">
+          <label className="dh-search-field">
+            <span>Search applications</span>
+            <input
+              type="search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Search applications"
+            />
+          </label>
+          <button type="button" className="dh-secondary-button" onClick={() => onNavigate('applications')}>Add application</button>
+          <button type="button" className="dh-primary-button" onClick={() => onNavigate('studio')}>New résumé</button>
+        </div>
+      </header>
+
+      <div className="dh-active-grid">
+        <PipelinePanel applications={visibleApplications} savedCount={savedCount} onNavigate={onNavigate} />
+        <StatsPanel applications={applications} readiness={readiness} />
+        <ResumePanel
+          resume={activeResume}
+          linkedApplications={linkedApplications}
+          firstName={firstName}
+          onNavigate={onNavigate}
+        />
+        <UpcomingPanel applications={applications} onNavigate={onNavigate} />
+      </div>
+    </div>
+  );
 }
