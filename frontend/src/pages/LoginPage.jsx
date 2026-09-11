@@ -1,13 +1,5 @@
 import { useState } from 'react';
-import {
-  AlertCircle,
-  ArrowRight,
-  Eye,
-  EyeOff,
-  Loader2,
-  LockKeyhole,
-  Mail,
-} from 'lucide-react';
+import { AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../lib/auth/AuthContext';
 import { ApiError } from '../lib/api';
@@ -54,7 +46,7 @@ export default function LoginPage({ onSwitch, onBack }) {
     <AuthShell mode="login" onBack={onBack} onSwitch={onSwitch} busy={busy}>
       {error && (
         <div className="auth-alert" role="alert">
-          <AlertCircle size={16} strokeWidth={1.9} />
+          <AlertCircle size={15} strokeWidth={1.9} />
           <span>{error}</span>
         </div>
       )}
@@ -69,10 +61,10 @@ export default function LoginPage({ onSwitch, onBack }) {
               theme="outline"
               shape="rectangular"
               size="large"
-              width="400"
+              width="380"
             />
           </div>
-          <div className="auth-divider"><span>or use email</span></div>
+          <div className="auth-divider"><span>or</span></div>
         </>
       )}
 
@@ -80,7 +72,6 @@ export default function LoginPage({ onSwitch, onBack }) {
         <div className={`auth-field${errors.email ? ' has-error' : ''}`}>
           <label htmlFor="login-email">Email address</label>
           <div className="auth-control">
-            <Mail className="auth-control-icon" size={18} strokeWidth={1.7} />
             <input
               id="login-email"
               type="email"
@@ -95,7 +86,7 @@ export default function LoginPage({ onSwitch, onBack }) {
           </div>
           {errors.email && (
             <span className="auth-field-error" id="login-email-error">
-              <AlertCircle size={12} /> {errors.email}
+              {errors.email}
             </span>
           )}
         </div>
@@ -103,7 +94,6 @@ export default function LoginPage({ onSwitch, onBack }) {
         <div className={`auth-field${errors.password ? ' has-error' : ''}`}>
           <label htmlFor="login-password">Password</label>
           <div className="auth-control">
-            <LockKeyhole className="auth-control-icon" size={18} strokeWidth={1.7} />
             <input
               id="login-password"
               type={showPassword ? 'text' : 'password'}
@@ -125,18 +115,13 @@ export default function LoginPage({ onSwitch, onBack }) {
           </div>
           {errors.password && (
             <span className="auth-field-error" id="login-password-error">
-              <AlertCircle size={12} /> {errors.password}
+              {errors.password}
             </span>
           )}
         </div>
 
         <button className="auth-primary-action" type="submit" disabled={busy}>
-          <span>{busy ? 'Signing in' : 'Enter workspace'}</span>
-          {busy ? (
-            <Loader2 size={18} className="auth-spinner" />
-          ) : (
-            <ArrowRight size={18} className="auth-action-arrow" />
-          )}
+          {busy ? <Loader2 size={18} className="auth-spinner" /> : 'Sign in'}
         </button>
       </form>
     </AuthShell>

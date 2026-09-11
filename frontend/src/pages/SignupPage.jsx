@@ -1,15 +1,5 @@
 import { useMemo, useState } from 'react';
-import {
-  AlertCircle,
-  ArrowRight,
-  Check,
-  Eye,
-  EyeOff,
-  Loader2,
-  LockKeyhole,
-  Mail,
-  UserRound,
-} from 'lucide-react';
+import { AlertCircle, Check, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../lib/auth/AuthContext';
 import { ApiError } from '../lib/api';
@@ -28,7 +18,7 @@ function getPasswordScore(value) {
   return score;
 }
 
-const STRENGTH_LABELS = ['Start typing', 'Needs work', 'Good', 'Strong', 'Excellent'];
+const STRENGTH_LABELS = ['Start typing', 'Weak', 'Good', 'Strong', 'Excellent'];
 
 export default function SignupPage({ onSwitch, onBack }) {
   const { signup, loginWithGoogle } = useAuth();
@@ -72,7 +62,7 @@ export default function SignupPage({ onSwitch, onBack }) {
     <AuthShell mode="signup" onBack={onBack} onSwitch={onSwitch} busy={busy}>
       {error && (
         <div className="auth-alert" role="alert">
-          <AlertCircle size={16} strokeWidth={1.9} />
+          <AlertCircle size={15} strokeWidth={1.9} />
           <span>{error}</span>
         </div>
       )}
@@ -87,10 +77,10 @@ export default function SignupPage({ onSwitch, onBack }) {
               theme="outline"
               shape="rectangular"
               size="large"
-              width="400"
+              width="380"
             />
           </div>
-          <div className="auth-divider"><span>or use email</span></div>
+          <div className="auth-divider"><span>or</span></div>
         </>
       )}
 
@@ -98,7 +88,6 @@ export default function SignupPage({ onSwitch, onBack }) {
         <div className={`auth-field${errors.name ? ' has-error' : ''}`}>
           <label htmlFor="signup-name">Full name</label>
           <div className="auth-control">
-            <UserRound className="auth-control-icon" size={18} strokeWidth={1.7} />
             <input
               id="signup-name"
               type="text"
@@ -111,16 +100,13 @@ export default function SignupPage({ onSwitch, onBack }) {
             />
           </div>
           {errors.name && (
-            <span className="auth-field-error" id="signup-name-error">
-              <AlertCircle size={12} /> {errors.name}
-            </span>
+            <span className="auth-field-error" id="signup-name-error">{errors.name}</span>
           )}
         </div>
 
         <div className={`auth-field${errors.email ? ' has-error' : ''}`}>
           <label htmlFor="signup-email">Email address</label>
           <div className="auth-control">
-            <Mail className="auth-control-icon" size={18} strokeWidth={1.7} />
             <input
               id="signup-email"
               type="email"
@@ -134,9 +120,7 @@ export default function SignupPage({ onSwitch, onBack }) {
             />
           </div>
           {errors.email && (
-            <span className="auth-field-error" id="signup-email-error">
-              <AlertCircle size={12} /> {errors.email}
-            </span>
+            <span className="auth-field-error" id="signup-email-error">{errors.email}</span>
           )}
         </div>
 
@@ -150,14 +134,13 @@ export default function SignupPage({ onSwitch, onBack }) {
             )}
           </div>
           <div className="auth-control">
-            <LockKeyhole className="auth-control-icon" size={18} strokeWidth={1.7} />
             <input
               id="signup-password"
               type={showPassword ? 'text' : 'password'}
               autoComplete="new-password"
               value={form.password}
               onChange={(event) => setForm({ ...form, password: event.target.value })}
-              placeholder="Create a secure password"
+              placeholder="At least 8 characters"
               aria-invalid={!!errors.password}
               aria-describedby={errors.password ? 'signup-password-error' : 'signup-password-help'}
             />
@@ -178,33 +161,25 @@ export default function SignupPage({ onSwitch, onBack }) {
                   <span key={step} className={passwordScore >= step ? 'is-filled' : ''} />
                 ))}
               </div>
-              <span className={passwordIsValid ? 'is-valid' : ''}>
-                {passwordIsValid && <Check size={12} strokeWidth={2.4} />}
-                8+ characters with letters and numbers
-              </span>
+              {passwordIsValid && (
+                <span className="auth-password-valid"><Check size={12} /> Meets requirements</span>
+              )}
             </div>
           )}
 
           {!form.password && !errors.password && (
             <span className="auth-field-hint" id="signup-password-help">
-              Use 8+ characters with letters and numbers.
+              Use letters and numbers.
             </span>
           )}
 
           {errors.password && (
-            <span className="auth-field-error" id="signup-password-error">
-              <AlertCircle size={12} /> {errors.password}
-            </span>
+            <span className="auth-field-error" id="signup-password-error">{errors.password}</span>
           )}
         </div>
 
         <button className="auth-primary-action" type="submit" disabled={busy}>
-          <span>{busy ? 'Creating workspace' : 'Create my workspace'}</span>
-          {busy ? (
-            <Loader2 size={18} className="auth-spinner" />
-          ) : (
-            <ArrowRight size={18} className="auth-action-arrow" />
-          )}
+          {busy ? <Loader2 size={18} className="auth-spinner" /> : 'Create account'}
         </button>
       </form>
     </AuthShell>
